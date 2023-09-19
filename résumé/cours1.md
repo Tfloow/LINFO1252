@@ -1,6 +1,8 @@
 # Cours 1
 
 - [Cours 1](#cours-1)
+  - [Fondamentaux](#fondamentaux)
+    - [Architecture de von Neumann](#architecture-de-von-neumann)
   - [Représentation des données](#représentation-des-données)
   - [Fonctionnement d'un système informatique](#fonctionnement-dun-système-informatique)
     - [Interruption](#interruption)
@@ -23,6 +25,21 @@
     - [Boucles ``for``](#boucles-for)
 
 
+## Fondamentaux
+
+On a des composants:
+- RAM, CPU, IO devices, ...
+
+Le processeur exécute des *instructions*.
+
+- Lire / écrire en mémoire vers / depuis des registres
+- Opérations sur ces registres
+
+Il y a 2 grandes familles *X86_64* et *ARM A64* avec des jeux d'instructions différents.
+
+### Architecture de von Neumann
+
+![alt](image-5.png)
 
 ## Représentation des données
 
@@ -37,7 +54,10 @@ On a typiquement:
 
 ## Fonctionnement d'un système informatique
 
-On annonce l'afin d'une opération entrée/sortie en utilisant des **interruption**.
+Les opérations d'entrée/sortie se déroulent de manière *concurrente*. Chacun a un contrôleur qui a une mémoire spécifique. Le processeur doit transporter les infos de la mémoire classique à la zone des contrôleurs.
+
+Un processeur n'est pas de base parallélisé. À chaque frappe du clavier, une interruption est lancée pour intercepté ce stimulis.
+
 
 ### Interruption
 
@@ -224,5 +244,5 @@ for s in $students; do
 done
 ```
 
-
-
+- s prend successivement les valeurs présentes dans la liste d'entrée `$students`
+       
