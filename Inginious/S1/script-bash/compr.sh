@@ -4,12 +4,12 @@ RED="\e[31m"
 GREEN="\e[32m"
 N="\e[0m"
 
-CURRENT=$(basename "$1")
-
 if [ $# -ne 1 ]; then
     echo -e "$RED You must provide a specific directory to package it $N"
     exit 1
 fi
+
+CURRENT=$(basename "$1")
 
 cd $1
 
@@ -51,3 +51,5 @@ echo "$ID" >> manifest.txt
 tar -cJf $CURRENT.tar.xz *
 
 rm manifest.txt
+
+exit 0

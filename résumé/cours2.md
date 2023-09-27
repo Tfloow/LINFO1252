@@ -171,12 +171,13 @@ Ensuite pour faire un appel, on doit déréférencer le pointeur.
 
 ### Expressions de manipulation de bits
 
-| Opération |            Explication            |
-| :-------: | :-------------------------------: |
-|    `~`    |        Inversion des bits         |
-|    `&`    |               Le ET               |
-|   `\|`    |               le OU               |
-|    `^`    | le XOR (seulement si 1 bit est 1) |
+| Opération |                Explication                |
+| :-------: | :---------------------------------------: |
+|    `~`    |            Inversion des bits             |
+|    `&`    |                   Le ET                   |
+|   `\|`    |                   le OU                   |
+|    `^`    |     le XOR (seulement si 1 bit est 1)     |
+|   `>>`    | Shift les bits de x places vers la droite |
 
 ### Constante
 

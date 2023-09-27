@@ -3,6 +3,7 @@
 - [Note TP](#note-tp)
   - [S1](#s1)
     - [Bash](#bash)
+  - [C](#c)
 
 
 ## S1
@@ -49,3 +50,8 @@ On doit faire la commande `echo -e` et pour changer la couleur on doit à chaque
 |   2   |   Faint text    |
 |   3   |     Italics     |
 |   4   | Underlined text |
+
+
+## C
+
+Bien faire la différence entre un `"a"` et `'a'`. Le premier est un pointeur vers un `char` et le second est un `char`.
