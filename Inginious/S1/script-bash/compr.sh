@@ -13,9 +13,6 @@ CURRENT=$(basename "$1")
 
 cd $1
 
-rm $CURRENT.tar.xz
-
-
 # Check for a Makefile
 
 MAKE=$(ls | grep Makefile)
@@ -28,30 +25,27 @@ fi
 # Add the RFC-3339 date format
 
 TIME=$(date --rfc-3339=seconds)
-FILE=$(ls -R | grep -E "*.c|*.h|*.py")
-COUNT=0
-
-# Utiliser find plutot que ls
-
-for f in $FILE
-do
-    TMP=$(wc -l "$f" | awk '{print $1}')
-    COUNT=$((TMP + COUNT))
-done
-
 ID="$(whoami)@$(hostname)"
+
+# find plutot
 
 OLD=$(ls | grep manifest.txt)
 if [ "$OLD" = "manifest.txt" ]; then
     rm $OLD
 fi
 
+cd ..
+
+COUNT=$(find $CURRENT -type f \( -name "*.py" -o -name "*.c" -o -name "*.h" \) -exec cat {} + | wc -l)
+
 echo "$TIME" >> manifest.txt
 echo "$COUNT" >> manifest.txt
 echo "$ID" >> manifest.txt
 
-tar -cJf $CURRENT.tar.xz *
+tar -cJf $CURRENT.tar.xz $CURRENT manifest.txt
 
 rm manifest.txt
+
+echo $COUNT
 
 exit 0
