@@ -69,24 +69,52 @@ int compare(const void* a, const void* b){
     return 0; 
 }
 
-void* fold(void* tab, size_t nel, void* res, void* (*func)(void* a, void* b)){
-    int* tabw = (int*) tab;
-
-    if(nel <= 1){
-        return tab;
+int fold(int* tab, size_t nel, int start, int (*func)(int a, int b)){
+    for(int i = 0; i < nel; i++){
+        start = func(start, tab[i]);
     }
 
-    return NULL;
+    return start;
 }
 
-void* map(void* tab, size_t nel, int (*func)(void* a)){
-    return NULL;
+
+void printTab(int* tab, size_t nel){
+    printf("[");
+    for(int i = 0; i < nel; i++){
+        printf("%d, ", tab[i]);
+    }
+    printf("]\n");
 }
 
+int* map(int* tab, size_t nel, int (*func)(int a)){
+    int* newArr = (int*) malloc(sizeof(int)*nel);
+
+    for(int i = 0; i < nel; i++){
+        newArr[i] = func(tab[i]);
+    }
+
+    return newArr;
+}
+
+
+
+int add(int a, int b){
+    return a + b;
+}
+
+int doubling(int a){
+    return 2*a;
+}
 
 int main(int argc, char* argv[]){
 
+    int arr[] = {1,2,3,4,5};
 
+    printf("%d\n", fold(arr, 5, 0, &add));
+
+    int* newArr =  map(arr, 5, &doubling);
+
+    printTab(newArr, 5);
 
     return EXIT_SUCCESS;
 }

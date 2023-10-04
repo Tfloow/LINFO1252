@@ -18,17 +18,6 @@ uint8_t get_4_rightmost_bits(uint32_t x) {
     return res;
 }
 
-uint32_t cycle_bits(uint32_t x, uint8_t n) {
-    printf("%d\n", x);
-
-    uint32_t y = x;
-
-
-
-
-    return x << n;
-}
-
 uint8_t nbits(uint32_t n) {
     uint32_t mask = 0b0000000000000000000000000000001;
     uint8_t count = 0;
@@ -59,13 +48,42 @@ uint32_t reset_highestorder_strong_bit(uint32_t x) {
     return x;
 }
 
+uint32_t cycle_bits(uint32_t x, uint8_t n) {
+    uint32_t old = x;
+
+    x = x << n;
+    x = x + (old>>(32-n));
+
+    return x;
+}
+
+unsigned int stexp() { 
+    static int n = 0;
+    int res = 1;
+
+    for(int i = 0; i < n; i++){
+        res*=2;
+    }
+
+    if(n >= 13){
+        n = 0;
+        res = 1;
+    }
+    n++;
+    return res;
+}
+
 
 int main(int argc, char* argv[]){
 
     uint32_t x = 0b11100000000000000000000000000111;
     uint8_t y = 0b10101010;
 
-    printf("%d\n",nbits(y));
+    printf("%d\n",cycle_bits(y, 2));
+
+    for(int i = 0; i < 30; i++){
+        printf("%d \n", stexp());
+    }
 
     return EXIT_SUCCESS;
 }

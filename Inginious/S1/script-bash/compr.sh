@@ -31,6 +31,8 @@ TIME=$(date --rfc-3339=seconds)
 FILE=$(ls -R | grep -E "*.c|*.h|*.py")
 COUNT=0
 
+# Utiliser find plutot que ls
+
 for f in $FILE
 do
     TMP=$(wc -l "$f" | awk '{print $1}')
