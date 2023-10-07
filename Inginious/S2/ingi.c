@@ -11,94 +11,99 @@ void exchange_pointers(int** a, int** b){
    *b = c;
 }
 
+
+void printint(int* arr, int size){
+    printf("[");
+    for(int i = 0; i < size; i++){
+        printf("%d, ", arr[i]);
+    }
+    printf("]\n");
+}
+
+
 void sort(void *base, size_t nel, size_t width, int (*compare)(const void *, const void *)){
     // Home made bubble sort
-    char* test = (char*) malloc(width*nel);
-    strcpy(test, (char*) base);
     // Check for error
-    if(nel == 0 || width == 0 || base == NULL){
+    if(nel == 0 || width == 0 || base == NULL || compare == NULL){
         return;
     } 
-
     // Init my variables and copy the array
     void* max; void* track;
     void* sorted = malloc(nel*width);
     void* tmpStorage = malloc(width);
-    if(memcpy(sorted, base, nel) == NULL){
+    if(sorted == NULL || tmpStorage == NULL){
         return;
     }
-    printf("%s\n", (char*) sorted);
-
-    for(int i = 1; i < nel; i++){
+    if(memcpy(sorted, base, nel*width) == NULL){
+        return;
+    }
+    printf("%s\n",(char*) sorted);
+    for(int i = 0; i < nel; i++){
 
         max = sorted;
         track = sorted+width;
 
-        for(int j = 1; j < nel - 1; j++){
-            printf("max: %c \t track: %c \t %s\n", *((char*) max), *((char*) track), (char*) sorted);
+        for(int j = 1; j < nel - i; j++){
             // If our max is still the max compared to the next one
             if(compare(max, track) > 0){
-                printf("%c is bigger than %c", *((char*) max), *((char*) track));
+                printf("%s\n",(char*) sorted);
+                printf("Big\n");
                 memcpy(tmpStorage, max, width);
                 memcpy(max, track, width);
                 memcpy(track, tmpStorage, width);
-
             }
+
             max = track;
             track = max+width;
         }
     }
-
+    printf("Last copy\n");
     printf("%s\n", (char*) sorted);
-
     memcpy(base, sorted, nel*width);
-    printf("Copy\n");
 }
 
 int compare(const void* a, const void* b){
-    if(a == NULL && b == NULL){
-        return 0;
-    }
-    if(a == NULL){
-        return -1;
-    }
-    if(b == NULL){
-        return 1;
-    }
     const char* stringa = a;
     const char* stringb = b;
-    int val; int i = 1;
+    int val; int vala; int valb;
 
-    char tracka = *stringa; char trackb = *stringb;
-
-    while(tracka != '\0' || trackb != '\0'){
-
-        if(tracka > 90){
-            tracka-=32;
+    while ( *stringa != '\0' || *stringb != '\0')
+    {
+        vala = *stringa; valb = *stringb;
+        if(*stringa > 96 && *stringa < 123){
+            vala -= 32;
         }
-        if(trackb > 90){
-            trackb-=32;
+        if(*stringb > 96 && *stringb < 123){
+            valb -= 32;
         }
-
-        val = tracka - trackb;
+        val = vala - valb;
 
         if(val != 0){
             return val;
         }
 
-        tracka = stringa[i]; trackb = stringb[i];
-        i++;
-    }
+        stringa++;
+        stringb++;
 
-    if(tracka == '\0' && trackb == '\0'){
+    }
+    
+    if(*stringa == *stringb){
         return 0;
     }
-    if(tracka == '\0'){
+    
+    if(*stringa == '\0'){
+        return -1;
+    }
+
+    if(*stringb == '\0'){
         return 1;
     }
 
-    return -1;
+    return 0; 
+}
 
+int intcmp(const void* a, const void* b){
+    return *((int*) a) - *((int*)b);
 }
 
 int fold(int* tab, size_t nel, int start, int (*func)(int a, int b)){
@@ -129,7 +134,6 @@ int* map(int* tab, size_t nel, int (*func)(int a)){
 }
 
 
-
 int add(int a, int b){
     return a + b;
 }
@@ -140,9 +144,20 @@ int doubling(int a){
 
 int main(int argc, char* argv[]){
 
-    char* a = "Laura"; char* b = "laur";
-    printf("%d\n", compare(a, b));
+    //char* a = "Laura"; char* b = "laur";
+    //printf("%d\n", compare(a, b));
+    //
+    //a = "HellO"; b = "heLlo";
+    //printf("%d\n", compare(a, b));
+    //
+    //a = "a"; b = "A";
+    //printf("%d\n", compare(a, b));
+    //
+    //a = "a"; b = "a";
+    //printf("%d\n", compare(a, b));
+    //
+    char* test = " ZHFSaL^_}#!+-";
+    sort(test, 14, sizeof(char), &compare);
+    printf("%s\n", test);
 
-    a = "HellO"; b = "heLlo";
-    printf("%d\n", compare(a, b));
 }
