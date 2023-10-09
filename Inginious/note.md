@@ -3,7 +3,9 @@
 - [Note TP](#note-tp)
   - [S1](#s1)
     - [Bash](#bash)
-  - [C](#c)
+  - [S2](#s2)
+  - [S3](#s3)
+    - [Static](#static)
 
 
 ## S1
@@ -52,6 +54,20 @@ On doit faire la commande `echo -e` et pour changer la couleur on doit à chaque
 |   4   | Underlined text |
 
 
-## C
+## S2
 
 Bien faire la différence entre un `"a"` et `'a'`. Le premier est un pointeur vers un `char` et le second est un `char`.
+
+## S3
+
+On va passer en revue les différents endroits de la mémoire:
+1. **Segment Text**: correspond à l'endroit où est stocké le programme. (eg: une fonction, programme)
+2. **Données initialisées**: on stocke les variables **globales initialisées**  (donc en dehors de toute fonction).
+3. **Données non-initialisées**: on stocke les variables **globales non-initialisées**  (donc en dehors de toute fonction). 
+4. **Heap**: on enregistre le contenu de malloc ici. C'est une taille extensible.
+5. **Stack**: on enregistre les valeurs au cours de l'exécution du programme. (eg: nouvelle variable pointant vers un malloc ou une fonction)
+6. **Arg, envp**: les arguments d'environnements.
+
+### Static
+
+On utilise ``static`` en C pour rendre une variable accessible sans passer par la fonction où elle est définie. Donc toute variable ``static`` se trouve dans les **données initialisées** ou **non-initialisées**. **Attention**, ce n'est pas parce qu'une variable *non-statique* dépend de variable statique que cette dernière sera également sur ce segment de la mémoire (elle sera sur le stack).
