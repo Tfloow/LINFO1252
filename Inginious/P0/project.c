@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 // Vous n'utiliserez pas le vrai heap mais un tableau accessible globalement déjà déclaré de la manière suivante:
 uint8_t MY_HEAP[64000]; // max of 8 is 256 numbers
