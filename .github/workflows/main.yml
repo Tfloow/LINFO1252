@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v1
       - name: Compiling
         run: |
-          cd Inginious\P0
+          ls
+          cd Inginious/P0
           gcc -o project project.c -g
           ./project
