@@ -26,7 +26,7 @@ void write16(uint8_t* arr, uint16_t index, uint16_t value){
 
 void init(){
     // Not compulsory just to prepare our fake heap
-    static first = 2; // the first value are used for the pointer
+    static uint16_t first = 2; // the first value are used for the pointer
     write16(MY_HEAP, 0, 2);
     printf("%d\n", cast(MY_HEAP[0], MY_HEAP[1])); // to check we have correctly allocate the space
     write16(MY_HEAP, 2, 63996); // Write the size left
