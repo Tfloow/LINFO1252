@@ -149,7 +149,9 @@ void* my_malloc(size_t size){
     }else{
         write_heap(MY_HEAP, i, searched_size + 1 - 4); //block fits perfectly
         write_heap(MY_HEAP, i + searched_size - 2, searched_size + 1 - 4);
-    } 
+    }
+    
+    return ((void*) &(MY_HEAP[i+2]));
 }
 
 
@@ -171,7 +173,13 @@ int main(int argc, char *argv[]){
     uint16_t size = read_bytestoword(MY_HEAP[63998], MY_HEAP[63999]);
 
     printf("%d\n", size);
-    void* test = my_malloc(4);
+    uint8_t* test = (uint8_t*) my_malloc(4); // Need to cast it in 8 bit watch out not int !
+
+    for(int i = 0; i<4; i++){
+        test[i] = i+1;
+    }
+
+
     dbgprint(MY_HEAP, 20);
 
 
