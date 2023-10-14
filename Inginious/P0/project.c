@@ -1,93 +1,142 @@
-#include <stdint.h>
-#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include<math.h>
+#include <stdint.h>
 
-// Vous n'utiliserez pas le vrai heap mais un tableau accessible globalement déjà déclaré de la manière suivante:
-uint8_t MY_HEAP[64000]; // max of 8 is 256 numbers
 
-uint16_t cast(uint8_t a, uint8_t b){
+
+uint8_t MY_HEAP[64000]; // The heap where we allocate data
+
+void write_wordtobytes(uint16_t nbr, uint8_t *a, uint8_t *b){
     /*
-    Cast 2 digits together to have a 16 bits number
+    Function to write 16 bits word on 2 bytes 
+
+    nbr: the word we want to write
+    a:   pointer to the higher weight bit
+    b:   pointer to the lower weight bit
     */
+
+    *a = nbr >> 8; //high order bits
+    *b = nbr; //low order bits
+}
+
+uint16_t read_bytestoword(uint8_t a, uint8_t b){
+    /*
+    Function that reads 2 bits and return the result as a 16 bits
+
+    a: value that represents the higher weight bit
+    b: value that represents the lower order bit
+    
+    return: 16 bits data from a and b
+    */
+    
     uint16_t res = a << 8;
     res += b;
     return res;
 }
 
-void write16(uint8_t* arr, uint16_t index, uint16_t value){
-    // Write in a 8 bits array 16 bits number. We write on 2 bits
-    // Values is capped at 64 000 of size.
-    if(index > 63998){
-        printf(" [LOG]: Not enough space to write\n");
-    }
-    arr[index] = (value & 65280) >> 8;
-    arr[index + 1] = (value & 255);
-}
+void write_heap(uint8_t* arr, uint16_t index, uint16_t value){
+    /*
+    To write in a HEAP a VALUE at a specific INDEX
 
-void dbgprint(uint8_t* arr, uint16_t amount){
-    printf("[ ");
-    for(int i = 0; i < amount; i++){
-        printf("%d, ", arr[i]);
-    }
-    printf("]\n");
+    arr:   an array that represents our heap
+    index: where in the array to write the data
+    value: what to write in the heap
+    */
+
+    uint8_t a; uint8_t b;
+    write_wordtobytes(value, &a, &b);
+    arr[index] = a;
+    arr[index + 1] = b;
 }
 
 void init(){
-    // Not compulsory just to prepare our fake heap
-    static uint16_t first = 2; // the first value are used for the pointer
-    write16(MY_HEAP, 0, 2);
-    printf("%d\n", cast(MY_HEAP[0], MY_HEAP[1])); // to check we have correctly allocate the space, should say 2
-    write16(MY_HEAP, 2, 63996); // Write the size left
-    write16(MY_HEAP, 4, 0); // 0 address is for the variable first so it's our type of null
+    /**
+    heap initialization: all bytes are free. 2 words of metadata on each side
+    */
 
-}
+    write_heap(MY_HEAP, 0, 63996);
+    write_heap(MY_HEAP, 63998, 63996);
 
-void my_free(void *pointer) {
-    // Our free
 }
 
 void* my_malloc(size_t size){
-    // Our malloc
+    /*
+    Function to allocate a specific size in the HEAP and gives back its index in the heap as a pointer
 
-    // Elementary check
-    if(size % 2 != 0){
-        printf(" [LOG]: we can only allocate multiples of 2\n");
+    size: size of the data we want to allocate
+
+    return: a pointer to where our data was allocated
+    */
+
+    if(size>= 63996){
+        printf("Requested size is too big");
+        return NULL;
     }
 
-    uint16_t ptr = cast(MY_HEAP[0], MY_HEAP[1]); int32_t prev = -2; //only useful when flag == 1
-    size_t found_size = cast(MY_HEAP[ptr], MY_HEAP[ptr+1]); // to get the first element's size
-    uint8_t flag = 0; // flag to see if it's the first element we use 
+    size_t searched_size = size;
 
-    printf("%ld\n", found_size);
-    while(found_size < size){
-        //TODO
-        printf("search");
-        flag = 1;
-        prev = ptr;
-        ptr = cast(MY_HEAP[ptr+2], MY_HEAP[ptr+3]);
+    if(searched_size % 2 != 0){searched_size++;} //allocates multiples of 2 only
+    searched_size = searched_size + 4; //adds metadatas size;
 
-        // If no space found
-        if(ptr < 2){
-            printf(" [LOG]: no empty space found for this size of %ld\n", size);
-            return NULL;
-        }
+    int i = 0;
 
-        found_size = cast(MY_HEAP[ptr], MY_HEAP[ptr+1]);
+    uint16_t h = read_bytestoword(MY_HEAP[i], MY_HEAP[i+1]);
+
+    /*
+    Searches for big enough block. 3 cases to check
+    -end of MY_HEAP reached
+    -block big enough
+    -block already allocated
+    */
+
+    while( i < 63998 && ( h < searched_size || ((h && 0x1) !=0) )){
+        i = i + h + 4;
+        h = read_bytestoword(MY_HEAP[i], MY_HEAP[i+1]);
     }
 
-    write16(MY_HEAP, ptr, (uint16_t) size);
-    write16(MY_HEAP, ptr + size + 2, (uint16_t) found_size - 2 - size); // Still need to check that my math are correct
+    //end of MY_HEAP without finding a block:
+    if(i >= 63998){printf("End of MY_HEAP reached: couldn't allocate memory");}
 
-    //TODO
-    write16(MY_HEAP, prev + 2,  cast(MY_HEAP[prev+2], MY_HEAP[prev+3]) + size + 2);
-    // We need to think about all possible case scenario and need to do extensive testing
+    else{//stops at first big enough block, must check if block has to be divided then writes it as allocated (LOB = 1)
 
-    dbgprint(MY_HEAP, 20); // a print to debug the code
+    if(h > searched_size + 4){ //+4 for extra metadatas from splitting
 
+        uint16_t leftover = h - searched_size;
+        //allocates:
+        write_heap(MY_HEAP, i, searched_size + 1 - 4); //+1 : is allocated, -4 subtracts extra metadatas size
+        
+        write_heap(MY_HEAP, i + searched_size, leftover-4);
+
+    }
+
+    else{write_heap(MY_HEAP, i, searched_size + 1 - 4);} //block fits perfectly
+
+    }
 }
 
-int main(int argc, char* argv[]){
+
+void my_free(void *pointer) {
+    /*
+    Free space that was previously allocated by my_malloc function
+
+    pointer: a pointer to the area in the HEAP where we have allocated some data that we want now to free
+    */
+    // Our free
+}
+
+
+
+int main(int argc, char *argv[]){
+
     init();
-    my_malloc(4);
-    printf("%d\n", cast(249, 246)); // Seems okay
+
+    uint16_t size = read_bytestoword(MY_HEAP[63998], MY_HEAP[63999]);
+
+    printf("%d\n", size);
+
+
+
+    return 0;
 }
