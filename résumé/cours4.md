@@ -16,6 +16,10 @@
     - [Types de données](#types-de-données)
     - [Instructions](#instructions)
     - [Modes d'adressage](#modes-dadressage)
+    - [Registre de drapeaux `eflags`](#registre-de-drapeaux-eflags)
+    - [Saut](#saut)
+    - [Manipulation de la Pile](#manipulation-de-la-pile)
+    - [Fonctions](#fonctions)
 
 
 ## Rappel
@@ -139,11 +143,20 @@ On a également des registres pour traiter les floats et double.
 
 ### Instructions
 
-| Fonctions | Variantes |                         Explications                         |
-| :-------: | :-------: | :----------------------------------------------------------: |
-|   `mov`   |  `movb`   | `movb src, dest`: déplace de `src` vers `dest` pour taille 1 |
-|           |  `movw`   | `movb src, dest`: déplace de `src` vers `dest` pour taille 2 |
-|           |  `movl`   | `movb src, dest`: déplace de `src` vers `dest` pour taille 4 |
+|    Fonctions     |  Variantes  |                          Explications                          |
+| :--------------: | :---------: | :------------------------------------------------------------: |
+|      `mov`       |   `movb`    |  `movb src, dest`: déplace de `src` vers `dest` pour taille 1  |
+|                  |   `movw`    |  `movb src, dest`: déplace de `src` vers `dest` pour taille 2  |
+|                  |   `movl`    |  `movb src, dest`: déplace de `src` vers `dest` pour taille 4  |
+|      `inc`       | `b`,`w`,`l` |                      Incrémente la valeur                      |
+|      `dec`       | `b`,`w`,`l` |                      Décrémente la valeur                      |
+|      `not`       | `b`,`w`,`l` |                            Négation                            |
+|      `add`       | `b`,`w`,`l` |          `add addition, dest`: ajoute à dest addition          |
+|      `sub`       | `b`,`w`,`l` |    `sub soustraction, dest`: soustrait à dest soustraction     |
+|      `mul`       | `b`,`w`,`l` | Même chose que pour sub et add, `imul` pour les nombres signés |
+|      `div`       | `b`,`w`,`l` |                 Division d'entiers non-signés                  |
+|  `shl` \& `shr`  | `b`,`w`,`l` |      Shift vers la gauche et la droite (utile en binaire)      |
+| `or`/`xor`/`and` | `b`,`w`,`l` |      Opération logique binaires avec résultat dans `dist`      |
 
 
 ### Modes d'adressage
@@ -153,3 +166,125 @@ Pour spécifier un registre, on utilise `%eax` pour spécifier le registre `EAX`
 ```assembly
 movl $123, %eax ; écris dans le registre eax 
 ```
+
+
+On peut faire une référence **absolue**. C'est-à-dire faire `movl 0x04, %eax` pour mettre dans `eax` la valeur se trouvant à l'adresse `0x04`.
+
+On peut être **indirect**. On peut spécifier un registre qui contient une adresse.
+
+```assembly
+movl (%eax), %ecx   ; écris dans ecx ce qui se trouve dans le registre eax.
+```
+
+On peut faire de l'**indirect avec base et déplacement**. On accede à une adresse + ou - la valeur donnée. On fait `D(%reg)` qui permet de bouger l'adresse de D.
+
+```assembly
+movl $0x08, %eax    ; place la valeur 0x08 dans %eax
+movl 0(%eax), %ecx  ; place la valeur (0xFF) se trouvant à l'adresse
+                    ; 0x08= (0x08+0) dans le registre %ecx
+movl 4(%eax), %ecx  ; place la valeur (0x10) se trouvant à l'adresse
+                    ; 0x0C (0x08+4) dans le registre %ecx
+movl -8(%eax), %ecx ; place la valeur (0x04) se trouvant à l'adresse
+                    ; 0x00 (0x08-8) dans le registre %ecx
+```
+
+### Registre de drapeaux `eflags`
+
+On a un registre spécial `eflags` qui contient des bits "drapeau" qui est mis à jour à l'exécution des instructions.
+
+- **ZF**: indique si le résultat de la dernière opération est = à 0.
+- **SF**: indique si le résultat de la dernière opération est < à 0.
+- **CF**: indique si le résultat de la dernière opération arithmétique **non-signé** requiert plus de 32 bits.
+- **OF**: indique si le résultat de la dernière opération arithmétique **signé** requiert plus de 32 bits.
+
+Ce registre se met à jour mais certaines opérations ne vont pas stocker le résultat:
+- `cmp`: équivalent de `sub`
+- `test`: équivalent de `and`
+
+Pour récupérer la valeur des drapeaux on utilise `set`.
+- `sete`: **ZF**
+- `sets`: **SF**
+- `setg`: `~SF & ZF` en gérant dépassement test>
+- `setl`: **SF** et gérant le dépassement test<=
+
+
+#### Exemples
+
+Jetez un œil au [syllabus](https://sites.uclouvain.be/SystInfo/notes/Theorie/Assembleur/memory.html).
+
+### Saut
+
+On va modifier la valeur du **compteur de programme** `%eip`.
+
+#### Inconditionnel
+
+On fait simplement `jmp [etiquette]`. On va donc sauter jusqu'à une étiquette. On peut aussi sauter à une adresse mémoire via `jmp *%eax` (saute à l'instruction se trouvant à l'adresse mémoire dans EAX). 
+
+#### Conditionnel
+
+La comparaison compare avec la dernière valeur en référence.
+
+- `je`: Saut si égal
+- `js`: Saut si négatif
+- `jg`: Saut si strictement supérieur à 
+- `jge`: Saut si supérieur ou égal à
+- `jl`: Saut si strictement inférieur à 
+- `jle`: Saut si inférieur ou égal à 
+
+Pour les négations, on rajoute un `n` après `j`.
+
+### Manipulation de la Pile
+
+Comme dit plus haut, la pile est stocké dans le registre `%esp`.
+
+#### Opérations
+
+- `pushl %reg`: place le contenu `%reg` au somment de la pile. Décrémente la taille du registre `%esp` de 4.
+- `popl %reg`: retire le mot de 32 bits du sommet de la pile et le place dans `%reg`. Incrémente la taille du registre `%esp` de 4.
+
+### Fonctions
+
+On a comme en Oz des procédures qui sont des fonctions sans valeur de retour.
+
+#### Appel
+
+1. Sauver l’adresse de l’instruction qui suit l’appel de fonction
+2. Positionner le compteur de programme à la première instruction de la fonction appelée
+3. Exécuter la fonction
+4. Positionner le compteur de programme à l’adresse qui suit l’appel, précédemment sauvée
+
+L'instruction `call` combine l'étape 1 et 2. `ret` réalise l'étape 4. À savoir que `call` et `ret` modifie la pile (donc `%esp`). 
+
+```assembly
+increase:     ; étiquette de la première instruction
+            movl  g,  %eax
+            addl  h,  %eax
+            movl  %eax, g
+            ret
+init_g: 
+            movl  $1252,  g
+            ret
+main: 
+            (...)
+            calll init_g
+A_init_g:   calll increase
+A_increase: movl  $0, %eax
+            addl  $12, %esp
+            ret
+g:
+      .long 0
+h:
+      .long 2
+```
+
+#### Avec Arguments
+
+On place les arguments dans la pile. On passe donc les arguments par **valeur**. On met donc l'adresse de retour sur le sommet de la pile puis le premier, second, ...
+
+Pour modifier les registres `%eax`, `%ecx` et `%edx`, il faut faire une copie de sauvegarde.
+
+Pour modifier les registres `%ebx`, `%edi` et `%esi`, il faut copier puis restaurer. (qu'un convention)
+
+#### Valeur de Retour
+
+On stocke les valeurs de retour dans le registre `%eax` par convention.
