@@ -121,7 +121,6 @@ void* my_malloc(size_t size){
     size_t searched_size = size;
 
     if(searched_size % 2 != 0){searched_size++;} //allocates multiples of 2 only
-    searched_size = searched_size + 4; //adds metadatas size;
 
     int i = 0;
 
@@ -139,15 +138,15 @@ void* my_malloc(size_t size){
 
 
         h = read_bytestoword(MY_HEAP[i], MY_HEAP[i+1]);
+        //printf("  bytes: %d free ? %d at spot %d for a size of %ld\n", h, isFree(MY_HEAP, i), i, searched_size);
         //if(h %2 != 0){i--;}
 
-        if(isFree(MY_HEAP, i) && ((h >= searched_size + 4) || (h == searched_size))){
-            printf("Found space\n");
-            if(h %2 != 0 && i != 0){i--;}
+        if(isFree(MY_HEAP, i) && (h >= searched_size)){
+            //printf("Found space\n");
             break;
         }
-        i = i + h + 4;
         if(h %2 != 0){i--;}
+        i = i + h + 4;
     }
 
 
@@ -159,23 +158,24 @@ void* my_malloc(size_t size){
 
     //stops at first big enough block, must check if block has to be divided then writes it as allocated (LOB = 1)
 
-    if(h >= searched_size + 4){ //+4 for extra metadatas from splitting
+    if(h > searched_size){ //+4 for extra metadatas from splitting
 
-        uint16_t leftover = h - searched_size;
+        uint16_t leftover = h - searched_size - 4;
         //allocates and writes metadatas:
-        write_heap(MY_HEAP, i, searched_size + 1 - 4); //+1 : is allocated, -4 subtracts extra metadatas size
-        write_heap(MY_HEAP, i + searched_size - 2, searched_size + 1 - 4);
+        write_heap(MY_HEAP, i, searched_size + 1); //+1 : is allocated, -4 subtracts extra metadatas size
+        write_heap(MY_HEAP, i + searched_size + 2, searched_size + 1);
 
         //adjusts rest of the block's values:
-        write_heap(MY_HEAP, i + searched_size, leftover);
-        write_heap(MY_HEAP, i +searched_size + leftover + 2 , leftover);
+        write_heap(MY_HEAP, i + searched_size + 4, leftover);
+        write_heap(MY_HEAP, i + searched_size + 4 + leftover + 2, leftover);
 
         //printf("Beginnning index:%d\n",i +searched_size);
         //printf("End index: %d\n",i +searched_size + leftover);
 
     }else{
-        write_heap(MY_HEAP, i, searched_size + 1 - 4); //block fits perfectly
-        write_heap(MY_HEAP, i + searched_size - 2, searched_size + 1 - 4);
+        //printf("PERFECT\n");
+        write_heap(MY_HEAP, i, searched_size + 1); //+1 : is allocated, -4 subtracts extra metadatas size
+        write_heap(MY_HEAP, i + searched_size + 2, searched_size + 1);
     }
     
     return ((void*) &(MY_HEAP[i+2]));
@@ -236,6 +236,17 @@ void my_free(void *ptr) {
         return;
     }
 
+    // Last part of the memory
+    if(next == 0){
+        if(prev % 2 == 0){
+            write_wordtobytes(size + prev + 4, ptr_cast - 4 - prev -2, ptr_cast - 4 - prev -1);
+            write_wordtobytes(size + prev + 4, ptr_cast + size, ptr_cast + size + 1);
+        }else{
+            write_wordtobytes(size, ptr_cast-2, ptr_cast-1);
+            write_wordtobytes(size, ptr_cast+size, ptr_cast+size+1);
+        }
+    }
+
     //Case 1:
     if(next % 2 == 0 && prev % 2 != 0){//OK
         printf("Case 1\n");
@@ -291,24 +302,23 @@ int main(int argc, char *argv[]){
 
     init();
 
-    dbgprint(MY_HEAP, 30);
-    printf("%d\n", read_bytestoword(249,252));
-
     uint8_t* test  = (uint8_t *) my_malloc(2); //63988: ok, 63989: pas ok
     uint8_t* test2 = (uint8_t *) my_malloc(4);
     uint8_t* test3 = (uint8_t *) my_malloc(6);
     uint8_t* test4 = (uint8_t *) my_malloc(8);
-    uint8_t* test5 = (uint8_t *) my_malloc(10);
+    uint8_t* test5 = (uint8_t *) my_malloc(63960); // HEAP is now full
 
+
+    printf("%d\n", read_bytestoword(249,216));
     dbgprint(MY_HEAP, 30);
 
     my_free(test2);
-    dbgprint(MY_HEAP, 30);
     my_free(test);
-    dbgprint(MY_HEAP, 30);
     my_free(test3);
+    my_free(test4);
+    my_free(test5);
     
-    dbgprint(MY_HEAP, 30); // 
+    dbgprint(MY_HEAP, -30);
 
     for(int i = 0; i< 30; i++){
         //printf("%d\n", MY_HEAP[i]);
