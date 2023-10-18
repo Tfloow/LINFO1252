@@ -113,7 +113,7 @@ void* my_malloc(size_t size){
     return: a pointer to where our data was allocated
     */
 
-    if(size>= 63996){
+    if(size> 63996){
         printf("Requested size is too big\n");
         return NULL;
     }
@@ -135,14 +135,20 @@ void* my_malloc(size_t size){
     */
 
     // Need to recheck if the loop is correct or not
-    while( i < 63996 && ( h < searched_size || ((h && 0x1) !=0) )){
+    while( i < 63996 && ( h < searched_size || ((h && 0x1) !=0) )){ 
+
         h = read_bytestoword(MY_HEAP[i], MY_HEAP[i+1]);
-        if(isFree(MY_HEAP, i) && (h > searched_size+4)){
+        //if(h %2 != 0){i--;}
+
+        if(isFree(MY_HEAP, i) && ((h >= searched_size + 4) || (h == searched_size))){
             printf("Found space\n");
+            if(h %2 != 0){i--;}
             break;
         }
         i = i + h + 4;
+        if(h %2 != 0){i--;}
     }
+
 
     //end of MY_HEAP without finding a block:
     if(i >= 63998){
@@ -152,14 +158,19 @@ void* my_malloc(size_t size){
 
     //stops at first big enough block, must check if block has to be divided then writes it as allocated (LOB = 1)
 
-    if(h > searched_size + 4){ //+4 for extra metadatas from splitting
+    if(h >= searched_size + 4){ //+4 for extra metadatas from splitting
 
         uint16_t leftover = h - searched_size;
-        //allocates:
+        //allocates and writes metadatas:
         write_heap(MY_HEAP, i, searched_size + 1 - 4); //+1 : is allocated, -4 subtracts extra metadatas size
-        
-        write_heap(MY_HEAP, i + searched_size, leftover-4);
         write_heap(MY_HEAP, i + searched_size - 2, searched_size + 1 - 4);
+
+        //adjusts rest of the block's values:
+        write_heap(MY_HEAP, i + searched_size, leftover);
+        write_heap(MY_HEAP, i +searched_size + leftover + 2 , leftover);
+
+        //printf("Beginnning index:%d\n",i +searched_size);
+        //printf("End index: %d\n",i +searched_size + leftover);
 
     }else{
         write_heap(MY_HEAP, i, searched_size + 1 - 4); //block fits perfectly
@@ -177,6 +188,64 @@ void my_free(void *ptr) {
     ptr: a pointer to the area in the HEAP where we have allocated some data that we want now to free
     */
     // Our free
+
+    /*
+     4 cases:
+    - prev and next are allocated: free ptr only
+    -prev is free, next is allocated: merge ptr and free
+    -prev is allocated, next is free: merge ptr and next
+    -prev and next are free: merge prev ptr and free
+    */
+
+
+    //gets ptr size:
+    uint8_t* ptr_cast = (uint8_t *) ptr;
+    uint16_t size = read_bytestoword(*(ptr_cast -2),*(ptr_cast - 1) ) - 1;
+
+    //gets next block size
+    uint16_t next = read_bytestoword(*(ptr_cast + size +2), *(ptr_cast + size + 3));
+    uint16_t prev = 1; //read_bytestoword(*(ptr_cast - 4), *(ptr_cast - 3));
+
+    write_wordtobytes(63000, (ptr_cast -2),(ptr_cast - 1));
+
+    if(next % 2 == 0 && prev % 2 != 0){
+
+
+
+    /*
+    +4: we get back the bits used at the end of ptr and at the beginning of next 
+    */
+
+    write_wordtobytes(size + next + 4, ptr_cast -2,ptr_cast - 1);
+    /*
+    + 3: skips 2nd bit of ptr size and next's metadata
+    */
+    write_wordtobytes(size + next + 4, ptr_cast + size + 3 + next + 1,  ptr_cast + 3 + size + next + 2);
+        
+    }
+
+
+    else if(next % 2 == 0 && prev % 2 == 0){}
+
+    else if(next % 2 != 0 && prev % 2 == 0){}
+
+
+    //free ptr only: just subtract 1
+    else{
+
+        write_wordtobytes(size - 1, ptr_cast - 2, ptr_cast - 1);
+        write_wordtobytes(size - 1, ptr_cast + size , ptr_cast + size + 1);
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -185,19 +254,21 @@ int main(int argc, char *argv[]){
 
     init();
 
-    uint16_t size = read_bytestoword(MY_HEAP[63998], MY_HEAP[63999]);
 
-    printf("%d\n", size);
     uint8_t* test = (uint8_t*) my_malloc(4); // Need to cast it in 8 bit watch out not int !
+    uint8_t* test2 = (uint8_t*) my_malloc(4);
+    uint8_t* test3 = (uint8_t*) my_malloc(4);
 
-    for(int i = 0; i<4; i++){
-        test[i] = i+1;
+
+    //printf("%d\n", read_bytestoword(MY_HEAP[24], MY_HEAP[25]));
+    //printf("%d\n", read_bytestoword(MY_HEAP[63998], MY_HEAP[63999]));
+
+
+    //my_free(test);
+
+    for(int i = 0; i< 30; i++){
+       printf("%d\n", MY_HEAP[i]);
     }
 
 
-    dbgprint(MY_HEAP, 20);
-    dbgprint(MY_HEAP, -20);
-
-
-    return 0;
 }
