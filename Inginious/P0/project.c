@@ -125,7 +125,7 @@ void* my_malloc(size_t size){
 
     int i = 0;
 
-    uint16_t h;
+    uint16_t h = 0;
 
     /*
     Searches for big enough block. 3 cases to check
@@ -197,7 +197,7 @@ void my_free(void *ptr) {
     1)next free, prev allocated: merge ptr and nxt
     2)next allocated, prev free: merge ptr and free
     3)next and prev are free: merge prev ptr and next
-    4)next and free are allocated: free ptr only
+    4)next and prev are allocated: free ptr only
     */
 
 
@@ -205,34 +205,54 @@ void my_free(void *ptr) {
     uint8_t* ptr_cast = (uint8_t *) ptr; 
     uint16_t size = read_bytestoword(*(ptr_cast -2),*(ptr_cast - 1) ) - 1; //Note the -1 for the following steps
 
+    if(size % 2 != 0){
+        // If it's already free
+        return;
+    }
+
     //gets next block size
-    uint16_t next = read_bytestoword(*(ptr_cast + size +2), *(ptr_cast + size + 3));
+    uint16_t next = read_bytestoword(*(ptr_cast + size + 2), *(ptr_cast + size + 3));
 
     //gets prev block size:
     uint16_t prev = read_bytestoword(*(ptr_cast - 4), *(ptr_cast - 3));
 
+    printf("size: %d, next:%d, prev:%d at %d\n", size, next, prev, *(ptr_cast -2));
+
     //printf("Prev's size: %d\n", prev);
     //printf("Next's size: %d\n", next);
 
-
+    // First part of the memory
+    if(prev == 0){
+        printf("first\n");
+        if(next % 2 == 0){
+            printf("Free\n");
+            // If the next one is free
+            write_wordtobytes(size + next + 4, ptr_cast-2, ptr_cast-1);
+            write_wordtobytes(size + next + 4, ptr_cast + size + 3 + next + 1,  ptr_cast + 3 + size + next + 2);
+        }else{
+            write_wordtobytes(size, ptr_cast-2, ptr_cast-1);
+            write_wordtobytes(size, ptr_cast+size, ptr_cast+size+1);
+        }
+        return;
+    }
 
     //Case 1:
     if(next % 2 == 0 && prev % 2 != 0){//OK
-
-    /*
-    +4: we get back the bits used at the end of ptr and at the beginning of next 
-    */
-    write_wordtobytes(size + next + 4, ptr_cast -2,ptr_cast - 1);
-    /*
-    + 3: skips 2nd bit of ptr size and next's metadata
-    */
-    write_wordtobytes(size + next + 4, ptr_cast + size + 3 + next + 1,  ptr_cast + 3 + size + next + 2);
+        printf("Case 1\n");
+        /*
+        +4: we get back the bits used at the end of ptr and at the beginning of next 
+        */
+        write_wordtobytes(size + next + 4, ptr_cast - 2,ptr_cast - 1);
+        /*
+        + 3: skips 2nd bit of ptr size and next's metadata
+        */
+        write_wordtobytes(size + next + 4, ptr_cast + size + 3 + next + 1,  ptr_cast + 3 + size + next + 2);
     }
 
 
     //Case 2:
     else if(next % 2 != 0 && prev % 2 == 0 && prev != 0){ //OK
-
+        printf("Case 2\n");
         write_wordtobytes(size + prev + 4, ptr_cast - 4 - prev -2, ptr_cast - 4 - prev -1);
         write_wordtobytes(size + prev + 4, ptr_cast + size, ptr_cast + size + 1);
 
@@ -241,8 +261,7 @@ void my_free(void *ptr) {
 
     //Case 3:
     else if(next % 2 == 0 && prev % 2 == 0 && prev != 0){
-
-
+        printf("Case 3\n");
         write_wordtobytes(prev + size + next + 8, ptr_cast - 4 - prev - 2, ptr_cast - 4 - prev - 1);
         write_wordtobytes(prev + size + next + 8, ptr_cast + size + 3 + next + 1, ptr_cast + size + 3 + next + 2);
 
@@ -254,7 +273,7 @@ void my_free(void *ptr) {
     //Case 4:
     //free ptr only: just subtract 1
     else{ //OK
-
+        printf("Case 4\n");
         write_wordtobytes(size , ptr_cast - 2, ptr_cast - 1);
         write_wordtobytes(size , ptr_cast + size , ptr_cast + size + 1);
     }
@@ -272,17 +291,24 @@ int main(int argc, char *argv[]){
 
     init();
 
+    dbgprint(MY_HEAP, 30);
+    printf("%d\n", read_bytestoword(249,252));
 
-    uint8_t* test = (uint8_t *) my_malloc(4); //63988: ok, 63989: pas ok
+    uint8_t* test  = (uint8_t *) my_malloc(2); //63988: ok, 63989: pas ok
     uint8_t* test2 = (uint8_t *) my_malloc(4);
-    uint8_t* test3 = (uint8_t *) my_malloc(4);
-    uint8_t* test4 = (uint8_t *) my_malloc(4);
-    uint8_t* test5 = (uint8_t *) my_malloc(4);
+    uint8_t* test3 = (uint8_t *) my_malloc(6);
+    uint8_t* test4 = (uint8_t *) my_malloc(8);
+    uint8_t* test5 = (uint8_t *) my_malloc(10);
 
-    my_free(test);
-    my_free(test3);
+    dbgprint(MY_HEAP, 30);
+
     my_free(test2);
+    dbgprint(MY_HEAP, 30);
+    my_free(test);
+    dbgprint(MY_HEAP, 30);
+    my_free(test3);
     
+    dbgprint(MY_HEAP, 30); // 
 
     for(int i = 0; i< 30; i++){
         //printf("%d\n", MY_HEAP[i]);
