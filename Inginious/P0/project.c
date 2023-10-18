@@ -188,21 +188,22 @@ void my_free(void *ptr) {
 
     ptr: a pointer to the area in the HEAP where we have allocated some data that we want now to free
 
+
     */
     // Our free
 
     /*
      4 cases:
-    - prev and next are allocated: free ptr only
-    -prev is free, next is allocated: merge ptr and free
-    -prev is allocated, next is free: merge ptr and next
-    -prev and next are free: merge prev ptr and free
+    1)next free, prev allocated: merge ptr and nxt
+    2)next allocated, prev free: merge ptr and free
+    3)next and prev are free: merge prev ptr and next
+    4)next and free are allocated: free ptr only
     */
 
 
-    //gets ptr size:
-    uint8_t* ptr_cast = (uint8_t *) ptr;
-    uint16_t size = read_bytestoword(*(ptr_cast -2),*(ptr_cast - 1) ) - 1;
+    //gets ptr size and index:
+    uint8_t* ptr_cast = (uint8_t *) ptr; 
+    uint16_t size = read_bytestoword(*(ptr_cast -2),*(ptr_cast - 1) ) - 1; //Note the -1 for the following steps
 
     //gets next block size
     uint16_t next = read_bytestoword(*(ptr_cast + size +2), *(ptr_cast + size + 3));
@@ -213,38 +214,50 @@ void my_free(void *ptr) {
     //printf("Prev's size: %d\n", prev);
     //printf("Next's size: %d\n", next);
 
-    write_wordtobytes(63000, (ptr_cast -2),(ptr_cast - 1));
 
+
+    //Case 1:
     if(next % 2 == 0 && prev % 2 != 0){//OK
 
     /*
     +4: we get back the bits used at the end of ptr and at the beginning of next 
     */
-
     write_wordtobytes(size + next + 4, ptr_cast -2,ptr_cast - 1);
-
     /*
     + 3: skips 2nd bit of ptr size and next's metadata
     */
     write_wordtobytes(size + next + 4, ptr_cast + size + 3 + next + 1,  ptr_cast + 3 + size + next + 2);
     }
 
-    //prev == 0 -> ptr is the first element
-    else if(next % 2 == 0 && prev % 2 == 0 && prev != 0){}
 
-    else if(next % 2 != 0 && prev % 2 == 0 && prev != 0){}
+    //Case 2:
+    else if(next % 2 != 0 && prev % 2 == 0 && prev != 0){ //OK
+
+        write_wordtobytes(size + prev + 4, ptr_cast - 4 - prev -2, ptr_cast - 4 - prev -1);
+        write_wordtobytes(size + prev + 4, ptr_cast + size, ptr_cast + size + 1);
+
+    }
 
 
+    //Case 3:
+    else if(next % 2 == 0 && prev % 2 == 0 && prev != 0){
+
+
+        write_wordtobytes(prev + size + next + 8, ptr_cast - 4 - prev - 2, ptr_cast - 4 - prev - 1);
+        write_wordtobytes(prev + size + next + 8, ptr_cast + size + 3 + next + 1, ptr_cast + size + 3 + next + 2);
+
+
+    }
+
+
+
+    //Case 4:
     //free ptr only: just subtract 1
     else{ //OK
 
         write_wordtobytes(size , ptr_cast - 2, ptr_cast - 1);
         write_wordtobytes(size , ptr_cast + size , ptr_cast + size + 1);
     }
-
-
-
-
 
 
 
@@ -262,17 +275,19 @@ int main(int argc, char *argv[]){
 
     uint8_t* test = (uint8_t *) my_malloc(4); //63988: ok, 63989: pas ok
     uint8_t* test2 = (uint8_t *) my_malloc(4);
-    //uint8_t* test3 = (uint8_t *) my_malloc(4);
-    //uint8_t* test4 = (uint8_t *) my_malloc(4);
+    uint8_t* test3 = (uint8_t *) my_malloc(4);
+    uint8_t* test4 = (uint8_t *) my_malloc(4);
+    uint8_t* test5 = (uint8_t *) my_malloc(4);
 
+    my_free(test);
+    my_free(test3);
     my_free(test2);
     
 
-    for(int i = 0; i< 20; i++){
+    for(int i = 0; i< 30; i++){
         //printf("%d\n", MY_HEAP[i]);
     }
 
-    printf("%d\n", read_bytestoword(MY_HEAP[8], MY_HEAP[9]));
     printf("%d\n", read_bytestoword(MY_HEAP[63998], MY_HEAP[63999]));
 
 
