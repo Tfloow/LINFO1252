@@ -64,18 +64,33 @@ uint16_t isFree(uint8_t* arr, uint16_t index){
 }
 
 // Debug function
-void dbgprint(uint8_t* arr, uint16_t amount){
+void dbgprint(uint8_t* arr, int amount){
     /*
     Print the first AMOUNT elements of the ARR
 
     arr:    the HEAP
     amount: the amount we want to see
     */
-    printf("[ ");
-    for(int i = 0; i < amount; i++){
-        printf("%d, ", arr[i]);
+    printf("[ "); int flag = 0;
+
+    int offset = 0;
+    if(amount < 0){
+        offset = 64000+amount;
+        amount = -amount;
+        flag = 1;
+        printf(" ..., ");
     }
-    printf("... ]\n");
+
+
+    for(int i = 0; i < amount; i++){
+        printf("%d, ", arr[offset + i]);
+    }
+
+    if(!flag){
+        printf("... ");
+    }
+
+    printf("]\n");
 }
 
 void init(){
@@ -181,6 +196,7 @@ int main(int argc, char *argv[]){
 
 
     dbgprint(MY_HEAP, 20);
+    dbgprint(MY_HEAP, -20);
 
 
     return 0;
