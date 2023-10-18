@@ -81,7 +81,8 @@ Nous ne remettons pas les octets fraîchement libérés à 0 pour éviter une co
 \label{perf}
 
 \subsubsection*{Motivation du choix d'algorithme}
-Notre politique first fit ...
+Notre politique first fit a pour avantage d'être rapide. Cependant, elle ne rime pas avec localité. En effet, on ne garantit pas que des valeurs associés à la chaine (donc des valeurs qui risquent d'être accédées à la chaine) sont l'une à côté des autres.\\
+Tout du moins, on évite la fragmentation via notre implémentation de free qui va regrouper les blocs inutilisés.
 
 
 \end{document}
