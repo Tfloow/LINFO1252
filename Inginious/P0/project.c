@@ -182,8 +182,7 @@ void* my_malloc(size_t size){
 }
 
 
-void my_free(void *ptr) {
-    /*
+void my_free(void *pointer) {    /*
     Free space that was previously allocated by my_malloc function
 
     ptr: a pointer to the area in the HEAP where we have allocated some data that we want now to free
@@ -202,7 +201,7 @@ void my_free(void *ptr) {
 
 
     //gets ptr size and index:
-    uint8_t* ptr_cast = (uint8_t *) ptr; 
+    uint8_t* ptr_cast = (uint8_t *) pointer; 
     uint16_t size = read_bytestoword(*(ptr_cast -2),*(ptr_cast - 1) ) - 1; //Note the -1 for the following steps
 
     if(size % 2 != 0){

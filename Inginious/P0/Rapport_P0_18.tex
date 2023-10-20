@@ -56,7 +56,7 @@
 
 Ajouter les 3 états d'exécution avec un diagramme et mettre les informations de l'algo
 
-\subsubsection{Structure de la mémoire}
+\subsection{Structure de la mémoire}
 
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
@@ -66,13 +66,13 @@ Ajouter les 3 états d'exécution avec un diagramme et mettre les informations d
 
 \end{wrapfigure}
 
-Autour de chaque morceau de mémoire se trouve des informations sur la taille de ce dernier.
-Etant donné que MY\_HEAP est un tableau de 64000 éléments et que nous ne souhaitons pas perdre d'information sur la taille des blocs, nous utilisons 2 bytes pour stocker la taille de ceux-ci.
-À la création, on indique donc qu'il y a 63998 octets disponibles. Ce nombre est écrit au début et à la fin de chaque morceau (les avantages de cette structure sont abordés aux sections \ref{free} et \ref{perf}). Ci-contre, une représentation abstraite de la mémoire.
+Autour de chaque morceau de mémoire se trouve des informations sur la taille de ce dernier. On y indique le nombre d'octets avant le prochain bloc. Cela correspond à la taille libre $+ 2$.
+Étant donné que MY\_HEAP est un tableau de 64000 éléments et que nous ne souhaitons pas perdre d'information sur la taille des blocs, nous utilisons 2 bytes pour stocker la taille de ceux-ci.
+À la création, on indique donc qu'il y a 63998 octets disponibles. Ce nombre est écrit au début et à la fin de chaque morceau (les avantages de cette structure sont abordés aux sections \ref{free} et \ref{perf}). Ci-dessus, une représentation abstraite de la mémoire.
 
-\subsubsection{Malloc}
-Notre implémentation de `malloc` est la suivante, on met de part et d'autre des cases des données la taille disponible. On alloue que des tailles paires ainsi on peut utiliser le bit de poids faible pour indiquer si les blocs sont libres ou occupés.\\ 
-En cas de demande d'un nombre impair, la taille du bloc retourné est augmentée de 1. Si c'est un nombre pair par exemple 4, il y a donc 4 emplacements libres de 8 bits. Si ce chiffre était 5, cela signifierait qu'il y a 4 octets mais qu'ils ont été alloués par malloc.\\
+\subsection{Malloc}
+Notre implémentation de `malloc` est la suivante, on met de part et d'autre des cases des données la taille disponible $+2$. On alloue que des tailles paires ainsi on peut utiliser le bit de poids faible pour indiquer si les blocs sont libres ou occupés.  Si c'est un nombre pair par exemple 4, il y a donc 4 emplacements libres de 8 bits. Si ce chiffre était 5, cela signifierait qu'il y a 4 octets mais qu'ils ont été alloués par malloc.\\ 
+En cas de demande d'un nombre impair, la taille du bloc retourné est augmentée de 1.\\
 On commence par chercher le premier ensemble de blocs qui puissent accueillir la taille désirée par l'utilisateur. On commence au début de notre Heap à chaque fois.\\
 2 critères d'arrêt sont considérés:
 \begin{itemize}
@@ -80,12 +80,12 @@ On commence par chercher le premier ensemble de blocs qui puissent accueillir la
     \item Un bloc libre de taille supérieure ou égale à la taille demandée est trouvé: la recherche s'arrête. \newline
 \end{itemize}
 
-Si la taille du bloc trouvé est supérieure à la taille demandée, seule celle-ci est allouée et la fonction malloc s'occupe directement d'indiquer que la suite du bloc est toujours libre.
+Si la taille du bloc trouvé est supérieure à la taille demandée, malloc va partitionner en 2 morceaux notre mémoire. Seul le premier est allouée et la fonction malloc s'occupe directement d'indiquer que la suite du bloc est toujours libre.
 
 %On va donc partitionner un ensemble de blocs en 2 plus petits ensembles. Le premier des deux a la taille désirée par l'utilisateur et le deuxième est le reste des blocs.\\ 
 Il est important de noter qu'à chaque fragmentation de notre mémoire, 4 octets (2 à chaque extrémité représentant la taille du bloc) de méta-données sont requis.
 
-\subsubsection{Free}
+\subsection{Free}
 \label{free}
 Notre free va éviter la fragmentation de la mémoire. En effet, on regarde si les fragments de mémoire à droite et à gauche de celui qu'on veut libérer sont libres.
 Cela est permis en $\mathcal{O}(1)$ grâce au fait que chaque bloc a directement accès aux tailles (et à l'état) du bloc précédent et du bloc suivant grâce aux méta-données présentes aux 2 extrémités.
