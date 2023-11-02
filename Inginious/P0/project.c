@@ -300,24 +300,18 @@ void my_free(void *pointer) {    /*
 int main(int argc, char *argv[]){
 
     init();
+    dbgprint(MY_HEAP, 50);
 
-    uint8_t* test  = (uint8_t *) my_malloc(2); //63988: ok, 63989: pas ok
-    uint8_t* test2 = (uint8_t *) my_malloc(4);
-    uint8_t* test3 = (uint8_t *) my_malloc(6);
-    uint8_t* test4 = (uint8_t *) my_malloc(8);
-    uint8_t* test5 = (uint8_t *) my_malloc(63960); // HEAP is now full
+    uint8_t* test  = (uint8_t *) my_malloc(1); //63988: ok, 63989: pas ok
+    uint8_t* test2 = (uint8_t *) my_malloc(17);
+    uint8_t* test3 = (uint8_t *) my_malloc(13);
 
+    printf("%d\n", read_bytestoword(249,224));
+    dbgprint(MY_HEAP, 50);
 
-    printf("%d\n", read_bytestoword(249,216));
-    dbgprint(MY_HEAP, 30);
-
-    my_free(test2);
-    my_free(test);
     my_free(test3);
-    my_free(test4);
-    my_free(test5);
     
-    dbgprint(MY_HEAP, -30);
+    dbgprint(MY_HEAP, 50);
 
     for(int i = 0; i< 30; i++){
         //printf("%d\n", MY_HEAP[i]);
