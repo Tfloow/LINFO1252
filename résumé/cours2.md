@@ -1,3 +1,7 @@
+[↰](../README.md)
+
+___
+
 # Rappels & compléments de C
 
 - [Rappels \& compléments de C](#rappels--compléments-de-c)
@@ -189,4 +193,6 @@ Une variable globale est définie pour tous les modules d'un programme.
 
 Une variable `static`, on peut y accéder en dehors d'un bloc de fonction car on ne doit pas l'instancier.
 
+___
 
+[↰](../README.md)

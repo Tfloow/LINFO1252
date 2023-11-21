@@ -1,3 +1,7 @@
+[↰](../README.md)
+
+___
+
 # Cours 1
 
 - [Cours 1](#cours-1)
@@ -246,3 +250,6 @@ done
 
 - s prend successivement les valeurs présentes dans la liste d'entrée `$students`
        
+___
+
+[↰](../README.md)

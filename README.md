@@ -11,7 +11,10 @@
 - [cours 3](résumé/cours3.md)
 - [cours 4](résumé/cours4.md)
 - [cours 5](résumé/cours5.md)
+- [cours 6](résumé/cours6.md)
+- [cours 7](résumé/cours7.md)
+- [cours 8](résumé/cours8.md)
 
 ## Projet
 
-[HERE](Inginious/P0/note.md)
+[HERE](Inginious/P1/note.md)

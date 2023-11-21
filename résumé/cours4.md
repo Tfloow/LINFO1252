@@ -1,3 +1,6 @@
+[↰](../README.md)
+___
+
 # Cours 4
 
 - [Cours 4](#cours-4)
@@ -288,3 +291,7 @@ Pour modifier les registres `%ebx`, `%edi` et `%esi`, il faut copier puis restau
 #### Valeur de Retour
 
 On stocke les valeurs de retour dans le registre `%eax` par convention.
+
+___
+
+[↰](../README.md)
