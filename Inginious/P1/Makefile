@@ -2,7 +2,7 @@ FLAGS=-Wall -Werror -g
 LIBS=-lpthread
 
 FILE_SRC = part1
-EXEC = $(FILE_SRC:%=%_cmpl)
+EXEC = $(FILE_SRC:%=%)
 
 .PHONY: part1 clean
 
