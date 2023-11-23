@@ -27,54 +27,55 @@ sem_t full;
 
 // Producteur
 void* producer(void* rien){
-while(item_produced < NB_PRODUCT){
+    while(item_produced < NB_PRODUCT){
 
-//simulates production:
-for(int i = 0; i<10000; i++){}
-
-
-sem_wait(&empty); // attente d’une place libre
-
-pthread_mutex_lock(&mutex);
-// section critique
-buffer[count] = item_produced;
-count++;
-item_produced++;
-pthread_mutex_unlock(&mutex);
+        //simulates production:
+        for(int i = 0; i<10000; i++){
+        }
 
 
-sem_post(&full); // il y a une place remplie en plus
-}
+        sem_wait(&empty); // attente d’une place libre
+
+        pthread_mutex_lock(&mutex);
+        // section critique
+        buffer[count] = item_produced;
+        count++;
+        item_produced++;
+        pthread_mutex_unlock(&mutex);
+
+
+        sem_post(&full); // il y a une place remplie en plus
+    }
+
+    return NULL;
 }
 
 
 
 // Consommateur
-void* consumer(void* rien)
-{
+void* consumer(void* rien){
     int product;
-while(item_consumed  < NB_PRODUCT){
+    while(item_consumed  < NB_PRODUCT){
 
 
-sem_wait(&full); // attente d’une place remplie
+    sem_wait(&full); // attente d’une place remplie
 
-pthread_mutex_lock(&mutex);
-// section critique
-product = buffer[count - 1];
-count--;
-item_consumed++;
-pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mutex);
+    // section critique
+    product = buffer[count - 1];
+    count--;
+    item_consumed++;
+    pthread_mutex_unlock(&mutex);
 
-sem_post(&empty); // il y a une place libre en plus
+    sem_post(&empty); // il y a une place libre en plus
 
-printf("consumed %d\n", product);
+    printf("consumed %d\n", product);
 
-//simulates consumption:
-for(int i = 0; i<10000; i++){}
+    //simulates consumption:
+    for(int i = 0; i<10000; i++){}
 
-
-
-}
+    }
+    return NULL;
 }
 
 

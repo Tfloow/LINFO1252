@@ -1,25 +1,34 @@
 FLAGS=-Wall -Werror -g
 LIBS=-lpthread
 
-FILE_SRC = part1
+FILE_SRC = philosopher prod-cons reader-writer
 EXEC = $(FILE_SRC:%=%)
 
 .PHONY: part1 clean
 
 all: $(EXEC)
 
-part1: src/part1.c
+test:
+#	Run and plot the various test
+	@bash ./perf/eval.sh all plot
+
+philosopher: src/philosopher.c
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
-	@./$@
+#	@./$@
 
 part2: src/part2.c
 	gcc $(FLAGS)  $< -o $@ $(LIBS)
 	./$@
 
+prod-cons: src/prod-cons.c
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+reader-writer: src/reader-writer.c
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 clean:
 	@rm -f *.out
-	@rm -f part1
-	@rm -f part1_cmpl
-
+	@rm -f *.o
+	@rm -f $(EXEC)
+	@rm -f *.png
 

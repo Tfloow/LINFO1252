@@ -6,16 +6,17 @@
   - [Tâches](#tâches)
     - [1](#1)
     - [2](#2)
+  - [Graph](#graph)
 
 
 ## Tâches
 
 ### 1
-- [ ] Coder le problème des philosophes (*thomas*)
+- [x] Coder le problème des philosophes (*thomas*)
 - [ ] Coder le problème des producteurs-consommateurs (*matya*)
 - [ ] Coder le problème des lecteurs et écrivains (code du TD) (*matya*)
-- [ ] Écrire un script d’évaluation des performances (*thomas*)
-- [ ] Représenter graphiquement les résultats (*thomas*)
+- [x] Écrire un script d’évaluation des performances (*thomas*)
+- [x] Représenter graphiquement les résultats (*thomas*)
 
 ### 2
 
@@ -24,3 +25,12 @@
 - [ ] Implémentez l’algorithme test-and-test-and-set
 - [ ] Concevez une interface sémaphore sur la base de vos primitives d’attente active
 - [ ] Adaptez vos 3 programmes de la partie 1 pour utiliser vos primitives d’attente active
+
+
+## Graph 
+
+![philosopher](perf/philosopher_plot.png)
+![prod-cons](perf/prod-cons_plot.png)
+![reader-writer](perf/reader-writer_plot.png)
+
+

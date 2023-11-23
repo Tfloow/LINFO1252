@@ -32,62 +32,65 @@ int nb_read = 0;
 
 
 void *reader(void* rien){
-while(nb_read <READ){
+    while(nb_read <READ){
 
-pthread_mutex_lock(&z);
-sem_wait(&rsem);
+        pthread_mutex_lock(&z);
+        sem_wait(&rsem);
 
-pthread_mutex_lock(&mutex_read_count);
-readcount++;
-//printf("read %d\n", nb_read);
-//nb_read++;
-if(readcount == 1){sem_wait(&wsem);}
+        pthread_mutex_lock(&mutex_read_count);
+        readcount++;
+        //printf("read %d\n", nb_read);
+        //nb_read++;
+        if(readcount == 1){sem_wait(&wsem);}
 
-pthread_mutex_unlock(&mutex_read_count);
-sem_post(&rsem);
-pthread_mutex_unlock(&z);
+        pthread_mutex_unlock(&mutex_read_count);
+        sem_post(&rsem);
+        pthread_mutex_unlock(&z);
 
-//simulates read operation:
-for(int i = 0; i<10000; i++){}
-pthread_mutex_lock(&mutex_read_count);
-readcount --;
-//printf("read %d\n", nb_read);
-nb_read++;
-if(readcount == 0){sem_post(&wsem);}
-pthread_mutex_unlock(&mutex_read_count);
+        //simulates read operation:
+        for(int i = 0; i<10000; i++){}
+        pthread_mutex_lock(&mutex_read_count);
+        readcount --;
+        //printf("read %d\n", nb_read);
+        nb_read++;
+        if(readcount == 0){sem_post(&wsem);}
+        pthread_mutex_unlock(&mutex_read_count);
 
-}
+    }
+    return NULL;
 }
 
 
 
 
 void* writer(void* rien){
-while(nb_write < WRITE){
+    while(nb_write < WRITE){
 
-pthread_mutex_lock(&mutex_write_count);
-//Section critique
-writecount++;
-//printf("wrote %d\n", nb_write);
-//nb_write++;
-if(writecount ==1){sem_wait(&rsem);}
-pthread_mutex_unlock(&mutex_write_count);
+        pthread_mutex_lock(&mutex_write_count);
+        //Section critique
+        writecount++;
+        //printf("wrote %d\n", nb_write);
+        //nb_write++;
+        if(writecount ==1){sem_wait(&rsem);}
+        pthread_mutex_unlock(&mutex_write_count);
 
-sem_wait(&wsem);
-//simulates: writing:
-for(int i = 0; i<10000; i++){}
-//printf("wrote %d\n", nb_write);
-//nb_write++;
-sem_post(&wsem);
+        sem_wait(&wsem);
+        //simulates: writing:
+        for(int i = 0; i<10000; i++){}
+        //printf("wrote %d\n", nb_write);
+        //nb_write++;
+        sem_post(&wsem);
 
-pthread_mutex_lock(&mutex_write_count);
-//Section critique
-writecount--;
-if(writecount == 0){sem_post(&rsem);}
-printf("wrote %d\n", nb_write);
-nb_write++;
-pthread_mutex_unlock(&mutex_write_count);
-}
+        pthread_mutex_lock(&mutex_write_count);
+        //Section critique
+        writecount--;
+        if(writecount == 0){sem_post(&rsem);}
+        printf("wrote %d\n", nb_write);
+        nb_write++;
+        pthread_mutex_unlock(&mutex_write_count);
+        }
+
+    return NULL;
 }
 
 
