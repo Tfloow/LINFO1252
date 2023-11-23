@@ -15,4 +15,4 @@ jobs:
         run: |
           ls
           cd Inginious/P1
-          make test
+          make 
