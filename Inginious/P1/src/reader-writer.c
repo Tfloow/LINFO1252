@@ -8,7 +8,7 @@
 
 #define WRITE 640
 #define READ  2560
-#define THREAD_NUM 32
+//#define THREAD_NUM 32
 
 //2560 pour read et 640 pour write
 
@@ -105,6 +105,9 @@ sem_init(&rsem, 0, 1);
 pthread_mutex_init(&mutex_read_count, NULL);
 pthread_mutex_init(&mutex_write_count, NULL);
 pthread_mutex_init(&z, NULL);
+
+
+int THREAD_NUM = (int)  atoi(argv[1]);
 
 pthread_t thread[THREAD_NUM];
 

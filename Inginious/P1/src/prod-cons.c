@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 
 // Initialisation
 #define N 8 // places dans le buffer
-#define THREAD_NUM 16
 #define NB_PRODUCT 8192
 
 
@@ -27,7 +27,7 @@ sem_t full;
 
 // Producteur
 void* producer(void* rien){
-    while(item_produced < NB_PRODUCT){
+    while(true){
 
         //simulates production:
         for(int i = 0; i<10000; i++){
@@ -38,6 +38,15 @@ void* producer(void* rien){
 
         pthread_mutex_lock(&mutex);
         // section critique
+
+
+        if(item_produced == NB_PRODUCT){
+            pthread_mutex_unlock(&mutex);
+            sem_post(&full);
+            return EXIT_SUCCESS;
+        }
+
+
         buffer[count] = item_produced;
         count++;
         item_produced++;
@@ -55,21 +64,31 @@ void* producer(void* rien){
 // Consommateur
 void* consumer(void* rien){
     int product;
-    while(item_consumed  < NB_PRODUCT){
+    while(true){
 
 
     sem_wait(&full); // attente d’une place remplie
 
     pthread_mutex_lock(&mutex);
     // section critique
+
+        if(item_consumed == NB_PRODUCT){
+            pthread_mutex_unlock(&mutex);
+            sem_post(&empty);
+            return EXIT_SUCCESS;
+    }
+
     product = buffer[count - 1];
     count--;
     item_consumed++;
+
+
+
     pthread_mutex_unlock(&mutex);
 
     sem_post(&empty); // il y a une place libre en plus
 
-    printf("consumed %d\n", product);
+    //printf("consumed %d\n", product);
 
     //simulates consumption:
     for(int i = 0; i<10000; i++){}
@@ -89,6 +108,10 @@ int main(int argc, char *argv[]){
 pthread_mutex_init(&mutex, NULL);
 sem_init(&empty, 0 , N); // buffer vide
 sem_init(&full, 0 , 0); // buffer vide
+
+
+int THREAD_NUM = (int)  atoi(argv[1]);
+
 pthread_t thread[THREAD_NUM];
 
 
@@ -115,6 +138,10 @@ pthread_t thread[THREAD_NUM];
         int errjoin = pthread_join(thread[i], NULL);
         if(errjoin != 0){printf("error joining thread\n");}
     }
+
+
+    //printf("Produced: %d, Consumed: %d\n", item_produced, item_consumed);
+    
 
 //destroys semaphore and mutex at the end:
 sem_destroy(&empty);

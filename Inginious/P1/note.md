@@ -13,7 +13,7 @@
 
 ### 1
 - [x] Coder le problème des philosophes (*thomas*)
-- [ ] Coder le problème des producteurs-consommateurs (*matya*)
+- [x] Coder le problème des producteurs-consommateurs (*matya*)
 - [ ] Coder le problème des lecteurs et écrivains (code du TD) (*matya*)
 - [x] Écrire un script d’évaluation des performances (*thomas*)
 - [x] Représenter graphiquement les résultats (*thomas*)
