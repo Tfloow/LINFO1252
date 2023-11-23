@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdlib.h>
-#include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 
@@ -15,13 +15,14 @@
 pthread_mutex_t mutex_read_count;
 pthread_mutex_t mutex_write_count;
 pthread_mutex_t z;
+
 sem_t wsem;
 sem_t rsem;
 int readcount = 0;
 int writecount = 0;
 
 /*
-Problème actuel : nb_write et nb_read dépassent WRITE et READ et dépendent de THREAD_NUM (jsp si c grave faut demander)
+Problème actuel : nb_write et nb_read dépassent WRITE et READ et dépendent de THREAD_NUM
 */
 int nb_write = 0;
 int nb_read = 0;
@@ -32,15 +33,16 @@ int nb_read = 0;
 
 
 void *reader(void* rien){
-    while(nb_read <READ){
+    while(true){
+
 
         pthread_mutex_lock(&z);
         sem_wait(&rsem);
 
         pthread_mutex_lock(&mutex_read_count);
         readcount++;
-        //printf("read %d\n", nb_read);
-        //nb_read++;
+
+
         if(readcount == 1){sem_wait(&wsem);}
 
         pthread_mutex_unlock(&mutex_read_count);
@@ -49,12 +51,27 @@ void *reader(void* rien){
 
         //simulates read operation:
         for(int i = 0; i<10000; i++){}
+
+
         pthread_mutex_lock(&mutex_read_count);
-        readcount --;
-        //printf("read %d\n", nb_read);
-        nb_read++;
+        //section critique
+        readcount--;
+        //indique qu'une lecture en plus a été faite:
+        if(nb_read == READ){
         if(readcount == 0){sem_post(&wsem);}
         pthread_mutex_unlock(&mutex_read_count);
+        return EXIT_SUCCESS;}
+
+
+        nb_read++;
+        //printf("read number %d\n", nb_read);
+
+        if(readcount == 0){sem_post(&wsem);}
+        pthread_mutex_unlock(&mutex_read_count);
+
+
+
+
 
     }
     return NULL;
@@ -64,29 +81,53 @@ void *reader(void* rien){
 
 
 void* writer(void* rien){
-    while(nb_write < WRITE){
+    while(true){
+
+
 
         pthread_mutex_lock(&mutex_write_count);
         //Section critique
         writecount++;
-        //printf("wrote %d\n", nb_write);
-        //nb_write++;
+    
+
         if(writecount ==1){sem_wait(&rsem);}
         pthread_mutex_unlock(&mutex_write_count);
 
         sem_wait(&wsem);
         //simulates: writing:
         for(int i = 0; i<10000; i++){}
-        //printf("wrote %d\n", nb_write);
-        //nb_write++;
+
+        if(nb_write == WRITE){
+            sem_post(&wsem);
+
+        pthread_mutex_lock(&mutex_write_count);
+        //Section critique
+        writecount--;
+
+
+        
+
+        if(writecount == 0){sem_post(&rsem);}
+
+        pthread_mutex_unlock(&mutex_write_count);
+        return EXIT_SUCCESS;}
+
+
+        nb_write++;
+        //printf("write number %d\n", nb_write);
+
+
         sem_post(&wsem);
 
         pthread_mutex_lock(&mutex_write_count);
         //Section critique
         writecount--;
+
+
+        
+
         if(writecount == 0){sem_post(&rsem);}
-        printf("wrote %d\n", nb_write);
-        nb_write++;
+
         pthread_mutex_unlock(&mutex_write_count);
         }
 
@@ -130,6 +171,9 @@ for(int i = 0; i<THREAD_NUM; i++){
         if(errjoin != 0){printf("error joining thread\n");}
     }
 
+
+
+printf("wrote: %d, read: %d\n", nb_write, nb_read);
 
 
 
