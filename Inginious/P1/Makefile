@@ -31,4 +31,5 @@ clean:
 	@rm -f *.o
 	@rm -f $(EXEC)
 	@rm -f *.png
+	@rm -f src/rw src/pc
 

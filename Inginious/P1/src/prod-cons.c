@@ -94,6 +94,7 @@ void* consumer(void* rien){
     for(int i = 0; i<10000; i++){}
 
     }
+    product -= product; // DUMMY TO BE DELTED
     return NULL;
 }
 

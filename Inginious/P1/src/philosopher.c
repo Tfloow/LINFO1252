@@ -11,20 +11,30 @@ pthread_mutex_t* baguette;
 
 
 
-void* philosophe (void* args){
-    int *id=(int *) args;
+void* philosophe ( void* arg ){
+    printf("%d\n", *((int*) arg));
+    int *id=(int *) arg;
     int left = *id;
-    int right = (left + 1);
-    for(int i=0;i< 10000000; i++) {
-        printf("Philosophe [%d] pense\n",*id);
-        pthread_mutex_lock(&baguette[left]);
-        printf("Philosophe [%d] possède baguette gauche [%d]\n",*id,left);
-        pthread_mutex_lock(&baguette[right]);
-        printf("Philosophe [%d] possède baguette droite [%d]\n",*id,right);
+
+    int right = 0;
+    if(*id == 0){
+        right = 1;
+    }else{
+        right = (left + 1) % *id; //PHILOSOPHES
+    }
+    int i = 0;
+    while(i<10000000) {
+        // philosophe pense
+        if(left<right) {
+            pthread_mutex_lock(&baguette[left]);
+            pthread_mutex_lock(&baguette[right]);
+        }else {
+            pthread_mutex_lock(&baguette[right]);
+            pthread_mutex_lock(&baguette[left]);
+        }
         pthread_mutex_unlock(&baguette[left]);
-        printf("Philosophe [%d] a libéré baguette gauche [%d]\n",*id,left);
         pthread_mutex_unlock(&baguette[right]);
-        printf("Philosophe [%d] a libéré baguette droite [%d]\n",*id,right);
+        i++;
     }
     return (NULL);
 }
@@ -36,15 +46,40 @@ void philosopher(int N){
     
     pthread_t* phil = (pthread_t*) malloc(sizeof(pthread_t)*N);
     baguette = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t)*N);
+    int* ID;
+
 
     for(int i = 0; i < N; i++){
 
-        if (pthread_create(&(phil[i]),0, &philosophe, &i) != 0){
+        if (pthread_mutex_init(&baguette[i], NULL) != 0) { 
+            printf("\n mutex init has failed\n"); 
+            return; 
+        } 
+
+        ID = malloc(sizeof(int));
+        *ID = i;
+
+
+        if (pthread_create(&(phil[i]), NULL, philosophe, (void*) ID) != 0){
             printf("Issue with thread %d\n", i);
             return;
         }
 
     }
+
+    // Wait for threads to finish
+    for (int i = 0; i < N; i++) {
+        pthread_join(phil[i], NULL);
+    }
+
+    for (int i = 0; i < N; i++){
+        pthread_mutex_destroy(&(baguette[i]));
+    }
+
+    free(phil);
+    free(baguette);
+    free(ID);
+
 }
 
 int main(int argc, char** argv){
