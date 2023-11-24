@@ -2,7 +2,7 @@
 ALL=0
 ITE=(2 4 8 16 32 64)
 COL="2 thread, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
-TRY=1 # Set the number of sample
+TRY=5 # Set the number of sample
 PROGRAM=("philosopher" "prod-cons" "reader-writer") # the program we handle right now
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/

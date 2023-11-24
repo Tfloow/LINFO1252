@@ -9,19 +9,13 @@ pthread_mutex_t* baguette;
 
 // Helper Function
 
-
+int N;
 
 void* philosophe ( void* arg ){
-    printf("%d\n", *((int*) arg));
     int *id=(int *) arg;
     int left = *id;
-
-    int right = 0;
-    if(*id == 0){
-        right = 1;
-    }else{
-        right = (left + 1) % *id; //PHILOSOPHES
-    }
+    int right = (left + 1) % N; //PHILOSOPHES
+    
     int i = 0;
     while(i<10000000) {
         // philosophe pense
@@ -32,6 +26,7 @@ void* philosophe ( void* arg ){
             pthread_mutex_lock(&baguette[right]);
             pthread_mutex_lock(&baguette[left]);
         }
+        // Il mange
         pthread_mutex_unlock(&baguette[left]);
         pthread_mutex_unlock(&baguette[right]);
         i++;
@@ -87,7 +82,7 @@ int main(int argc, char** argv){
         printf("Please provide the amount of philosopher you want\n");
         return EXIT_FAILURE;
     }
-
+    N = (int)  atoi(argv[1]);
     philosopher((int)  atoi(argv[1]));
     return EXIT_SUCCESS;
 }
