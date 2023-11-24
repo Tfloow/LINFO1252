@@ -47,8 +47,8 @@ do
     if [ $1 = $prog ] || [ $ALL -eq 1 ]
     then 
         echo "[LOG]: Launching test on $prog"
-        rm -f perf/$prog.csv
-        echo $COL >> perf/$prog.csv
+        rm -f perf/data/$prog.csv
+        echo $COL >> perf/data/$prog.csv
 
         for ite in $(seq 1 $TRY)
         do
@@ -58,13 +58,13 @@ do
                 ./$prog $i > /dev/null 
                 TIME=$(($(date +%s%N) - $TIME))
                 #echo $TIME
-                echo -n $TIME >> perf/$prog.csv
+                echo -n $TIME >> perf/data/$prog.csv
                 if [ $i -lt 64 ]
                 then
-                    echo -n "," >> perf/$prog.csv
+                    echo -n "," >> perf/data/$prog.csv
                 fi
             done
-            echo "" >> perf/$prog.csv
+            echo "" >> perf/data/$prog.csv
         done
         echo "[LOG]: Data exported"
     fi

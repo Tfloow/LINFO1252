@@ -5,9 +5,9 @@ import os
 
 timeScale = ["ns", "µs", "ms", "s"]
 
-for f in os.listdir("perf"):
+for f in os.listdir("perf/data"):
     if f.split(".")[-1] == "csv":
-        data = pd.read_csv(f"perf/{f}")        
+        data = pd.read_csv(f"perf/data/{f}")        
         fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
@@ -43,6 +43,6 @@ for f in os.listdir("perf"):
         ax.minorticks_on()
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
-        
-        fig.savefig(f"perf/{f.split(".")[0]}_plot.png")
+                
+        fig.savefig(f"perf/plot/{f.split(".")[0]}_plot.png")
         data.plot()

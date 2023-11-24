@@ -28,10 +28,12 @@ Nous avons implémenter le problème des philosophes dans ce [fichier](src/philo
 
 ## Résultat
 
+Tous les tests ont été réalisé sur des AMD Ryzen 7 5700U 8 coeurs 16 threads avec 16 Go de RAM à 4.4 GHz en boost. 
+
 ### Partie 1
 
 Pour réaliser les tests de 
 
-![philosopher](perf/philosopher_plot.png)
-![prod-cons](perf/prod-cons_plot.png)
-![reader-writer](perf/reader-writer_plot.png)
+![philosopher](perf/plot/philosopher_plot.png)
+![prod-cons](perf/plot/prod-cons_plot.png)
+![reader-writer](perf/plot/reader-writer_plot.png)
