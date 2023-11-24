@@ -11,6 +11,7 @@ for f in os.listdir("perf/data"):
         fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
+        standard = [0 for _ in range(width)]
         
         track = 0
         time_scale = timeScale[track]
@@ -25,13 +26,14 @@ for f in os.listdir("perf/data"):
         
         for i,col in enumerate(data.columns):
             nb_threads = int(col.strip().split()[0])
-            ax.plot(np.ones(len(data[col]))*nb_threads, data[col]/(1000**track), "o", label=col.strip())
+            #ax.plot(np.ones(len(data[col]))*nb_threads, data[col]/(1000**track), "o", label=col.strip()) # To plot all the dots
             av[i] = data[col].mean()
             t[i] = nb_threads
             
-    
-        ax.legend()
-        ax.plot(t, av/(1000**track), linewidth=3)
+            standard[i] = (data[col].to_numpy()/(1000**track)).std()
+            
+        ax.plot(t, av/(1000**track))
+        ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange")
         
         ax.set_title(f"Rapidité d'exécution de {f.split(".")[0]}")
         ax.set_xlabel("Nombre de Threads")
