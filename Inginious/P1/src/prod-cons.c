@@ -100,52 +100,48 @@ void* consumer(void* rien){
 
 
 
-
-
-
-
-
 int main(int argc, char *argv[]){
-pthread_mutex_init(&mutex, NULL);
-sem_init(&empty, 0 , N); // buffer vide
-sem_init(&full, 0 , 0); // buffer vide
+    pthread_mutex_init(&mutex, NULL);
+    sem_init(&empty, 0 , N); // buffer vide
+    sem_init(&full, 0 , 0); // buffer vide
 
 
-int THREAD_NUM = (int)  atoi(argv[1]);
+    int THREAD_NUM = (int)  atoi(argv[1]);
 
-pthread_t thread[THREAD_NUM];
-
-
+    pthread_t thread[THREAD_NUM];
 
 
-    //initialisation: half producer, half consumer
-    for(int i = 0; i<THREAD_NUM; i++){
 
-        if(i % 2 == 0){
-            int err = pthread_create(&thread[i], NULL, &producer, NULL);
-            if(err != 0){printf("error creating producer\n");}
+
+        //initialisation: half producer, half consumer
+        for(int i = 0; i<THREAD_NUM; i++){
+
+            if(i % 2 == 0){
+                int err = pthread_create(&thread[i], NULL, &producer, NULL);
+                if(err != 0){printf("error creating producer\n");}
+            }
+
+            else{
+                int err = pthread_create(&thread[i], NULL, &consumer, NULL);
+                if(err != 0){printf("error creating consumer\n");}
+            }
+
         }
 
-        else{
-            int err = pthread_create(&thread[i], NULL, &consumer, NULL);
-            if(err != 0){printf("error creating consumer\n");}
+
+        //joins each thread
+        for(int i = 0; i<THREAD_NUM; i++){
+            int errjoin = pthread_join(thread[i], NULL);
+            if(errjoin != 0){printf("error joining thread\n");}
         }
 
-    }
 
+        //printf("Produced: %d, Consumed: %d\n", item_produced, item_consumed);
+        
 
-    //joins each thread
-    for(int i = 0; i<THREAD_NUM; i++){
-        int errjoin = pthread_join(thread[i], NULL);
-        if(errjoin != 0){printf("error joining thread\n");}
-    }
-
-
-    //printf("Produced: %d, Consumed: %d\n", item_produced, item_consumed);
-    
-
-//destroys semaphore and mutex at the end:
-sem_destroy(&empty);
-sem_destroy(&full);
-pthread_mutex_destroy(&mutex);
-return 0;}
+    //destroys semaphore and mutex at the end:
+    sem_destroy(&empty);
+    sem_destroy(&full);
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}

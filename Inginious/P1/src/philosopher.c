@@ -82,7 +82,9 @@ int main(int argc, char** argv){
         printf("Please provide the amount of philosopher you want\n");
         return EXIT_FAILURE;
     }
+
     N = (int)  atoi(argv[1]);
     philosopher((int)  atoi(argv[1]));
+    
     return EXIT_SUCCESS;
 }
