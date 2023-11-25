@@ -32,8 +32,8 @@ for f in os.listdir("perf/data"):
             
             standard[i] = (data[col].to_numpy()/(1000**track)).std()
             
-        ax.plot(t, av/(1000**track))
-        ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange")
+        ax.plot(t, av/(1000**track), label="Moyenne")
+        ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
         
         ax.set_title(f"Rapidité d'exécution de {f.split(".")[0]}")
         ax.set_xlabel("Nombre de Threads")
@@ -45,6 +45,8 @@ for f in os.listdir("perf/data"):
         ax.minorticks_on()
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
+        
+        ax.legend()
                 
         fig.savefig(f"perf/plot/{f.split(".")[0]}_plot.png")
         data.plot()

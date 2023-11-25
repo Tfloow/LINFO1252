@@ -40,4 +40,5 @@ clean:
 	@rm -f $(EXEC)
 	@rm -f *.png
 	@rm -f src/rw src/pc
+	@rm -f test
 
