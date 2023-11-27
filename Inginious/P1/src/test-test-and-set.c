@@ -9,9 +9,8 @@ int NTHREADS;
 void lock(){
 
     asm(
-            
-    "ENTER:"
             "movl $1, %%eax\n\t"
+    "ENTER:"
             "cmpl %%eax, %0\n\t"
             "je  ENTER\n\t" //keeps checking verrou's value until it is == 0 (!= 1)
             "jmp CHECK\n\t"

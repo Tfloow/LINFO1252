@@ -22,7 +22,7 @@
 
 - [x] Mettre en œuvre un verrou par attente active utilisant l’opération atomique `xchg`, sur le modèle de l’algorithme test-and-set vu en cours  
 - [x] Mesurez la performance du verrou test-and-set
-- [ ] Implémentez l’algorithme test-and-test-and-set
+- [x] Implémentez l’algorithme test-and-test-and-set
 - [ ] Concevez une interface sémaphore sur la base de vos primitives d’attente active
 - [ ] Adaptez vos 3 programmes de la partie 1 pour utiliser vos primitives d’attente active
 
