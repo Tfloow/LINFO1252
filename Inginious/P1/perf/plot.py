@@ -32,7 +32,7 @@ for f in os.listdir("perf/data"):
             
             standard[i] = (data[col].to_numpy()/(1000**track)).std()
             
-        ax.plot(t, av/(1000**track), label="Moyenne")
+        ax.plot(t, av/(1000**track), label=f"Moyenne sur {len(data[col])} essais")
         ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
         
         ax.set_title(f"Rapidité d'exécution de {f.split(".")[0]}")

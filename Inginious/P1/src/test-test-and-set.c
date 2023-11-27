@@ -6,24 +6,25 @@
 int verrou = 0;
 int NTHREADS;
 
-inline void lock(){
+void lock(){
 
-__asm__(
-        
-"ENTER:"
-        "movl $1, %eax\n\t"
-        "cmpl %eax, %0\n\t"
-        "je  ENTER\n\t" //keeps checking verrou's value until it is == 0 (!= 1)
-        "jmp CHECK\n\t"
+    asm(
+            
+    "ENTER:"
+            "movl $1, %%eax\n\t"
+            "cmpl %%eax, %0\n\t"
+            "je  ENTER\n\t" //keeps checking verrou's value until it is == 0 (!= 1)
+            "jmp CHECK\n\t"
 
 
-"CHECK:"
-        "xchgl %eax, %0\n\t"
-        "testl %eax, %eax\n\t"
-        "jnz ENTER\n\t"
-        //"ret \n\t"
+    "CHECK:"
+            "xchgl %%eax, %0\n\t"
+            "testl %%eax, %%eax\n\t"
+            "jnz ENTER\n\t"
+            //"ret \n\t"
 
-);
+    :"+m"(verrou)
+    );
 
 }
 
@@ -32,11 +33,13 @@ __asm__(
 
 
 //same as test-and-test algorithm:
-inline void unlock(){
-    __asm__(
-        "movl $0, %eax\n\t"
-        "xchgl %eax, %0\n\t"
-    );}
+void unlock(){
+    asm(
+        "movl $0, %%eax\n\t"
+        "xchgl %%eax, %0\n\t"
+        :"+m"(verrou)
+    );
+}
 
 
 
@@ -82,7 +85,7 @@ void start(int NTHREADS){
 
 int main(int argc, char** argv){
     if(argc != 2){
-        printf("Please provide the amount of philosopher you want\n");
+        printf("Please provide the amount of threads you want\n");
         return EXIT_FAILURE;
     }
     NTHREADS = (int)  atoi(argv[1]);

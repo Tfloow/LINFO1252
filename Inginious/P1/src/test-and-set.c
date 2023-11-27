@@ -63,7 +63,7 @@ void start(int NTHREADS){
 
 int main(int argc, char** argv){
     if(argc != 2){
-        printf("Please provide the amount of philosopher you want\n");
+        printf("Please provide the amount of threads you want\n");
         return EXIT_FAILURE;
     }
     NTHREADS = (int)  atoi(argv[1]);
