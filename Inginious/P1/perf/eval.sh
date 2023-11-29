@@ -1,9 +1,10 @@
 #!/bin/bash
 ALL=0
-ITE=(2 4 8 16 32 64)
+ITE=(1 2 4 8 16 32 64)
 COL="2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
 TRY=5 # Set the number of sample
-PROGRAM=( "philosopher" "prod-cons" "reader-writer" ) #"test-and-set" "test-test-and-set") # the program we handle right now
+PROGRAM=( "test-and-set" "test-test-and-set" ) # "philosopher" "prod-cons" "reader-writer" ) # the program we handle right now
+
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/
 # for i in ${ITE[@]}
@@ -42,23 +43,24 @@ then
 fi
 
 # Test
+
 for prog in ${PROGRAM[@]}
 do 
     if [ $1 = $prog ] || [ $ALL -eq 1 ]
     then 
         NEWITE=$ITE
-        if [ $prog == "test-and-set" ]
+        rm -f perf/data/$prog.csv
+        if [ $prog = "test-and-set" ] || [ $prog = "test-test-and-set" ]
         then 
             echo -n "1 thread," >> perf/data/$prog.csv
             NEWITE=(1 2 4 8 16 32 64)
         fi
         echo "[LOG]: Launching test on $prog"
-        rm -f perf/data/$prog.csv
         echo $COL >> perf/data/$prog.csv
 
         for ite in $(seq 1 $TRY)
         do
-            for i in ${ITE[@]}
+            for i in ${NEWITE[@]}
             do
                 TIME=$(date +%s%N)
                 ./$prog $i > /dev/null 

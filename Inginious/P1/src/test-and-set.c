@@ -32,7 +32,7 @@ void* myFunc(void* arg){
 
     for(int j = 0; j < 6400/NTHREADS; j++){
         lock();
-        for(int a = 0; a <1000000; a++){
+        for(int a = 0; a <10000; a++){
             // DO
         }
         unlock();
