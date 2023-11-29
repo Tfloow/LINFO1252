@@ -35,7 +35,7 @@ for f in os.listdir("perf/data"):
         ax.plot(t, av/(1000**track), label=f"Moyenne sur {len(data[col])} essais")
         ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
         
-        ax.set_title(f"Rapidité d'exécution de {f.split(".")[0]}")
+        ax.set_title(f"Rapidité d'exécution de {f.split('.')[0]}")
         ax.set_xlabel("Nombre de Threads")
         ax.set_xlim(0, 70)
         
@@ -48,5 +48,5 @@ for f in os.listdir("perf/data"):
         
         ax.legend()
                 
-        fig.savefig(f"perf/plot/{f.split(".")[0]}_plot.png")
+        fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")
         data.plot()
