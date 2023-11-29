@@ -101,6 +101,8 @@ void* consumer(void* rien){
 
 
 int main(int argc, char *argv[]){
+
+
     pthread_mutex_init(&mutex, NULL);
     sem_init(&empty, 0 , N); // buffer vide
     sem_init(&full, 0 , 0); // buffer vide

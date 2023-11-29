@@ -1,10 +1,10 @@
 #!/bin/bash
 ALL=0
-ITE=(1 2 4 8 16 32 64)
-COL="2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
+ITE=(2 4 8 16 32 64) #commence par 1 normalement
+COL="2, 4, 8, 16, 32, 64"  #"2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
 TRY=5 # Set the number of sample
-PROGRAM=( "test-and-set" "test-test-and-set" ) # "philosopher" "prod-cons" "reader-writer" ) # the program we handle right now
-
+PROGRAM=( "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
+# "prod-cons" "philosopher" "reader-writer"
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/
 # for i in ${ITE[@]}
@@ -52,7 +52,7 @@ do
         rm -f perf/data/$prog.csv
         if [ $prog = "test-and-set" ] || [ $prog = "test-test-and-set" ]
         then 
-            echo -n "1 thread," >> perf/data/$prog.csv
+            echo -n "1," >> perf/data/$prog.csv
             NEWITE=(1 2 4 8 16 32 64)
         fi
         echo "[LOG]: Launching test on $prog"

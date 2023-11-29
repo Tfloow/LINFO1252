@@ -7,7 +7,7 @@ timeScale = ["ns", "µs", "ms", "s"]
 
 for f in os.listdir("perf/data"):
     if f.split(".")[-1] == "csv":
-        data = pd.read_csv(f"perf/data/{f}")        
+        data = pd.read_csv(f"perf/data/{f}")       
         fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
@@ -32,21 +32,27 @@ for f in os.listdir("perf/data"):
             
             standard[i] = (data[col].to_numpy()/(1000**track)).std()
             
-        ax.plot(t, av/(1000**track), label=f"Moyenne sur {len(data[col])} essais")
-        ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
+        #ax.plot(t, av/(1000**track), label=f"Moyenne sur {len(data[col])} essais")
+        #ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
+
+        #boxplot from df:
+        data.boxplot(ax=ax)
+
+
         
         ax.set_title(f"Rapidité d'exécution de {f.split('.')[0]}")
-        ax.set_xlabel("Nombre de Threads")
-        ax.set_xlim(0, 70)
+        ax.set_xlabel("Nombre de Threads [-]")
+        #ax.set_xlim(0, 70)
         
         ax.set_ylabel(f"Vitesse d'exécution [${timeScale[track]}$]")
-        ax.set_ylim(0, maximum/(1000**track)*1.1)
+        #ax.set_ylim(0, maximum/(1000**track)*1.1)
 
         ax.minorticks_on()
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
         
-        ax.legend()
+        
+        #ax.legend()
                 
         fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")
         data.plot()
