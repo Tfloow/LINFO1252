@@ -17,6 +17,12 @@ ___
   - [Instructions `xchg`](#instructions-xchg)
     - [Exclusion Mutuelle](#exclusion-mutuelle)
     - [Attente Active (spinlocks)](#attente-active-spinlocks)
+    - [Mutex POSIX](#mutex-posix)
+  - [Test-and-set `xchg`](#test-and-set-xchg)
+    - [Utilisation du Cache](#utilisation-du-cache)
+    - [Protocole de Cohérence de Cache MSI](#protocole-de-cohérence-de-cache-msi)
+    - [Instructions Atomiques \& Utilisation du Bus](#instructions-atomiques--utilisation-du-bus)
+  - [Conclusion](#conclusion)
 
 ## Rappel
 
@@ -311,6 +317,95 @@ Les algorithmes basées sur une boucle `while` qui check une condition à chaque
 
 Cela fait du travail inutile pour le processeur. Vraiment problématique pour du code sur mono-coeur car c'est inutile !
 
+
+### Mutex POSIX
+
+On va ici utiliser le support du **Système d'Exploitation**. Si un thread veut faire un `lock()` sur un mutex *déjà bloqué* alors ce thread sera mis en état **blocked**. Il est maintenant dans une file d'attente pour que le mutex soit `unlock()`.
+
+**Avantages:** On perd pas de ressources inutilement. Utile pour gérer les sections critiques.
+
+**Inconvénients:** On a une grande latence entre l'appel `lock()` et l'exécution de la section critique.
+
+#### Comparaison
+
+**Attente active** que sur multi-processeur. Utile pour les sections critiques courtes. Fort utilisé dans le noyau !
+
+**Mutex** plus efficace pour mettre en oeuvre la synchronisation avec équité. On ne schedule pas des threads non prioritaires avant ceux qui doivent accéder à leur SC en premier.
+
+## Test-and-set `xchg`
+
+Si on utilise cet algorithme avec un `xchg` c'est **catastrophique**. On a une latence d'accès au sections critiques qui augmentent avec le nombre de threads.
+
+Ceci est causé par le **cache** !
+
+![Alt text](image-28-1.png)
+
+On a donc un cache pour chaque coeur et les adresses mémoires récemment utilisées. Mais on a aucun moyen de s'assurer de la cohérence du tout.
+
+### Utilisation du Cache
+
+On utilise donc le *bus* pour coordonner la mise à jour et l'invalidation de leur contenu. 
+
+On a chaque contrôleur qui *snoop* le bus. Un seul contrôleur peut utiliser le bus à un moment. La mémoire va donc écouter le bus et répondre aux requêtes de lecture/écriture.
+
+
+### Protocole de Cohérence de Cache MSI 
+
+Chaque ligne de cache a donc 3 états:
+- **M** *modified*: la valeur en cache est plus récente que celle en mémoire principale.
+- **S** *shared*: lignes présentes à d'autres endroits et identiques.
+- **I** *invalid*: on ne peut pas utiliser cette ligne. L'accès doit retourner vers le bus pour avoir la version la plus à jour.
+
+![Fonctionnement MSI](image-29-1.png)
+
+Donc pour écrire une ligne en mode S, le contrôleur de cache doit invalider les autres copies de S et passer la ligne en mode M.
+
+Avec cela, on peut assister à un phénomène de ping-pong entre les caches si deux threads s'exécutent sur des processeurs différents. À chaque modification, un des deux threads doit invalider la valeur chez l'autre et modifier le tout.
+
+Le **faux partage** arrive lorsque deux variables distinctes sont dans la même ligne de cache.
+
+### Instructions Atomiques & Utilisation du Bus
+
+Avec un `xchg`, on doit avoir accès à la ligne de cache en mode **M** mais aussi assurer qu'aucune opération concurrente ne soit possible. Il faut verrouiller le bus le temps de l'exécution.
+
+Donc il y a un coup pour le processeur qui l'exécute pour assurer l'atomicité mais aussi pour les autres car ils ne peuvent plus rien exécuter.
+
+Donc on va saturer via un test-and-set le bus de message d'invalidation et en le bloquant.
+
+
+#### Solution: test-and-test-and-set
+
+On tire profit que tant que la variable `lock` est à 1, le thread $T_A$ exécute sa section critique. On va éviter de faire des appels à ``xchg``. Tant que `lock` est à 1 on peut faire une lecture depuis le cache et si on lit 0 alors il tente d'appeler `xchg`.
+
+```c
+while (test_and_set(verrou, 1)) { 
+    // on a pas obtenu le verrou car on a lu 1 
+    // donc on attend de lire 0 pour tenter à nouveau while (verrou) {}
+}
+```
+
+![Alt text](image-30-1.png)
+
+Cela va réduire sensiblement le traffic et l'immobilisation du bus quand la contention est élevée. Mais cela impact toujours de manière non négligeable.
+
+Dès que `lock` est libéré tous les autres threads se jettent pour appeler `xchg`. Des essais infructueux a de lourds impacts sur le système. Cela augmente la contention.
+
+#### backoff-test-and-test-and-test
+
+On peut aussi attendre et revenir plus tard !
+
+Si lors d'un second essai la contention est toujours forte on va attendre encore plus longtemps. On adapte les ressources nécessaires en fonction du trafic.
+
+On va souvent utiliser du **exponentiel-backoff**. Si on arrive pas du premier coup, on va attendre un temps aléatoire entre ``[0:v]`` avec $v=v_{init}$. Au deuxième essai, on attendra $v=v*2$ et cela jusqu'à $v_{max}$ et on ne doit pas utiliser d'appel système pour l'attente.
+
+## Conclusion
+
+* Le problème fondamental à résoudre pour construire des primitives de synchronisation est celui de l’exclusion mutuelle
+    * Avec des garanties de liveness : pas de *livelock* ou d’hypothèses sur l’entrelacement des opérations
+* Algorithmes classiques difficiles à utiliser sur les architectures modernes car fondés sur des hypothèses sur l’ordre des accès mémoire et une utilisation de la mémoire en $O(N)$
+* Utilisation d’instructions atomiques pour résoudre l’exclusion mutuelle avec $O(1)$ mot partagé
+*  Attention à la mise en oeuvre et à l’impact sur le cache et la
+performance !
 
 
 ___
