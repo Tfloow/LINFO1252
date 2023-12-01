@@ -11,17 +11,16 @@ void lock(){
 
     asm(
             "movl $1, %%eax\n\t"
-    "ENTER:"
-            "cmpl %%eax, %0\n\t"
-            "je  ENTER\n\t" //keeps checking verrou's value until it is == 0 (!= 1)
-            "jmp CHECK\n\t"
-
-
-    "CHECK:"
+        "TEST_AND_SET:\n\t"
             "xchgl %%eax, %0\n\t"
             "testl %%eax, %%eax\n\t"
-            "jnz ENTER\n\t"
-            //"ret \n\t"
+            "jnz VERROU\n\t" // if there is a fail with the set 
+            "jmp EXIT\n\t" // if we successfully set the lock
+        "VERROU:\n\t"
+            "cmpl $0, %0\n\t" // if greater than 0 we are free
+            "je TEST_AND_SET\n\t"
+            "jmp VERROU\n\t"
+        "EXIT:\n\t" // so we can safely exit the program
 
     :"+m"(verrou)
     );
