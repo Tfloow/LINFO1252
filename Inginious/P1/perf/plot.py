@@ -6,9 +6,10 @@ import os
 timeScale = ["ns", "µs", "ms", "s"]
 
 for f in os.listdir("perf/data"):
-    if f.split(".")[-1] == "csv":
-        data = pd.read_csv(f"perf/data/{f}")       
-        fig, ax = plt.subplots()
+    if f.split(".")[-1] == "csv":        
+        data = pd.read_csv(f"perf/data/{f}")  
+        if(f.split(".")[0] != "test-test-and-set"):     
+            fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
         standard = [0 for _ in range(width)]
@@ -50,8 +51,10 @@ for f in os.listdir("perf/data"):
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
         
+        if(f.split(".")[0] in ["test-and-set", "test-test-and-set"]):
+            ax.plot(np.arange(1,len(postProc)+1), [pt.mean() for pt in postProc], label=f.split(".")[0])
+            ax.legend()
         
         #ax.legend()
-                
-        fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")
-        data.plot()
+        if(f.split(".")[0] != "test-and-set"):
+            fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")

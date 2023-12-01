@@ -54,8 +54,5 @@ Pour réaliser les tests de
 
 à noter ici que la boucle for était borné jusqu'à $1000000$ itérations à chaque fois.
 
-![test-and-set](perf/plot/test-and-set_plot.png)
-
-
 ![test-test-and-set](perf/plot/test-test-and-set_plot.png)
 
