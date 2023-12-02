@@ -1,7 +1,7 @@
 FLAGS=-Wall -Werror -g
 LIBS=-lpthread
 
-FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set
+FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem
 EXEC = $(FILE_SRC:%=%)
 
 .PHONY: part1 clean
@@ -33,6 +33,9 @@ test-and-set: src/test-and-set.c
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 test-test-and-set: src/test-test-and-set.c
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+sem: src/sem.c
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 

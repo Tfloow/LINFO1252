@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#define SEM
 #include "test-test-and-set.c"
 
 
 int *sem_value;
 int waiting_thr = 0;
-int verrou = 0;
+int verrouSem = 0;
 
 
 void init(int *sem_value, int value){

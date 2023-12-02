@@ -39,7 +39,9 @@ for f in os.listdir("perf/data"):
         #ax.plot(t, av/(1000**track), label=f"Moyenne sur {len(data[col])} essais")
         #ax.fill_between(t, av/(1000**track) - standard, av/(1000**track) + standard, alpha=0.4, color="orange", label="Déviation Standard")
 
-        if(f.split(".")[0] == "test-test-and-set"):
+        if f.split(".")[0] == "test-test-and-set" and False:
+            print(postProc)
+            break
             tmp = []
             for s in postProc:
                 tmp.append(1000*s)

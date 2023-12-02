@@ -29,7 +29,6 @@ void* unlock(){
 
 void* myFunc(void* arg){
 
-
     for(int j = 0; j < 6400/NTHREADS; j++){
         lock();
         for(int a = 0; a <10000; a++){
@@ -61,6 +60,7 @@ void start(int NTHREADS){
     }
 }
 
+#ifndef SEM
 int main(int argc, char** argv){
     if(argc != 2){
         printf("Please provide the amount of threads you want\n");
@@ -70,3 +70,4 @@ int main(int argc, char** argv){
     start((int)  atoi(argv[1]));
     return EXIT_SUCCESS;
 }
+#endif
