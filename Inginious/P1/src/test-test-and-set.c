@@ -6,6 +6,7 @@
 int verrou = 0;
 int NTHREADS;
 
+
 void lock(){
 /*
     asm(
@@ -25,12 +26,26 @@ void lock(){
     );
     */
 
-   while(verrou==1){}
-       asm(
+//Inshasllah cette version est mieux:
+
+///*
+    while(verrou == 1){asm(
+        "LOOP: \n\t"
+        "movl $1, %%eax\n\t"
+        :"+m"(verrou)
+            );} 
+    //verrou == 0
+    asm(
         "movl $1, %%eax\n\t"
         "xchgl %%eax, %0\n\t"
+        "testl %%eax, %%eax\n\t"
+        "jnz LOOP\n\t"
         :"+m"(verrou)
-    );
+    
+
+
+
+    ); //*/
 
 }
 
@@ -57,6 +72,7 @@ void* myFunc(void* arg){
         lock();
         for(int a = 0; a <10000; a++){
             // DO
+
         }
         unlock();
 
