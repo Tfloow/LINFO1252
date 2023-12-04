@@ -7,7 +7,7 @@ int verrou = 0;
 int NTHREADS;
 
 void lock(){
-
+/*
     asm(
             "movl $1, %%eax\n\t"
         "TEST_AND_SET:\n\t"
@@ -22,6 +22,14 @@ void lock(){
         "EXIT:\n\t" // so we can safely exit the program
 
     :"+m"(verrou)
+    );
+    */
+
+   while(verrou==1){}
+       asm(
+        "movl $1, %%eax\n\t"
+        "xchgl %%eax, %0\n\t"
+        :"+m"(verrou)
     );
 
 }
