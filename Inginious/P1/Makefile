@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS=-Wall -Werror -g -O0
 LIBS=-lpthread
 INCLUDE_HEADERS_DIRECTORY=-Iinclude
-FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem philosopher_home
+FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem philosopher_home prod-cons_home reader-writer_home
 EXEC = $(FILE_SRC:%=%)
 
 .PHONY: part1 clean
@@ -28,10 +28,16 @@ philosopher: src/philosopher.c
 philosopher_home: src/philosopher_home.c include/sem.h
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
-prod-cons: src/prod-cons.c include/sem.h
+prod-cons: src/prod-cons.c
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+prod-cons_home: src/prod-cons_home.c include/sem.h
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 reader-writer: src/reader-writer.c include/sem.h
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+reader-writer_home: src/reader-writer_home.c include/sem.h
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 test-and-set: src/test-and-set.c

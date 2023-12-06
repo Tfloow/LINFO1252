@@ -58,4 +58,6 @@ Pour réaliser les tests de
 
 ![sem](perf/plot/sem_plot.png)
 
-![phil_home](perf/plot/philospher_home_plot.png)
+![phil_home](perf/plot/philosopher_home_plot.png)
+![prod_cons_home](perf/plot/prod-cons_home_plot.png)
+![reader_writer_home](perf/plot/reader-writer_home_plot.png)

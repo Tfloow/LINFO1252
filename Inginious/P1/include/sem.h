@@ -41,10 +41,10 @@ void sem_unlock(){
     );
 }
 
-
-int my_sem_init(unsigned int value){
+// NEED TO REMOVE THE MY
+int* my_my_sem_init(unsigned int value){
     sem_value = my_mutex_init(value);
-    return 0;
+    return sem_value;
 }
 
 int my_sem_wait(){
