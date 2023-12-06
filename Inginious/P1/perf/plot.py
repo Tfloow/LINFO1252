@@ -5,7 +5,10 @@ import os
 
 timeScale = ["ns", "µs", "ms", "s"]
 
-for f in os.listdir("perf/data"):
+files = os.listdir("perf/data")
+files.sort()
+
+for f in files:
     if f.split(".")[-1] == "csv":        
         data = pd.read_csv(f"perf/data/{f}")  
         if(f.split(".")[0] != "test-test-and-set"):     
@@ -47,13 +50,12 @@ for f in os.listdir("perf/data"):
                 tmp.append(1000*s)
             postProc = tmp
 
-
         ax.boxplot(postProc, labels=data.columns)
         
         ax.set_title(f"Rapidité d'exécution de {f.split('.')[0]} ({len(data[col])} essais)")
         ax.set_xlabel("Nombre de Threads [-]")
         
-        if(f.split(".")[0] != "test-test-and-set"):
+        if(f.split(".")[0] != "test-test-and-set") or True:
             ax.set_ylabel(f"Vitesse d'exécution [${timeScale[track]}$]")
             ax.set_ylim(0, maximum/(1000**track)*1.1)
 
