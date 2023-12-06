@@ -60,3 +60,12 @@ clean:
 	@rm -f test
 	@rm -f src/*.o
 
+deep-clean: clean
+	@rm -f perf/plot/*.png
+	@rm -f perf/plot/pdf/*.pdf
+
+deep-deep-clean: clean 
+	@rm -f perf/data/*.csv
+
+archive:
+	zip -r p1_matya_thomas.zip ../P1
