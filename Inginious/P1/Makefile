@@ -17,7 +17,7 @@ all: $(EXEC)
 
 test:
 #	Run and plot the various test
-	@bash ./perf/experiments.sh all plot
+	@bash ./experiments.sh all plot
 
 plot:
 	@python3 perf/plot.py
@@ -59,6 +59,7 @@ clean:
 	@rm -f src/rw src/pc
 	@rm -f test
 	@rm -f src/*.o
+	@rm -f *.zip
 
 deep-clean: clean
 	@rm -f perf/plot/*.png
@@ -67,5 +68,5 @@ deep-clean: clean
 deep-deep-clean: clean 
 	@rm -f perf/data/*.csv
 
-archive:
-	zip -r p1_matya_thomas.zip ../P1
+archive: clean
+	zip -r p1_matya_thomas.zip *
