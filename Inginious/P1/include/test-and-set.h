@@ -10,6 +10,7 @@ void lock(int* ver) {
     //printf("mem: %p\n", ver);
     //printf("lock\n");
 
+
     asm volatile(
         "enter:\n\t"
         "movl $1, %%eax\n\t"
