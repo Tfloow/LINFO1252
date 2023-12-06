@@ -55,6 +55,6 @@ void unlock(){
 }
 
 
-void test();
+void test(){}
 
 #endif
