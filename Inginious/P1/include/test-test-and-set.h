@@ -1,12 +1,17 @@
 #ifndef _TEST_TEST_AND_SET_H_
 #define _TEST_TEST_AND_SET_H_
+#include <stdio.h>
+#include <pthread.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
-int verrou = 0;
-int NTHREADS;
+int* mut_arr;
 
-void lock(){
-
-    asm(
+void lock(int* ver){
+    //printf("mem: %p\n", ver);
+    //printf("lock\n");
+    //printf("%d\n", *ver);
+    asm volatile(
             "movl $1, %%eax\n\t"
         "TEST_AND_SET:\n\t"
             "xchgl %%eax, %0\n\t"
@@ -18,8 +23,9 @@ void lock(){
             "je TEST_AND_SET\n\t"
             "jmp VERROU\n\t"
         "EXIT:\n\t" // so we can safely exit the program
-
-    :"+m"(verrou)
+    :"+m"(*ver)
+    :
+    : "eax", "memory"
     );
 
 //Inshasllah cette version est mieux:
@@ -46,12 +52,25 @@ void lock(){
 }
 
 //same as test-and-test algorithm:
-void unlock(){
-    asm(
+void unlock(int* ver){
+    //printf("unlock\n");
+    //printf("%d\n", *ver);
+
+    asm volatile(
         "movl $0, %%eax\n\t"
         "xchgl %%eax, %0\n\t"
-        :"+m"(verrou)
+        :"+m"(*ver)
+        :
+        : "eax", "memory"
     );
+}
+
+int* my_mutex_init(int amountLock) {
+    int* ver = (int*) calloc(amountLock, sizeof(int));
+    if (ver == NULL) {
+        return NULL; 
+    }
+    return ver;
 }
 
 

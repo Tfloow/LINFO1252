@@ -1,32 +1,45 @@
+#ifndef _TEST_AND_SET_H_
+#define _TEST_AND_SET_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#ifndef _TEST_AND_SET_H_
-#define _TEST_AND_SET_H_
 
-int L = 0;
-int NTHREADS;
+int* mut_arr;
 
-void* lock(){
-    asm(
+void lock(int* ver) {
+    //printf("mem: %p\n", ver);
+    //printf("lock\n");
+
+    asm volatile(
         "enter:\n\t"
         "movl $1, %%eax\n\t"
         "xchgl %%eax, %0\n\t"
         "testl %%eax, %%eax\n\t"
         "jnz enter\n\t"
-        :"+m"(L)
+        : "+m"(*ver)
+        :
+        : "eax", "memory"
     );
-
-    return NULL;
 }
 
-void* unlock(){
-    asm(
+void unlock(int* ver) {
+    //printf("unlock\n");
+
+    asm volatile(
         "movl $0, %%eax\n\t"
         "xchgl %%eax, %0\n\t"
-        :"+m"(L)
+        : "+m"(*ver)
+        :
+        : "eax", "memory"
     );
-    return NULL;
+}
+
+int* my_mutex_init(int amountLock) {
+    int* ver = (int*) calloc(amountLock, sizeof(int));
+    if (ver == NULL) {
+        return NULL; 
+    }
+    return ver;
 }
 
 #endif

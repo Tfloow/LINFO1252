@@ -1,16 +1,16 @@
 FLAGS=-Wall -Werror -g -Iinclude
 LIBS=-lpthread
-
-FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem
+CC = gcc
+CFLAGS=-Wall -Werror -g -O0
+LIBS=-lpthread
+INCLUDE_HEADERS_DIRECTORY=-Iinclude
+FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem philosopher_home
 EXEC = $(FILE_SRC:%=%)
 
 .PHONY: part1 clean
 
 all: $(EXEC)
-CC = gcc
-CFLAGS=-Wall -Werror -g -O0
-LIBS=-lpthread
-INCLUDE_HEADERS_DIRECTORY=-Iinclude
+
 
 %.o:%.c
 	@$(CC) $(INCLUDE_HEADERS_DIRECTORY) $(MACROS) $(CFLAGS) -o $@ -c $< ${LIBS}
@@ -22,18 +22,16 @@ test:
 plot:
 	@python3 perf/plot.py
 
-philosopher: src/philosopher.c
-	@gcc $(FLAGS)  $< -o $@ $(LIBS)
-#	@./$@
-
-part2: src/part2.c
-	gcc $(FLAGS)  $< -o $@ $(LIBS)
-	./$@
-
-prod-cons: src/prod-cons.c
+philosopher: src/philosopher.c 
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
-reader-writer: src/reader-writer.c
+philosopher_home: src/philosopher_home.c include/sem.h
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+prod-cons: src/prod-cons.c include/sem.h
+	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+
+reader-writer: src/reader-writer.c include/sem.h
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
 test-and-set: src/test-and-set.c

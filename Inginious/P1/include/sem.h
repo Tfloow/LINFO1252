@@ -55,7 +55,7 @@ int my_sem_wait(){
     return 0;
 }
 
-int sem_post(){
+int my_sem_post(){
     if(waiting_thr >0){//one thread is freed
         unlock();
         waiting_thr--;
