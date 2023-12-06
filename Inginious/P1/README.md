@@ -49,18 +49,12 @@ Tous les tests ont été réalisé sur des AMD Ryzen 7 5700U 8 coeurs 16 threads
 
 Pour réaliser les tests de 
 
-![philosopher](perf/plot/philosopher_plot.png)
-![prod-cons](perf/plot/prod-cons_plot.png)
-![reader-writer](perf/plot/reader-writer_plot.png)
+![philosopher](perf/plot/philosopher_home_plot.png)
+![prod-cons](perf/plot/prod-cons_home_plot.png)
+![reader-writer](perf/plot/reader-writer_home_plot.png)
 
 ### Partie 2
 
 à noter ici que la boucle for était borné jusqu'à $1000000$ itérations à chaque fois.
 
 ![test-test-and-set](perf/plot/test-test-and-set_plot.png)
-
-![sem](perf/plot/sem_plot.png)
-
-![phil_home](perf/plot/philosopher_home_plot.png)
-![prod_cons_home](perf/plot/prod-cons_home_plot.png)
-![reader_writer_home](perf/plot/reader-writer_home_plot.png)

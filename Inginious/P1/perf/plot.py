@@ -11,7 +11,7 @@ files.sort()
 for f in files:
     if f.split(".")[-1] == "csv":        
         data = pd.read_csv(f"perf/data/{f}")  
-        if(f.split(".")[0] != "test-test-and-set"):     
+        if not (f.split(".")[0] == "test-test-and-set" or f.split(".")[0].split("_")[-1] == "home"):
             fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
@@ -52,22 +52,25 @@ for f in files:
 
         ax.boxplot(postProc, labels=data.columns)
         
-        ax.set_title(f"Rapidité d'exécution de {f.split('.')[0]} ({len(data[col])} essais)")
+        ax.set_title(f"Rapidité d'exécution de {f.split('.')[0].split("_")[0]} ({len(data[col])} essais)")
         ax.set_xlabel("Nombre de Threads [-]")
         
-        if(f.split(".")[0] != "test-test-and-set") or True:
+        """
+        if(f.split(".")[0] != "test-test-and-set"):
             ax.set_ylabel(f"Vitesse d'exécution [${timeScale[track]}$]")
             ax.set_ylim(0, maximum/(1000**track)*1.1)
-
+        """
         ax.minorticks_on()
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
         
-        if(f.split(".")[0] in ["test-and-set", "test-test-and-set"]):
-            ax.plot(np.arange(1,len(postProc)+1), [pt.mean() for pt in postProc], label=f.split(".")[0])
-            ax.legend()
+        l=f.split(".")[0]
+        if(l.split("_")[-1] == "home"):
+            l = "notre " + l.split("_")[0]
         
-        #ax.legend()
-        if(f.split(".")[0] != "test-and-set"):
+        ax.plot(np.arange(1,len(postProc)+1), [pt.mean() for pt in postProc], label=l)
+        ax.legend()
+        
+        if(f.split(".")[0] == "test-test-and-set" or f.split(".")[0].split("_")[-1] == "home"):
             fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")
             fig.savefig(f"perf/plot/pdf/{f.split('.')[0]}_plot.pdf")
