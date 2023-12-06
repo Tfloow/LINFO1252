@@ -1,6 +1,7 @@
 # Projet 1 - LINFO1252
 
 - [Projet 1 - LINFO1252](#projet-1---linfo1252)
+  - [Rapports](#rapports)
   - [Commandes Utiles](#commandes-utiles)
   - [Organisation de l'Archive](#organisation-de-larchive)
   - [Description](#description)
@@ -9,7 +10,9 @@
     - [Partie 1](#partie-1-1)
     - [Partie 2](#partie-2)
 
+## Rapports
 
+À retrouver [ici](https://www.overleaf.com/8891929774mqpwcprpgyjt#89f944).
 
 ## Commandes Utiles
 
@@ -17,8 +20,8 @@
 
 |     commande      |                                                  description                                                   |
 | :---------------: | :------------------------------------------------------------------------------------------------------------: |
-| `make` `make all` |                            Compile tous les fichiers `.C` des différentes parties.                             |
-|    `make test`    | Lance le script bash [`eval.sh`](perf/eval.sh) qui relève les données sur la rapidité d'exécution et les plot. |
+| `make` ou `make all` |                            Compile tous les fichiers `.C` des différentes parties.                             |
+|    `make test`    | Lance le script bash [`experiments.sh`](perf/experiments.sh) qui relève les données sur la rapidité d'exécution et les plot. |
 |   `make clean`    |                                     Supprime tous les exécutables générés.                                     |
 |    `make plot`    |                                     Refais les graphes et les sauvegarde.                                      |
 

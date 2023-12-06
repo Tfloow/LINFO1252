@@ -18,8 +18,8 @@ pthread_mutex_t z;
 
 int* mutex; // 0 is read, 1 is write and 2 is z
 
-sem_t wsem;
-sem_t rsem;
+my_sem_t wsem;
+my_sem_t rsem;
 int readcount = 0;
 int writecount = 0;
 
@@ -35,16 +35,16 @@ void *reader(void* rien){
 
 
         lock(&mutex[2]);
-        sem_wait(&rsem);
+        my_sem_wait(&rsem);
 
         lock(&mutex[0]);
         readcount++;
 
 
-        if(readcount == 1){sem_wait(&wsem);}
+        if(readcount == 1){my_sem_wait(&wsem);}
 
         unlock(&mutex[0]);
-        sem_post(&rsem);
+        my_sem_post(&rsem);
         unlock(&mutex[2]);
 
         //simulates read operation:
@@ -56,7 +56,7 @@ void *reader(void* rien){
         readcount--;
         //indique qu'une lecture en plus a été faite:
         if(nb_read == READ){
-        if(readcount == 0){sem_post(&wsem);}
+        if(readcount == 0){my_sem_post(&wsem);}
         unlock(&mutex[0]);
         return EXIT_SUCCESS;
     }
@@ -65,7 +65,7 @@ void *reader(void* rien){
         nb_read++;
         //printf("read number %d\n", nb_read);
 
-        if(readcount == 0){sem_post(&wsem);}
+        if(readcount == 0){my_sem_post(&wsem);}
         unlock(&mutex[0]);
     }
     return NULL;
@@ -84,15 +84,15 @@ void* writer(void* rien){
         writecount++;
     
 
-        if(writecount ==1){sem_wait(&rsem);}
+        if(writecount ==1){my_sem_wait(&rsem);}
         unlock(&mutex[1]);
 
-        sem_wait(&wsem);
+        my_sem_wait(&wsem);
         //simulates: writing:
         for(int i = 0; i<10000; i++){}
 
         if(nb_write == WRITE){
-            sem_post(&wsem);
+            my_sem_post(&wsem);
 
         lock(&mutex[1]);
         //Section critique
@@ -101,7 +101,7 @@ void* writer(void* rien){
 
         
 
-        if(writecount == 0){sem_post(&rsem);}
+        if(writecount == 0){my_sem_post(&rsem);}
 
         unlock(&mutex[1]);
         return EXIT_SUCCESS;}
@@ -111,7 +111,7 @@ void* writer(void* rien){
         //printf("write number %d\n", nb_write);
 
 
-        sem_post(&wsem);
+        my_sem_post(&wsem);
 
         lock(&mutex[1]);
         //Section critique
@@ -120,7 +120,7 @@ void* writer(void* rien){
 
         
 
-        if(writecount == 0){sem_post(&rsem);}
+        if(writecount == 0){my_sem_post(&rsem);}
 
         unlock(&mutex[1]);
         }
@@ -136,8 +136,10 @@ int main(int argc, char *argv[]){
 
     //initialisation:
     mutex = my_mutex_init(3);
-    sem_init(&wsem, 0, 1);
-    sem_init(&rsem, 0, 1);
+    wsem = *((my_sem_t*) malloc(sizeof(my_sem_t)));
+    rsem = *((my_sem_t*) malloc(sizeof(my_sem_t)));
+    my_sem_init(&wsem, 0, 1);
+    my_sem_init(&rsem, 0, 1);
 
 
     int THREAD_NUM = (int)  atoi(argv[1]);
@@ -168,8 +170,6 @@ int main(int argc, char *argv[]){
     printf("wrote: %d, read: %d\n", nb_write, nb_read);
 
     //destruction:
-    sem_destroy(&wsem);
-    sem_destroy(&rsem);
     my_mutex_destroy();
 
     return 0;

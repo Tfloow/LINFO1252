@@ -2,13 +2,16 @@
 #define _SEM_H_
 #include <test-and-set.h>
 
+typedef struct
+{
+    int pshared;
+    int amount;
+    int* locked;
+} my_sem_t;
 
 //int verrou = 0;
-int *sem_value;
-int waiting_thr = 0;
-int verrouSem = 0;
-int verrou = 0;
-
+int* sem_value;
+/*
 void sem_lock(){
 //Inshasllah cette version est mieux:
 
@@ -39,34 +42,46 @@ void sem_unlock(){
         "xchgl %%eax, %0\n\t"
         :"+m"(verrou)
     );
-}
+}*/
 
 // NEED TO REMOVE THE MY
-int* my_my_sem_init(unsigned int value){
-    sem_value = my_mutex_init(value);
+int* my_sem_init(my_sem_t* sem, int pshared, unsigned int value){
+    //sem = (my_sem_t*) malloc(sizeof(my_sem_t));
+    if(sem == NULL){
+        return NULL;
+    }
+    // pshared is just a dummy variable
+    sem->amount = value;
+    sem->pshared = 0;
+    sem->locked = my_mutex_init(1);
+    //printf("%p\n", sem->locked);
+    //printf("%d\n", *(sem->locked));
+
+    sem_value = my_mutex_init(value); // amount of semaphore we want
     return sem_value;
 }
 
-int my_sem_wait(){
-    if(*sem_value > 0){
-        *sem_value = *sem_value -1;
+int my_sem_wait(my_sem_t* sem){
+    //printf("%p\n", sem->locked);
+    //printf("%d\n", *(sem->locked));
+
+    lock(sem->locked);
+
+    while(sem->amount <= 0){
+
     }
-    else{//Thread must wait
-        waiting_thr++;
-        lock(&sem_value[0]);
-    }
+    sem->amount--;
+
+    unlock(sem->locked);
     return 0;
 }
 
-int my_sem_post(){
-    if(waiting_thr >0){//one thread is freed
-        unlock(&sem_value[0]);
-        waiting_thr--;
-    }else{
-        *sem_value = *sem_value +1;
-    }
+int my_sem_post(my_sem_t* sem){
+    sem->amount++;
+
     return 0;
 }
+
 
 
 void test(){

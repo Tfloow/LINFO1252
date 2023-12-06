@@ -20,8 +20,8 @@ int item_produced = 0;
 int item_consumed = 0;
 
 int* mutex;
-sem_t empty;
-sem_t full;
+my_sem_t empty;
+my_sem_t full;
 
 
 
@@ -35,7 +35,7 @@ void* producer(void* rien){
         }
 
 
-        sem_wait(&empty); // attente d’une place libre
+        my_sem_wait(&empty); // attente d’une place libre
 
         lock(mutex);
         // section critique
@@ -43,7 +43,7 @@ void* producer(void* rien){
 
         if(item_produced == NB_PRODUCT){
             unlock(mutex);
-            sem_post(&full);
+            my_sem_post(&full);
             return EXIT_SUCCESS;
         }
 
@@ -54,7 +54,7 @@ void* producer(void* rien){
         unlock(mutex);
 
 
-        sem_post(&full); // il y a une place remplie en plus
+        my_sem_post(&full); // il y a une place remplie en plus
     }
 
     return NULL;
@@ -68,14 +68,14 @@ void* consumer(void* rien){
     while(true){
 
 
-    sem_wait(&full); // attente d’une place remplie
+    my_sem_wait(&full); // attente d’une place remplie
 
     lock(mutex);
     // section critique
 
         if(item_consumed == NB_PRODUCT){
             unlock(mutex);
-            sem_post(&empty);
+            my_sem_post(&empty);
             return EXIT_SUCCESS;
     }
 
@@ -87,7 +87,7 @@ void* consumer(void* rien){
 
     unlock(mutex);
 
-    sem_post(&empty); // il y a une place libre en plus
+    my_sem_post(&empty); // il y a une place libre en plus
 
     //printf("consumed %d\n", product);
 
@@ -105,8 +105,14 @@ int main(int argc, char *argv[]){
 
 
     mutex = my_mutex_init(1);
-    sem_init(&empty, 0 , N); // buffer vide
-    sem_init(&full, 0 , 0); // buffer vide
+    empty = *((my_sem_t*) malloc(sizeof(my_sem_t)));
+    full = *((my_sem_t*) malloc(sizeof(my_sem_t)));
+
+    my_sem_init(&empty, 0 , N); // buffer vide
+    my_sem_init(&full, 0 , 0); // buffer vide
+
+    printf("%p\n", empty.locked);
+    printf("%d\n", *(empty.locked));
 
 
     int THREAD_NUM = (int)  atoi(argv[1]);
@@ -143,8 +149,6 @@ int main(int argc, char *argv[]){
         
 
     //destroys semaphore and mutex at the end:
-    sem_destroy(&empty);
-    sem_destroy(&full);
     my_mutex_destroy();
     return 0;
 }
