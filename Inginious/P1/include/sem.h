@@ -54,6 +54,11 @@ int* my_sem_init(my_sem_t* sem, int pshared, unsigned int value){
     sem->amount = value;
     sem->pshared = 0;
     sem->locked = my_mutex_init(1);
+
+    if(sem->locked == NULL){
+        return NULL;
+    }
+
     //printf("%p\n", sem->locked);
     //printf("%d\n", *(sem->locked));
 
@@ -65,17 +70,18 @@ int my_sem_wait(my_sem_t* sem){
     //printf("%p\n", sem->locked);
     //printf("%d\n", *(sem->locked));
     //printf("wait\tstart\n");
+    while(true){
+        lock(sem->locked);
 
-    while(sem->amount <= 0){
+        if(sem->amount > 0) {
+            sem->amount--;
+            unlock(sem->locked);
+            return 0;
+        }
+
+        unlock(sem->locked);
 
     }
-    lock(sem->locked);
-
-    sem->amount--;
-
-    unlock(sem->locked);
-    //printf("w   \tfinish\n");
-    return 0;
 }
 
 int my_sem_post(my_sem_t* sem){

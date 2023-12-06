@@ -150,5 +150,8 @@ int main(int argc, char *argv[]){
 
     //destroys semaphore and mutex at the end:
     my_mutex_destroy();
+
+    printf("space in empty: %d \t space in full: %d\n", empty.amount, full.amount);
+
     return 0;
 }
