@@ -17,7 +17,7 @@ all: $(EXEC)
 
 test:
 #	Run and plot the various test
-	@bash ./perf/eval.sh all plot
+	@bash ./perf/experiments.sh all plot
 
 plot:
 	@python3 perf/plot.py
