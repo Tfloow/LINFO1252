@@ -168,6 +168,7 @@ int main(int argc, char *argv[]){
     }
 
     printf("wrote: %d, read: %d\n", nb_write, nb_read);
+    printf("space in write: %d \t space in read: %d\n", wsem.amount, rsem.amount);
 
     //destruction:
     my_mutex_destroy();

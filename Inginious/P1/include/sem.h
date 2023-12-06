@@ -64,21 +64,29 @@ int* my_sem_init(my_sem_t* sem, int pshared, unsigned int value){
 int my_sem_wait(my_sem_t* sem){
     //printf("%p\n", sem->locked);
     //printf("%d\n", *(sem->locked));
-
-    lock(sem->locked);
+    //printf("wait\tstart\n");
 
     while(sem->amount <= 0){
 
     }
+    lock(sem->locked);
+
     sem->amount--;
 
     unlock(sem->locked);
+    //printf("w   \tfinish\n");
     return 0;
 }
 
 int my_sem_post(my_sem_t* sem){
+    //printf("post\tstart\n");
+    lock(sem->locked);
+
     sem->amount++;
 
+    unlock(sem->locked);
+
+    //printf("p   \tfinish\n");
     return 0;
 }
 
