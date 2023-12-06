@@ -3,7 +3,7 @@ ALL=0
 ITERATION=( 2 4 8 16 32 64 ) #commence par 1 normalement
 COL="2, 4, 8, 16, 32, 64"  #"2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
 TRY=5 # Set the number of sample
-PROGRAM=( "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
+PROGRAM=( "philosopher_home" "prod-cons_home" "reader-writer_home" ) # "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
 # "prod-cons" "philosopher" "reader-writer"
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/

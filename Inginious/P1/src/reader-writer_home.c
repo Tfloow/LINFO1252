@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include <sem.h>
 
 #define WRITE 640
 #define READ  2560
@@ -15,6 +15,8 @@
 pthread_mutex_t mutex_read_count;
 pthread_mutex_t mutex_write_count;
 pthread_mutex_t z;
+
+int* mutex; // 0 is read, 1 is write and 2 is z
 
 sem_t wsem;
 sem_t rsem;
@@ -28,51 +30,43 @@ int nb_write = 0;
 int nb_read = 0;
 
 
-
-
-
-
 void *reader(void* rien){
     while(true){
 
 
-        pthread_mutex_lock(&z);
+        lock(&mutex[2]);
         sem_wait(&rsem);
 
-        pthread_mutex_lock(&mutex_read_count);
+        lock(&mutex[0]);
         readcount++;
 
 
         if(readcount == 1){sem_wait(&wsem);}
 
-        pthread_mutex_unlock(&mutex_read_count);
+        unlock(&mutex[0]);
         sem_post(&rsem);
-        pthread_mutex_unlock(&z);
+        unlock(&mutex[2]);
 
         //simulates read operation:
         for(int i = 0; i<10000; i++){}
 
 
-        pthread_mutex_lock(&mutex_read_count);
+        lock(&mutex[0]);
         //section critique
         readcount--;
         //indique qu'une lecture en plus a été faite:
         if(nb_read == READ){
         if(readcount == 0){sem_post(&wsem);}
-        pthread_mutex_unlock(&mutex_read_count);
-        return EXIT_SUCCESS;}
+        unlock(&mutex[0]);
+        return EXIT_SUCCESS;
+    }
 
 
         nb_read++;
         //printf("read number %d\n", nb_read);
 
         if(readcount == 0){sem_post(&wsem);}
-        pthread_mutex_unlock(&mutex_read_count);
-
-
-
-
-
+        unlock(&mutex[0]);
     }
     return NULL;
 }
@@ -85,13 +79,13 @@ void* writer(void* rien){
 
 
 
-        pthread_mutex_lock(&mutex_write_count);
+        lock(&mutex[1]);
         //Section critique
         writecount++;
     
 
         if(writecount ==1){sem_wait(&rsem);}
-        pthread_mutex_unlock(&mutex_write_count);
+        unlock(&mutex[1]);
 
         sem_wait(&wsem);
         //simulates: writing:
@@ -100,7 +94,7 @@ void* writer(void* rien){
         if(nb_write == WRITE){
             sem_post(&wsem);
 
-        pthread_mutex_lock(&mutex_write_count);
+        lock(&mutex[1]);
         //Section critique
         writecount--;
 
@@ -109,7 +103,7 @@ void* writer(void* rien){
 
         if(writecount == 0){sem_post(&rsem);}
 
-        pthread_mutex_unlock(&mutex_write_count);
+        unlock(&mutex[1]);
         return EXIT_SUCCESS;}
 
 
@@ -119,7 +113,7 @@ void* writer(void* rien){
 
         sem_post(&wsem);
 
-        pthread_mutex_lock(&mutex_write_count);
+        lock(&mutex[1]);
         //Section critique
         writecount--;
 
@@ -128,7 +122,7 @@ void* writer(void* rien){
 
         if(writecount == 0){sem_post(&rsem);}
 
-        pthread_mutex_unlock(&mutex_write_count);
+        unlock(&mutex[1]);
         }
 
     return NULL;
@@ -138,50 +132,45 @@ void* writer(void* rien){
 
 
 int main(int argc, char *argv[]){
-    
+        
 
-//initialisation:
-sem_init(&wsem, 0, 1);
-sem_init(&rsem, 0, 1);
-pthread_mutex_init(&mutex_read_count, NULL);
-pthread_mutex_init(&mutex_write_count, NULL);
-pthread_mutex_init(&z, NULL);
+    //initialisation:
+    mutex = my_mutex_init(3);
+    sem_init(&wsem, 0, 1);
+    sem_init(&rsem, 0, 1);
 
 
-int THREAD_NUM = (int)  atoi(argv[1]);
+    int THREAD_NUM = (int)  atoi(argv[1]);
 
-pthread_t thread[THREAD_NUM];
+    pthread_t thread[THREAD_NUM];
 
-//creation:
-for(int i = 0; i<THREAD_NUM; i++){
-    if(i % 2 == 0){
-        int err = pthread_create(&thread[i], NULL, &writer, NULL);
-        if(err != 0){printf("Error creating writer\n");}
+    //creation:
+    for(int i = 0; i<THREAD_NUM; i++){
+        if(i % 2 == 0){
+            int err = pthread_create(&thread[i], NULL, &writer, NULL);
+            if(err != 0){printf("Error creating writer\n");}
+        }
+
+        else{
+            int err = pthread_create(&thread[i], NULL, &reader, NULL);
+            if(err != 0){printf("Error creating reader\n");}
+        }
     }
 
-    else{
-        int err = pthread_create(&thread[i], NULL, &reader, NULL);
-        if(err != 0){printf("Error creating reader\n");}
-    }
-}
-
-//joins each thread:
-for(int i = 0; i<THREAD_NUM; i++){
+    //joins each thread:
+    for(int i = 0; i<THREAD_NUM; i++){
         int errjoin = pthread_join(thread[i], NULL);
-        if(errjoin != 0){printf("error joining thread\n");}
+        if(errjoin != 0){
+            printf("error joining thread\n");
+        }
     }
 
+    printf("wrote: %d, read: %d\n", nb_write, nb_read);
 
+    //destruction:
+    sem_destroy(&wsem);
+    sem_destroy(&rsem);
+    my_mutex_destroy();
 
-printf("wrote: %d, read: %d\n", nb_write, nb_read);
-
-
-
-//destruction:
-sem_destroy(&wsem);
-sem_destroy(&rsem);
-pthread_mutex_destroy(&mutex_read_count);
-pthread_mutex_destroy(&mutex_write_count);
-pthread_mutex_destroy(&z);
-
-return 0;}
+    return 0;
+}
