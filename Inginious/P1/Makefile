@@ -39,10 +39,10 @@ reader-writer: src/reader-writer.c
 test-and-set: src/test-and-set.c
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
-test-test-and-set: src/test-test-and-set.c
+test-test-and-set: src/test-test-and-set.c include/test-test-and-set.h
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
-sem: src/sem.c src/test-test-and-set.o
+sem: src/sem.c include/sem.h
 	@gcc $(FLAGS)  $^ -o $@ $(LIBS)
 
 
@@ -54,4 +54,5 @@ clean:
 	@rm -f *.png
 	@rm -f src/rw src/pc
 	@rm -f test
+	@rm -f src/*.o
 

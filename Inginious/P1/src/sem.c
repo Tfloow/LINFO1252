@@ -1,56 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "test-test-and-set.h"
-
-//int verrou = 0;
-int *sem_value;
-int waiting_thr = 0;
-int verrouSem = 0;
-
-/*
-void lock(){
+#include "sem.h"
 
 
-//Inshasllah cette version est mieux:
-
-    while(verrou == 1){asm(
-        "LOOP: \n\t"
-        "movl $1, %%eax\n\t"
-        :"+m"(verrou)
-            );} 
-    //verrou == 0
-    asm(
-        "movl $1, %%eax\n\t"
-        "xchgl %%eax, %0\n\t"
-        "testl %%eax, %%eax\n\t"
-        "jnz LOOP\n\t"
-        :"+m"(verrou)
-    
-
-
-
-    ); //
-
-}
-
-
-
-
-
-//same as test-and-test algorithm:
-void unlock(){
-    asm(
-        "movl $0, %%eax\n\t"
-        "xchgl %%eax, %0\n\t"
-        :"+m"(verrou)
-    );
-}
 void init(int *sem_value, int value){
     *sem_value = value;
 }
 
-*/
 
 
 void wait(){
@@ -77,9 +34,9 @@ void post(int *sem_value){
 }
 
 
-
 int main(int argc, char** argv){
 
     test();
 
-return EXIT_SUCCESS;}
+    return EXIT_SUCCESS;
+}
