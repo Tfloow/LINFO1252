@@ -1,31 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <test-and-set.h>
 
-int L = 0;
-int NTHREADS;
 
-void* lock(){
-    asm(
-        "enter:\n\t"
-        "movl $1, %%eax\n\t"
-        "xchgl %%eax, %0\n\t"
-        "testl %%eax, %%eax\n\t"
-        "jnz enter\n\t"
-        :"+m"(L)
-    );
-
-    return NULL;
-}
-
-void* unlock(){
-    asm(
-        "movl $0, %%eax\n\t"
-        "xchgl %%eax, %0\n\t"
-        :"+m"(L)
-    );
-    return NULL;
-}
 
 void* myFunc(void* arg){
 
@@ -60,7 +38,6 @@ void start(int NTHREADS){
     }
 }
 
-#ifndef SEM
 int main(int argc, char** argv){
     if(argc != 2){
         printf("Please provide the amount of threads you want\n");
@@ -70,4 +47,3 @@ int main(int argc, char** argv){
     start((int)  atoi(argv[1]));
     return EXIT_SUCCESS;
 }
-#endif

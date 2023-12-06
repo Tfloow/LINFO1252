@@ -55,6 +55,8 @@ void unlock(){
 }
 
 
-void test(){}
+void test(){
+    printf("ça marche \n");
+}
 
 #endif
