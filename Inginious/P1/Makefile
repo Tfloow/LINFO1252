@@ -1,4 +1,4 @@
-FLAGS=-Wall -Werror -g
+FLAGS=-Wall -Werror -g -Iinclude
 LIBS=-lpthread
 
 FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem
@@ -7,6 +7,13 @@ EXEC = $(FILE_SRC:%=%)
 .PHONY: part1 clean
 
 all: $(EXEC)
+CC = gcc
+CFLAGS=-Wall -Werror -g -O0
+LIBS=-lpthread
+INCLUDE_HEADERS_DIRECTORY=-Iinclude
+
+%.o:%.c
+	@$(CC) $(INCLUDE_HEADERS_DIRECTORY) $(MACROS) $(CFLAGS) -o $@ -c $< ${LIBS}
 
 test:
 #	Run and plot the various test
@@ -35,8 +42,8 @@ test-and-set: src/test-and-set.c
 test-test-and-set: src/test-test-and-set.c
 	@gcc $(FLAGS)  $< -o $@ $(LIBS)
 
-sem: src/sem.c
-	@gcc $(FLAGS)  $< -o $@ $(LIBS)
+sem: src/sem.c src/test-test-and-set.o
+	@gcc $(FLAGS)  $^ -o $@ $(LIBS)
 
 
 clean:

@@ -104,7 +104,15 @@ void start(int NTHREADS){
         pthread_join(phil[i], NULL);
     }
 }
-#ifndef SEM
+
+
+
+void test(){
+    printf("ça marche \n");
+}
+/*
+//#ifndef SEM
+
 int main(int argc, char** argv){
     if(argc != 2){
         printf("Please provide the amount of threads you want\n");
@@ -117,4 +125,5 @@ int main(int argc, char** argv){
 
     return EXIT_SUCCESS;
 }
-#endif
+*/
+//#endif
