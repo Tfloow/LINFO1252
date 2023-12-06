@@ -1,6 +1,7 @@
 .vscode
 *.pdf
 project
+!/Inginious/P1/perf/plot/pdf/*.pdf
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/latex,c

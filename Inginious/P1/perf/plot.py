@@ -70,3 +70,4 @@ for f in files:
         #ax.legend()
         if(f.split(".")[0] != "test-and-set"):
             fig.savefig(f"perf/plot/{f.split('.')[0]}_plot.png")
+            fig.savefig(f"perf/plot/pdf/{f.split('.')[0]}_plot.pdf")
