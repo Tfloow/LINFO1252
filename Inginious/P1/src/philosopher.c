@@ -10,6 +10,7 @@ pthread_mutex_t* baguette;
 // Helper Function
 
 int N;
+int testing = 0;
 
 void* philosophe ( void* arg ){
     int *id=(int *) arg;
@@ -27,6 +28,7 @@ void* philosophe ( void* arg ){
             pthread_mutex_lock(&baguette[left]);
         }
         // Il mange
+        testing++;
         pthread_mutex_unlock(&baguette[left]);
         pthread_mutex_unlock(&baguette[right]);
         i++;
@@ -85,6 +87,6 @@ int main(int argc, char** argv){
 
     N = (int)  atoi(argv[1]);
     philosopher((int)  atoi(argv[1]));
-    
+    printf("amount: %d\n", testing);
     return EXIT_SUCCESS;
 }

@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <sem.h>
 
-pthread_mutex_t* baguette;
 
 // 1.1 PHILOSOPHE
 
 // Helper Function
+
+int amount = 0;
 
 int N;
 
@@ -18,18 +19,19 @@ void* philosophe ( void* arg ){
     int right = (left + 1) % N; //PHILOSOPHES
     
     int i = 0;
-    while(i<10000000) {
+    while(i<1000) {
         // philosophe pense
         if(left<right) {
-            pthread_mutex_lock(&baguette[left]);
-            pthread_mutex_lock(&baguette[right]);
+            lock(&mut_arr[left]);
+            lock(&mut_arr[right]);
         }else {
-            pthread_mutex_lock(&baguette[right]);
-            pthread_mutex_lock(&baguette[left]);
+            lock(&mut_arr[right]);
+            lock(&mut_arr[left]);
         }
         // Il mange
-        pthread_mutex_unlock(&baguette[left]);
-        pthread_mutex_unlock(&baguette[right]);
+        amount++;
+        unlock(&mut_arr[left]);
+        unlock(&mut_arr[right]);
         i++;
     }
     return (NULL);
@@ -41,16 +43,15 @@ void philosopher(int N){
     printf("=====Philosopher Problem (%d)=====\n", N);
     
     pthread_t* phil = (pthread_t*) malloc(sizeof(pthread_t)*N);
-    baguette = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t)*N);
+    mut_arr = my_mutex_init(N);
+
+    if (mut_arr == NULL) {
+        return;
+    }
     int* ID;
 
 
     for(int i = 0; i < N; i++){
-
-        if (pthread_mutex_init(&baguette[i], NULL) != 0) { 
-            printf("\n mutex init has failed\n"); 
-            return; 
-        } 
 
         ID = malloc(sizeof(int));
         *ID = i;
@@ -68,12 +69,8 @@ void philosopher(int N){
         pthread_join(phil[i], NULL);
     }
 
-    for (int i = 0; i < N; i++){
-        pthread_mutex_destroy(&(baguette[i]));
-    }
 
     free(phil);
-    free(baguette);
     free(ID);
 
 }
@@ -86,6 +83,6 @@ int main(int argc, char** argv){
 
     N = (int)  atoi(argv[1]);
     philosopher((int)  atoi(argv[1]));
-    
+    printf("amount: %d\n", amount);
     return EXIT_SUCCESS;
 }

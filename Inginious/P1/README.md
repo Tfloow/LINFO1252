@@ -57,3 +57,5 @@ Pour réaliser les tests de
 ![test-test-and-set](perf/plot/test-test-and-set_plot.png)
 
 ![sem](perf/plot/sem_plot.png)
+
+![phil_home](perf/plot/philospher_home_plot.png)

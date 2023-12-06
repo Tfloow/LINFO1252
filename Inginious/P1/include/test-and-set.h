@@ -42,4 +42,8 @@ int* my_mutex_init(int amountLock) {
     return ver;
 }
 
+void my_mutex_destroy(){
+    free(mut_arr);
+}
+
 #endif
