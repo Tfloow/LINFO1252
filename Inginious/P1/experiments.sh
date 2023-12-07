@@ -3,7 +3,7 @@ ALL=0
 ITERATION=( 2 4 8 16 32 64 ) #commence par 1 normalement
 COL="2, 4, 8, 16, 32, 64"  #"2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
 TRY=5 # Set the number of sample
-PROGRAM=( "test-and-set" "test-test-and-set" "philosopher_home" "reader-writer_home" "prod-cons_home" ) #  "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
+PROGRAM=( "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" "philosopher_home" "reader-writer_home" "prod-cons_home" ) #  "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
 # "prod-cons" "philosopher" "reader-writer"
 var1=$1
 var2=$2
@@ -14,8 +14,6 @@ then
     var2="plot"
 fi
 
-echo $var1
-echo $var2
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/
 # for i in ${ITE[@]}
@@ -59,11 +57,12 @@ for prog in ${PROGRAM[@]}
 do 
     if [ $var1 = $prog ] || [ $ALL -eq 1 ]
     then 
-        NEWITE=${ITERATION[@]}
+        NEWITE=(2 4 8 16 32 64)
+
         rm -f perf/data/$prog.csv
         if [ $prog = "test-and-set" ] || [ $prog = "test-test-and-set" ]
         then 
-            echo -n "1," >> perf/data/$prog.csv
+            echo -n "1, " >> perf/data/$prog.csv
             NEWITE=(1 2 4 8 16 32 64)
         fi
         echo "[LOG]: Launching test on $prog"
