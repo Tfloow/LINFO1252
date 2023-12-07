@@ -59,10 +59,11 @@ for f in files:
         
         if not (f.split(".")[0] == "test-test-and-set" or f.split(".")[0].split("_")[-1] == "home"):
             ax.set_ylabel(f"Vitesse d'exécution [${timeScale[track]}$]")
-            ax.set_ylim(0, max(maxima, maximum/(1000**track)*1.1))
+            maxima = max(maxima, maximum/(1000**track)*1.1)
+            ax.set_ylim(0, maxima)
         else:
-            maxima = maximum/(1000**track)*1.1
-            ax.set_ylim(0, max(maxima, maximum/(1000**track)*1.1))
+            maxima = max(maxima, maximum/(1000**track)*1.1)
+            ax.set_ylim(0, maxima)
 
         
         ax.minorticks_on()

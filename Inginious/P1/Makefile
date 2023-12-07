@@ -70,3 +70,7 @@ deep-deep-clean: clean
 
 archive: clean
 	zip -r p1_matya_thomas.zip *
+
+stdserv:
+	python3 perf/stdserv.py
+	make plot
