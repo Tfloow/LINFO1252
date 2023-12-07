@@ -7,16 +7,12 @@ INCLUDE_HEADERS_DIRECTORY=-Iinclude
 FILE_SRC = philosopher prod-cons reader-writer test-and-set test-test-and-set sem philosopher_home prod-cons_home reader-writer_home
 EXEC = $(FILE_SRC:%=%)
 
-.PHONY: part1 clean
-
 all: $(EXEC)
-
 
 %.o:%.c
 	@$(CC) $(INCLUDE_HEADERS_DIRECTORY) $(MACROS) $(CFLAGS) -o $@ -c $< ${LIBS}
 
 test:
-#	Run and plot the various test
 	@bash ./experiments.sh all plot
 
 plot:

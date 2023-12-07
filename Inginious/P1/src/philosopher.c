@@ -18,7 +18,7 @@ void* philosophe ( void* arg ){
     int right = (left + 1) % N; //PHILOSOPHES
     
     int i = 0;
-    while(i<10000000) {
+    while(i<1000000) {
         // philosophe pense
         if(left<right) {
             pthread_mutex_lock(&baguette[left]);
