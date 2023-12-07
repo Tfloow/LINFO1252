@@ -12,6 +12,7 @@ for f in files:
     if f.split(".")[-1] == "csv":        
         data = pd.read_csv(f"perf/data/{f}")  
         if not (f.split(".")[0] == "test-test-and-set" or f.split(".")[0].split("_")[-1] == "home"):
+            maxima = 0
             fig, ax = plt.subplots()
         maximum = data.to_numpy().max()
         width = data.shape[1]
@@ -55,11 +56,15 @@ for f in files:
         ax.set_title(f"Rapidité d'exécution de {f.split('.')[0].split("_")[0]} ({len(data[col])} essais)")
         ax.set_xlabel("Nombre de Threads [-]")
         
-        """
-        if(f.split(".")[0] != "test-test-and-set"):
+        
+        if not (f.split(".")[0] == "test-test-and-set" or f.split(".")[0].split("_")[-1] == "home"):
             ax.set_ylabel(f"Vitesse d'exécution [${timeScale[track]}$]")
-            ax.set_ylim(0, maximum/(1000**track)*1.1)
-        """
+            ax.set_ylim(0, max(maxima, maximum/(1000**track)*1.1))
+        else:
+            maxima = maximum/(1000**track)*1.1
+            ax.set_ylim(0, max(maxima, maximum/(1000**track)*1.1))
+
+        
         ax.minorticks_on()
         ax.grid(which = "major", linewidth = 1)
         ax.grid(which = "minor", linewidth = 0.2)
