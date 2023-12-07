@@ -53,7 +53,7 @@ for f in files:
 
         ax.boxplot(postProc, labels=data.columns)
         
-        ax.set_title(f"Rapidité d'exécution de {f.split('.')[0].split("_")[0]} ({len(data[col])} essais)")
+        ax.set_title(f"Rapidité d'exécution de {f.split('.')[0].split('_')[0]} ({len(data[col])} essais)")
         ax.set_xlabel("Nombre de Threads [-]")
         
         
