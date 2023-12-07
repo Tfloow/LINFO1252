@@ -3,8 +3,19 @@ ALL=0
 ITERATION=( 2 4 8 16 32 64 ) #commence par 1 normalement
 COL="2, 4, 8, 16, 32, 64"  #"2 threads, 4 threads, 8 threads, 16 threads, 32 threads, 64 threads" 
 TRY=5 # Set the number of sample
-PROGRAM=( "philosopher" "reader-writer" "prod-cons" "test-and-set" "test-test-and-set" "philosopher_home" "reader-writer_home" "prod-cons_home" ) #  "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
+PROGRAM=( "test-and-set" "test-test-and-set" "philosopher_home" "reader-writer_home" "prod-cons_home" ) #  "test-test-and-set" "test-and-set" ) # "prod-cons" "philosopher" "reader-writer" "test-and-set" "test-test-and-set" ) #"test-and-set" "test-test-and-set" # the program we handle right now
 # "prod-cons" "philosopher" "reader-writer"
+var1=$1
+var2=$2
+# WHEN LAUCHING WITHOUT ARGUMENTS
+if [ $# -eq 0 ]
+then 
+    var1="all"
+    var2="plot"
+fi
+
+echo $var1
+echo $var2
 
 # Iteration found on https://www.freecodecamp.org/news/bash-array-how-to-declare-an-array-of-strings-in-a-bash-script/
 # for i in ${ITE[@]}
@@ -36,7 +47,7 @@ make all
 
 # Check if we want to launch the test on everything
 
-if [ $1 = "all" ]
+if [ $var1 = "all" ]
 then 
     ALL=1
     echo "[LOG]: Launching test on everything"
@@ -46,7 +57,7 @@ fi
 
 for prog in ${PROGRAM[@]}
 do 
-    if [ $1 = $prog ] || [ $ALL -eq 1 ]
+    if [ $var1 = $prog ] || [ $ALL -eq 1 ]
     then 
         NEWITE=${ITERATION[@]}
         rm -f perf/data/$prog.csv
@@ -75,12 +86,13 @@ do
             echo "" >> perf/data/$prog.csv
         done
         echo "[LOG]: Data exported"
+        cat perf/data/$prog.csv
     fi
 done
 
 # Second argument to run the python script for plots
 
-if [ $# -gt 1 ] && [ $2 = "plot" ]
+if [ $# -gt 1 ] && [ $var2 = "plot" ]
 then 
     echo "[LOG]: Starting Plot"
     python3 perf/plot.py
