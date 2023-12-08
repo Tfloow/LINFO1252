@@ -9,7 +9,6 @@
 
 // Helper Function
 
-int amount = 0;
 
 int N;
 
@@ -29,7 +28,6 @@ void* philosophe ( void* arg ){
             lock(&mut_arr[left]);
         }
         // Il mange
-        amount++;
         unlock(&mut_arr[left]);
         unlock(&mut_arr[right]);
         i++;
@@ -83,6 +81,5 @@ int main(int argc, char** argv){
 
     N = (int)  atoi(argv[1]);
     philosopher((int)  atoi(argv[1]));
-    printf("amount: %d\n", amount);
     return EXIT_SUCCESS;
 }
