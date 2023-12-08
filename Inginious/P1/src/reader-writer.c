@@ -21,9 +21,7 @@ sem_t rsem;
 int readcount = 0;
 int writecount = 0;
 
-/*
-Problème actuel : nb_write et nb_read dépassent WRITE et READ et dépendent de THREAD_NUM
-*/
+
 int nb_write = 0;
 int nb_read = 0;
 
