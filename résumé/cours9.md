@@ -1,3 +1,8 @@
+[↰](../README.md)
+
+___
+
+
 # Scheduling
 
 - [Scheduling](#scheduling)
@@ -186,3 +191,7 @@ Dans Linux, les priorités sont dynamiques et prise en compte des threads *inter
 - Le noyau supporte de nombreux scheduler différents
 - Chaque scheduler peut être paramétré
 - Critique pour la bonne performance et l’efficacité énergétique
+
+___
+
+[↰](../README.md)
