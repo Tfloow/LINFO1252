@@ -1,4 +1,36 @@
+#include <stdio.h>
+#include <sys/stat.h>
+
 #include "lib_tar.h"
+
+struct stat info;
+
+// DEBUG FUNCTION
+
+void print_stat(int tar_fd){
+    if(fstat(tar_fd, &info) == -1){
+        perror("fstat(tar_file)");
+        return;
+    } 
+
+    printf("______________Info_______________\n");
+    printf("Permissions:\t\t %d \n", info.st_mode);
+    printf("Device on:\t\t %ld \n", info.st_dev);
+    printf("User ID:\t\t %d \n", info.st_uid);
+    printf("Group ID:\t\t %d \n", info.st_gid);
+    printf("Accessed time:\t\t %ld \n", info.st_atime);
+    printf("Permission change time:\t %ld \n", info.st_ctime);
+    printf("Last modification time:\t %ld \n", info.st_mtime);
+    printf("Amount of link:\t\t %ld\n", info.st_nlink);
+    printf("______________Crucial_______________\n");
+    printf("Size:\t\t\t %ld \n", info.st_size);
+    printf("Block Size:\t\t %ld \n", info.st_blksize);
+    printf("Block:\t\t\t %ld \n", info.st_blocks);
+    printf("______________End Info_______________\n");
+
+
+}
+
 
 /**
  * Checks whether the archive is valid.
@@ -16,6 +48,15 @@
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
+    if(fstat(tar_fd, &info) == -1){
+        perror("fstat(tar_file)");
+        return -1;
+    } 
+
+    print_stat(tar_fd);
+
+
+    //void* buffer = malloc(sizeof())
     return 0;
 }
 
