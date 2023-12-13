@@ -108,6 +108,12 @@ int check_archive(int tar_fd) {
  *         any other value otherwise.
  */
 int exists(int tar_fd, char *path) {
+
+    int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return -1;}
+
     return 0;
 }
 
@@ -121,6 +127,12 @@ int exists(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_dir(int tar_fd, char *path) {
+
+    int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return 0;}
+
     return 0;
 }
 
@@ -134,6 +146,12 @@ int is_dir(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_file(int tar_fd, char *path) {
+
+    int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return 0;}
+
     return 0;
 }
 
@@ -146,6 +164,12 @@ int is_file(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_symlink(int tar_fd, char *path) {
+
+    int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return 0;}
+
     return 0;
 }
 
@@ -173,6 +197,12 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
+
+    int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return 0;}
+
     return 0;
 }
 
@@ -195,5 +225,9 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  *
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
+        int check = check_archive(tar_fd);
+    if(check < 0){
+        printf("The archive is not valid\n");
+        return -1;}
     return 0;
 }
