@@ -1,11 +1,28 @@
 #include <stdio.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include "lib_tar.h"
 
 struct stat info;
 
+// For readable date
+time_t     now;
+struct tm  ts;
+char       buf[80];
+
 // DEBUG FUNCTION
+
+/**
+    Readable time. Convert time from int to a readable output
+    @param since_epoch: an int with the elapsed time since epoch
+    @return nothing put but a string inside the global variable buf
+**/ 
+void readable_time(int since_epoch){
+    now = (time_t) info.st_atime;
+    ts = *localtime(&now);
+    strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+}
 
 void print_stat(int tar_fd){
     if(fstat(tar_fd, &info) == -1){
@@ -13,14 +30,30 @@ void print_stat(int tar_fd){
         return;
     } 
 
+
+
+    now = (time_t) 1702458988;
+
+    // Format time, "ddd yyyy-mm-dd hh:mm:ss zzz"
+    printf("%s\n", buf);
+
     printf("______________Info_______________\n");
     printf("Permissions:\t\t %d \n", info.st_mode);
     printf("Device on:\t\t %ld \n", info.st_dev);
     printf("User ID:\t\t %d \n", info.st_uid);
     printf("Group ID:\t\t %d \n", info.st_gid);
-    printf("Accessed time:\t\t %ld \n", info.st_atime);
-    printf("Permission change time:\t %ld \n", info.st_ctime);
-    printf("Last modification time:\t %ld \n", info.st_mtime);
+
+    readable_time(info.st_atime);
+
+    printf("Accessed time:\t\t %s \n", buf);
+
+    readable_time(info.st_atime);
+
+    printf("Permission change time:\t %s \n", buf);
+
+    readable_time(info.st_atime);
+
+    printf("Last modification time:\t %s \n", buf);
     printf("Amount of link:\t\t %ld\n", info.st_nlink);
     printf("______________Crucial_______________\n");
     printf("Size:\t\t\t %ld \n", info.st_size);
@@ -54,6 +87,11 @@ int check_archive(int tar_fd) {
     } 
 
     print_stat(tar_fd);
+
+    void* read_buf = malloc(info.st_blksize*8);
+
+    read(tar_fd,read_buf,info.st_blksize);
+    printf("buffer: %s\n", (char*) read_buf);
 
 
     //void* buffer = malloc(sizeof())
