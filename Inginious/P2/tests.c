@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    //int ret = check_archive(fd);
-    //printf("check_archive returned %d\n", ret);
+    int ret = check_archive(fd);
+    printf("check_archive returned %d\n", ret);
 
     int exist = exists(fd, "tarInfo.txt");
 

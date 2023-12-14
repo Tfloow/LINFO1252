@@ -15,7 +15,7 @@ submit: all
 	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c *.h *.c Makefile > soumission.tar
 
 easy: all 
-	tar -cf test.tar tarInfo.txt
+	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c aled.txt >   test.tar
 	./tests test.tar
-	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c tarInfo.txt >   archive.tar
+	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c tarInfo.txt aled.txt >   archive.tar
 	./tests archive.tar

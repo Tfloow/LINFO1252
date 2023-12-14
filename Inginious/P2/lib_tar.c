@@ -86,7 +86,7 @@ void print_tar_header(){
     printf("Check Sum:\t %ld \n", TAR_INT(tar_info.chksum));
     printf("Typeflag:\t %c \n", tar_info.typeflag);
     printf("Linkname:\t %ld \n", TAR_INT(tar_info.linkname));
-    printf("Magic:\t\t %ld \n", TAR_INT(tar_info.magic));
+    printf("Magic:\t\t %s \n", tar_info.magic);
     printf("Version:\t %ld \n", TAR_INT(tar_info.version));
     printf("Uname:\t\t %s \n", tar_info.uname);
     printf("Gname:\t\t %s \n", tar_info.gname);
@@ -114,7 +114,6 @@ void put_tar_info(void* read_buf){
             tar_info.mode[i-100] = *((int*) read_buf);
         }else if (i<116)
         {
-            printf("%d\n", *((char*) read_buf));
             tar_info.uid[i-108] = *((int*) read_buf);
         }else if (i<124)
         {
@@ -162,6 +161,22 @@ void put_tar_info(void* read_buf){
     }
 }
 
+int checksum(void* read_buf){
+    unsigned int summing = 0;
+    char* conv_buf = (char*) read_buf;
+
+    for(int i = 0; i < 148; i++){
+        summing += conv_buf[i];
+    }
+    for(int i = 156; i < 512; i++){
+        summing += conv_buf[i];
+    }
+    summing += 8*32;
+    summing %= 65535;
+
+    return summing;
+}
+
 /**
  * Checks whether the archive is valid.
  *
@@ -178,22 +193,40 @@ void put_tar_info(void* read_buf){
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
+
+    // NEED TO BE ADAPTED FOR MULTIPLE FILES IN ONE ARCHIVE LOLILOL
+
     if(fstat(tar_fd, &info) == -1){
         perror("fstat(tar_file)");
-        return -1;} 
+        return -4;
+    } 
 
     print_stat(tar_fd);
 
-    void* read_buf = malloc(info.st_blksize*8);
-
-    read(tar_fd,read_buf,info.st_blksize);
-    printf("buffer: %s\n", (char*) read_buf);
-
+    void* read_buf = malloc(info.st_size);
+    read(tar_fd,read_buf,info.st_size);
     put_tar_info(read_buf);
     print_tar_header();
 
+    // Check for the magic string
+    int magicCMP = strcmp(TMAGIC, tar_info.magic);
+    //printf("magic %s and comp %d and length of %ld\n", tar_info.magic,magicCMP, strlen(tar_info.magic));
+    if(magicCMP || strlen(tar_info.magic)+1 != TMAGLEN){ // +1 for the null Character
+        return -1;
+    }
 
-    //void* buffer = malloc(sizeof())
+    // Check for the version
+    for(int i = 0; i < 2; i++){
+        if(tar_info.version[i] != '0'){
+            return -2;
+        }
+    }
+
+    // Check for the checksum
+    if(checksum(read_buf) != TAR_INT(tar_info.chksum)){
+        return -3;
+    }
+
     return 0;
 }
 
