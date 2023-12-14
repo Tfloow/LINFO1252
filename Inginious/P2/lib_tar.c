@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <string.h>
-
+#include <sys/mman.h>
 #include "lib_tar.h"
 #include <dirent.h>
 #include <string.h> 
@@ -209,13 +209,13 @@ int check_archive(int tar_fd) {
  */
 int exists(int tar_fd, char *path) {
 
-/*
+
     int check = check_archive(tar_fd);
     if(check < 0){
         printf("The archive is not valid\n");
         return 0;}
 
-*/
+
     char *buffer = (char *) malloc(1*sizeof(char)+1);
 
     
@@ -258,7 +258,7 @@ int is_dir(int tar_fd, char *path) {
 
     //still needs to update tar_info for each header.
 
-    if(TAR_INT(tar_info.typeflag) == 5){return 1;}
+    if(tar_info.typeflag == DIRTYPE){return 1;}
 
     else{
         printf("The entry is not a directory\n");
@@ -283,7 +283,7 @@ int is_file(int tar_fd, char *path) {
 
     //still needs to update tar_info for each header.
 
-    if(TAR_INT(tar_info.typeflag) == 0){return 1;}
+    if(tar_info.typeflag == REGTYPE){return 1;}
 
     else{
         printf("The entry is not a file\n");
@@ -307,7 +307,7 @@ int is_symlink(int tar_fd, char *path) {
 
     //still needs to update tar_info for each header.
 
-    if(TAR_INT(tar_info.typeflag) == 2){return 1;}
+    if(tar_info.typeflag == SYMTYPE){return 1;}
 
     else{
         printf("The entry is not a symlink\n");
@@ -366,9 +366,46 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  *
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
-        int check = check_archive(tar_fd);
-    if(check < 0){
-        printf("The archive is not valid\n");
-        return -1;}
-    return 0;
+
+    int exist = exists(tar_fd, path);
+    if(exist == 0){return -1;}
+
+    int size = TAR_INT(tar_info.size);
+    if(offset > size){return -2;}
+
+    
+
+
+    //in case the buffer is too big:
+    if(*len > size - offset){*len = size - offset;}
+
+
+    //compute the remaining amount of bytes
+    int rem_bytes = size - offset - *len;
+    //the whole file is read and dest contains too much space:
+    if(rem_bytes < 0){rem_bytes = 0;}
+
+
+    /// Set offset:///
+
+    //offset to reach the file of interest, TO CHANGE
+    int size_files_before = 0;
+
+    size_t real_offset = offset + size_files_before;
+    int err_seek = lseek(tar_fd, real_offset, SEEK_SET);
+    if(err_seek == -1){printf("Error during lseek\n");}
+
+
+    ///Memory map:///
+    void* content = mmap(NULL, *len, PROT_READ, MAP_SHARED, tar_fd,0);
+    if(content == (void *) -1){printf("Error during mmap\n");}
+
+    ///Copy to dest:///
+    memcpy(content, dest, *len);
+
+    ///Memory unmap:///
+    int err_munmap = munmap(content, *len);
+    if(err_munmap<0){printf("Error during munmap\n");}
+
+    return rem_bytes;
 }
