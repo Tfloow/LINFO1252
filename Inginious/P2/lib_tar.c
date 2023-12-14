@@ -256,13 +256,13 @@ int is_dir(int tar_fd, char *path) {
         printf("The entry does not exist\n");
     return 0;}
 
-    DIR* dir = opendir(path);
-    if(dir == NULL){
-        printf("The entry is not a directory");
-    return 0;}
-    
+    //still needs to update tar_info for each header.
 
-    return 1;
+    if(TAR_INT(tar_info.typeflag) == 5){return 1;}
+
+    else{
+        printf("The entry is not a directory\n");
+    return 0;}
 }
 
 /**
