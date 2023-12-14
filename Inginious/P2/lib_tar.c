@@ -3,6 +3,8 @@
 #include <time.h>
 
 #include "lib_tar.h"
+#include <dirent.h>
+#include <string.h> 
 
 struct stat info;
 
@@ -165,8 +167,7 @@ void put_tar_info(void* read_buf){
 int check_archive(int tar_fd) {
     if(fstat(tar_fd, &info) == -1){
         perror("fstat(tar_file)");
-        return -1;
-    } 
+        return -1;} 
 
     print_stat(tar_fd);
 
@@ -195,12 +196,35 @@ int check_archive(int tar_fd) {
  */
 int exists(int tar_fd, char *path) {
 
+/*
     int check = check_archive(tar_fd);
     if(check < 0){
         printf("The archive is not valid\n");
-        return -1;}
+        return 0;}
 
-    return 0;
+*/
+    char *buffer = (char *) malloc(1*sizeof(char)+1);
+
+    
+
+    int size_path = strlen(path);
+
+    printf("size of path: %d\n", size_path);
+
+
+    for(int i = 0; i < size_path; i++){
+        read(tar_fd, (void *) (buffer),1);
+        if(*(path + i) != *buffer){
+            printf("the entry does not exist\n");
+            return 0;
+        }
+        
+    }
+
+
+    
+
+    return 1;
 }
 
 /**
@@ -214,12 +238,18 @@ int exists(int tar_fd, char *path) {
  */
 int is_dir(int tar_fd, char *path) {
 
-    int check = check_archive(tar_fd);
-    if(check < 0){
-        printf("The archive is not valid\n");
-        return 0;}
+    int exist = exists(tar_fd, path);
+    if(exist == 0){
+        printf("The entry does not exist\n");
+    return 0;}
 
-    return 0;
+    DIR* dir = opendir(path);
+    if(dir == NULL){
+        printf("The entry is not a directory");
+    return 0;}
+    
+
+    return 1;
 }
 
 /**
