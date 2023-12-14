@@ -276,12 +276,18 @@ int is_dir(int tar_fd, char *path) {
  */
 int is_file(int tar_fd, char *path) {
 
-    int check = check_archive(tar_fd);
-    if(check < 0){
-        printf("The archive is not valid\n");
-        return 0;}
+    int exist = exists(tar_fd, path);
+    if(exist == 0){
+        printf("The entry does not exist\n");
+    return 0;}
 
-    return 0;
+    //still needs to update tar_info for each header.
+
+    if(TAR_INT(tar_info.typeflag) == 0){return 1;}
+
+    else{
+        printf("The entry is not a file\n");
+    return 0;}
 }
 
 /**
@@ -294,12 +300,18 @@ int is_file(int tar_fd, char *path) {
  */
 int is_symlink(int tar_fd, char *path) {
 
-    int check = check_archive(tar_fd);
-    if(check < 0){
-        printf("The archive is not valid\n");
-        return 0;}
+    int exist = exists(tar_fd, path);
+    if(exist == 0){
+        printf("The entry does not exist\n");
+    return 0;}
 
-    return 0;
+    //still needs to update tar_info for each header.
+
+    if(TAR_INT(tar_info.typeflag) == 2){return 1;}
+
+    else{
+        printf("The entry is not a symlink\n");
+    return 0;}
 }
 
 
