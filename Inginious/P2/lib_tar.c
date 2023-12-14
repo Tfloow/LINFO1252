@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <string.h>
 
 #include "lib_tar.h"
 #include <dirent.h>
@@ -73,16 +74,27 @@ void print_stat(int tar_fd){
 void print_tar_header(){
     printf("______________Tar Header_______________\n");
     printf("Name:\t\t %s \n", tar_info.name);
-    printf("Mode:\t\t %s \n", tar_info.mode);
-    printf("User ID:\t\t %s \n", tar_info.uid);
-    printf("Group ID:\t\t %s \n", tar_info.gid);
-    printf("Size:\t\t %s \n", tar_info.size);
+    printf("Mode:\t\t %ld \n", TAR_INT(tar_info.mode));
+    printf("User ID:\t %ld \n", TAR_INT(tar_info.uid));
+    printf("Group ID:\t %ld \n", TAR_INT(tar_info.gid));
+    printf("Size:\t\t %ld \n", TAR_INT(tar_info.size));
 
     readable_time(atoi(tar_info.mtime));
 
     printf("Modified time:\t %s \n", buf);
 
-    printf("Check Sum:\t\t %s \n", tar_info.chksum);
+    printf("Check Sum:\t %ld \n", TAR_INT(tar_info.chksum));
+    printf("Typeflag:\t %c \n", tar_info.typeflag);
+    printf("Linkname:\t %ld \n", TAR_INT(tar_info.linkname));
+    printf("Magic:\t\t %ld \n", TAR_INT(tar_info.magic));
+    printf("Version:\t %ld \n", TAR_INT(tar_info.version));
+    printf("Uname:\t\t %s \n", tar_info.uname);
+    printf("Gname:\t\t %s \n", tar_info.gname);
+    printf("Devmajor:\t %s \n", tar_info.devmajor);
+    printf("Devminor:\t %s \n", tar_info.devminor);
+    printf("Prefix:\t\t %s \n", tar_info.prefix);
+    printf("Padding:\t %s \n", tar_info.padding);
+    
     printf("______________End Tar Header_______________\n");
 }
 
@@ -96,53 +108,54 @@ void print_tar_header(){
 void put_tar_info(void* read_buf){
     for(int i = 0; i < 512; i++){
         if(i < 100){
-            tar_info.name[i] = *((char*) read_buf);
+            tar_info.name[i] = *((int*) read_buf);
         }else if (i<108)
         {
-            tar_info.mode[i] = *((char*) read_buf);
+            tar_info.mode[i-100] = *((int*) read_buf);
         }else if (i<116)
         {
-            tar_info.uid[i] = *((char*) read_buf);
+            printf("%d\n", *((char*) read_buf));
+            tar_info.uid[i-108] = *((int*) read_buf);
         }else if (i<124)
         {
-            tar_info.gid[i] = *((char*) read_buf);
+            tar_info.gid[i-116] = *((int*) read_buf);
         }else if (i<136)
         {
-            tar_info.size[i] = *((char*) read_buf);
+            tar_info.size[i-124] = *((int*) read_buf);
         }else if (i<148)
         {
-            tar_info.mtime[i] = *((char*) read_buf);
+            tar_info.mtime[i-136] = *((int*) read_buf);
         }else if (i<156)
         {
-            tar_info.chksum[i] = *((char*) read_buf);
+            tar_info.chksum[i-148] = *((int*) read_buf);
         }else if (i<157)
         {
-            tar_info.typeflag = *((char*) read_buf);
+            tar_info.typeflag = *((int*) read_buf);
         }else if (i<257)
         {
-            tar_info.linkname[i] = *((char*) read_buf);
+            tar_info.linkname[i-157] = *((int*) read_buf);
         }else if (i<263)
         {
-            tar_info.magic[i] = *((char*) read_buf);
+            tar_info.magic[i-257] = *((int*) read_buf);
         }else if (i<265)
         {
-            tar_info.version[i] = *((char*) read_buf);
+            tar_info.version[i-263] = *((int*) read_buf);
         }else if (i<297)
         {
-            tar_info.uname[i] = *((char*) read_buf);
+            tar_info.uname[i-265] = *((int*) read_buf);
         }else if (i<329)
         {
-            tar_info.gname[i] = *((char*) read_buf);
+            tar_info.gname[i-297] = *((int*) read_buf);
         }else if (i<337)
         {
-            tar_info.devmajor[i] = *((char*) read_buf);
+            tar_info.devmajor[i-329] = *((int*) read_buf);
         }else if (i<345)
         {
-            tar_info.devminor[i] = *((char*) read_buf);
+            tar_info.devminor[i-337] = *((int*) read_buf);
         }else if (i<500){
-            tar_info.prefix[i] = *((char*) read_buf);
+            tar_info.prefix[i-345] = *((int*) read_buf);
         }else{
-            tar_info.padding[i] = *((char*) read_buf);
+            tar_info.padding[i-500] = *((int*) read_buf);
         }
         
         read_buf++;
