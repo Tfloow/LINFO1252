@@ -13,5 +13,7 @@ submit: all
 	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c *.h *.c Makefile > soumission.tar
 
 easy: all 
-	tar -cf test.tar tarInfo.txt 
+	tar -cf test.tar tarInfo.txt
 	./tests test.tar
+	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c tarInfo.txt >   archive.tar
+	./tests archive.tar

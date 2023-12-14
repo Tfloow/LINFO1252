@@ -6,6 +6,10 @@
 
 struct stat info;
 
+// POSIX Header
+
+tar_header_t tar_info;
+
 // For readable date
 time_t     now;
 struct tm  ts;
@@ -64,6 +68,84 @@ void print_stat(int tar_fd){
 
 }
 
+void print_tar_header(){
+    printf("______________Tar Header_______________\n");
+    printf("Name:\t\t %s \n", tar_info.name);
+    printf("Mode:\t\t %s \n", tar_info.mode);
+    printf("User ID:\t\t %s \n", tar_info.uid);
+    printf("Group ID:\t\t %s \n", tar_info.gid);
+    printf("Size:\t\t %s \n", tar_info.size);
+
+    readable_time(atoi(tar_info.mtime));
+
+    printf("Modified time:\t %s \n", buf);
+
+    printf("Check Sum:\t\t %s \n", tar_info.chksum);
+    printf("______________End Tar Header_______________\n");
+}
+
+// HELPER FUNCTION
+
+/**
+ * Convert a 512 bytes buffer to the struct tar_header_t tar_info variable
+ * @param read_buf: pointer to the 512 bytes buffer
+ * @return nothing but sliced the buffer properly into the global variable tar_info
+**/
+void put_tar_info(void* read_buf){
+    for(int i = 0; i < 512; i++){
+        if(i < 100){
+            tar_info.name[i] = *((char*) read_buf);
+        }else if (i<108)
+        {
+            tar_info.mode[i] = *((char*) read_buf);
+        }else if (i<116)
+        {
+            tar_info.uid[i] = *((char*) read_buf);
+        }else if (i<124)
+        {
+            tar_info.gid[i] = *((char*) read_buf);
+        }else if (i<136)
+        {
+            tar_info.size[i] = *((char*) read_buf);
+        }else if (i<148)
+        {
+            tar_info.mtime[i] = *((char*) read_buf);
+        }else if (i<156)
+        {
+            tar_info.chksum[i] = *((char*) read_buf);
+        }else if (i<157)
+        {
+            tar_info.typeflag = *((char*) read_buf);
+        }else if (i<257)
+        {
+            tar_info.linkname[i] = *((char*) read_buf);
+        }else if (i<263)
+        {
+            tar_info.magic[i] = *((char*) read_buf);
+        }else if (i<265)
+        {
+            tar_info.version[i] = *((char*) read_buf);
+        }else if (i<297)
+        {
+            tar_info.uname[i] = *((char*) read_buf);
+        }else if (i<329)
+        {
+            tar_info.gname[i] = *((char*) read_buf);
+        }else if (i<337)
+        {
+            tar_info.devmajor[i] = *((char*) read_buf);
+        }else if (i<345)
+        {
+            tar_info.devminor[i] = *((char*) read_buf);
+        }else if (i<500){
+            tar_info.prefix[i] = *((char*) read_buf);
+        }else{
+            tar_info.padding[i] = *((char*) read_buf);
+        }
+        
+        read_buf++;
+    }
+}
 
 /**
  * Checks whether the archive is valid.
@@ -93,10 +175,14 @@ int check_archive(int tar_fd) {
     read(tar_fd,read_buf,info.st_blksize);
     printf("buffer: %s\n", (char*) read_buf);
 
+    put_tar_info(read_buf);
+    print_tar_header();
+
 
     //void* buffer = malloc(sizeof())
     return 0;
 }
+
 
 /**
  * Checks whether an entry exists in the archive.
