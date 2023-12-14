@@ -242,6 +242,11 @@ int check_archive(int tar_fd) {
  */
 int exists(int tar_fd, char *path) {
 
+    /*
+    will be updated to check every file name in the tar_info array
+    
+    */
+
 
     int check = check_archive(tar_fd);
     if(check < 0){
