@@ -5,7 +5,9 @@
 #include <sys/mman.h>
 #include "lib_tar.h"
 #include <dirent.h>
-#include <string.h> 
+#include <string.h>
+
+#define BLK_SIZE = 4096
 
 struct stat info;
 
@@ -105,7 +107,7 @@ void print_tar_header(){
  * @param read_buf: pointer to the 512 bytes buffer
  * @return nothing but sliced the buffer properly into the global variable tar_info
 **/
-void put_tar_info(void* read_buf){
+int put_tar_info(void* read_buf){
     for(int i = 0; i < 512; i++){
         if(i < 100){
             tar_info.name[i] = *((int*) read_buf);
@@ -159,6 +161,13 @@ void put_tar_info(void* read_buf){
         
         read_buf++;
     }
+
+    printf("Name: %s\n", tar_info.name);
+
+    if(TAR_INT(tar_info.chksum) == 0){
+        return -1;
+    }
+    return 0;
 }
 
 int checksum(void* read_buf){
@@ -201,32 +210,56 @@ int check_archive(int tar_fd) {
         return -4;
     } 
 
-    print_stat(tar_fd);
-
+    //print_stat(tar_fd);
+    // Read the whole tar file
     void* read_buf = malloc(info.st_size);
     read(tar_fd,read_buf,info.st_size);
-    put_tar_info(read_buf);
-    print_tar_header();
+    
+    // Flag if there is multiple files
+    int otherFiles = 1;
+    int skip;
+    int tmp = 0;
 
-    // Check for the magic string
-    int magicCMP = strcmp(TMAGIC, tar_info.magic);
-    //printf("magic %s and comp %d and length of %ld\n", tar_info.magic,magicCMP, strlen(tar_info.magic));
-    if(magicCMP || strlen(tar_info.magic)+1 != TMAGLEN){ // +1 for the null Character
-        return -1;
-    }
+    // 44032 for archive.tar
 
-    // Check for the version
-    for(int i = 0; i < 2; i++){
-        if(tar_info.version[i] != '0'){
-            return -2;
+    while(otherFiles){
+        if(put_tar_info(read_buf) == -1){
+            printf("bye: %d\n", tmp);
+            break;
         }
-    }
+        print_tar_header();
 
-    // Check for the checksum
-    if(checksum(read_buf) != TAR_INT(tar_info.chksum)){
-        return -3;
-    }
+        if(TAR_INT(tar_info.size) == 0){
+            skip = 0;
+        }else{
+            skip = TAR_INT(tar_info.size)/512 + 2;
+            printf("to skip %d\n", skip);
+        }
 
+        // Check for the magic string
+        int magicCMP = strcmp(TMAGIC, tar_info.magic);
+        //printf("magic %s and comp %d and length of %ld\n", tar_info.magic,magicCMP, strlen(tar_info.magic));
+        if(magicCMP || strlen(tar_info.magic)+1 != TMAGLEN){ // +1 for the null Character
+            return -1;
+        }
+
+        // Check for the version
+        for(int i = 0; i < 2; i++){
+            if(tar_info.version[i] != '0'){
+                return -2;
+            }
+        }
+
+        // Check for the checksum
+        if(checksum(read_buf) != TAR_INT(tar_info.chksum)){
+            return -3;
+        }
+
+        read_buf += skip*512;
+        printf("skipped: %d\n", skip*512);
+        tmp++;
+
+    }
     return 0;
 }
 

@@ -39,9 +39,9 @@ int main(int argc, char **argv) {
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
 
-    int exist = exists(fd, "tarInfo.txt");
+    //int exist = exists(fd, "tarInfo.txt");
 
-    if(exist == 100){printf("Rien\n");}
+    //if(exist == 100){printf("Rien\n");}
 
     return 0;
 }
