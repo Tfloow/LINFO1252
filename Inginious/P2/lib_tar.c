@@ -230,7 +230,7 @@ int check_archive(int tar_fd) {
         print_tar_header();
 
         if(TAR_INT(tar_info.size) == 0){
-            skip = 0;
+            skip = 1;
         }else{
             skip = TAR_INT(tar_info.size)/512 + 2;
             printf("to skip %d\n", skip);
