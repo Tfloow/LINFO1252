@@ -24,3 +24,13 @@ easy: all
 hard: all
 	tar --posix --pax-option delete=".*" --pax-option delete="*time*" --no-xattrs --no-acl --no-selinux -c hard > hard.tar
 	./tests hard.tar
+
+damage: all
+	./tests damagedTar/ustar.tar
+	@echo SHOULD BE -1
+	./tests damagedTar/version.tar
+	@echo SHOULD BE -2
+	./tests damagedTar/chk.tar
+	@echo SHOULD BE -3
+
+

@@ -260,7 +260,8 @@ int check_archive(int tar_fd) {
         tmp++;
 
     }
-    return 0;
+
+    return tmp;
 }
 
 
