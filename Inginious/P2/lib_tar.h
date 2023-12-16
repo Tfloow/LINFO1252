@@ -148,4 +148,8 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries);
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len);
 
+// PERSONAL ADDITION
+
+void store_header(int tar_fd);
+
 #endif

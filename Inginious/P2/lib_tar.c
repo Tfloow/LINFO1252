@@ -14,6 +14,8 @@ struct stat info;
 // POSIX Header
 
 tar_header_t tar_info;
+tar_header_t* tar_array;
+int num_files;
 
 // For readable date
 time_t     now;
@@ -73,29 +75,29 @@ void print_stat(int tar_fd){
 
 }
 
-void print_tar_header(){
+void print_tar_header(tar_header_t tar_head){
     printf("______________Tar Header_______________\n");
-    printf("Name:\t\t %s \n", tar_info.name);
-    printf("Mode:\t\t %ld \n", TAR_INT(tar_info.mode));
-    printf("User ID:\t %ld \n", TAR_INT(tar_info.uid));
-    printf("Group ID:\t %ld \n", TAR_INT(tar_info.gid));
-    printf("Size:\t\t %ld \n", TAR_INT(tar_info.size));
+    printf("Name:\t\t %s \n", tar_head.name);
+    printf("Mode:\t\t %ld \n", TAR_INT(tar_head.mode));
+    printf("User ID:\t %ld \n", TAR_INT(tar_head.uid));
+    printf("Group ID:\t %ld \n", TAR_INT(tar_head.gid));
+    printf("Size:\t\t %ld \n", TAR_INT(tar_head.size));
 
-    readable_time(atoi(tar_info.mtime));
+    readable_time(atoi(tar_head.mtime));
 
     printf("Modified time:\t %s \n", buf);
 
-    printf("Check Sum:\t %ld \n", TAR_INT(tar_info.chksum));
-    printf("Typeflag:\t %c \n", tar_info.typeflag);
-    printf("Linkname:\t %ld \n", TAR_INT(tar_info.linkname));
-    printf("Magic:\t\t %s \n", tar_info.magic);
-    printf("Version:\t %ld \n", TAR_INT(tar_info.version));
-    printf("Uname:\t\t %s \n", tar_info.uname);
-    printf("Gname:\t\t %s \n", tar_info.gname);
-    printf("Devmajor:\t %s \n", tar_info.devmajor);
-    printf("Devminor:\t %s \n", tar_info.devminor);
-    printf("Prefix:\t\t %s \n", tar_info.prefix);
-    printf("Padding:\t %s \n", tar_info.padding);
+    printf("Check Sum:\t %ld \n", TAR_INT(tar_head.chksum));
+    printf("Typeflag:\t %c \n", tar_head.typeflag);
+    printf("Linkname:\t %ld \n", TAR_INT(tar_head.linkname));
+    printf("Magic:\t\t %s \n", tar_head.magic);
+    printf("Version:\t %ld \n", TAR_INT(tar_head.version));
+    printf("Uname:\t\t %s \n", tar_head.uname);
+    printf("Gname:\t\t %s \n", tar_head.gname);
+    printf("Devmajor:\t %s \n", tar_head.devmajor);
+    printf("Devminor:\t %s \n", tar_head.devminor);
+    printf("Prefix:\t\t %s \n", tar_head.prefix);
+    printf("Padding:\t %s \n", tar_head.padding);
     
     printf("______________End Tar Header_______________\n");
 }
@@ -227,7 +229,7 @@ int check_archive(int tar_fd) {
             printf("bye: %d\n", tmp);
             break;
         }
-        print_tar_header();
+        print_tar_header(tar_info);
 
         if(TAR_INT(tar_info.size) == 0){
             skip = 1;
@@ -261,7 +263,50 @@ int check_archive(int tar_fd) {
 
     }
 
+    num_files = tmp;
     return tmp;
+}
+
+
+void print_tar_array(){
+    printf("________TAR ARRAY________\n");
+    for(int i = 0; i < num_files; i++){
+        print_tar_header(tar_array[i]);
+    }
+    printf("________END TAR ARRAY________\n");
+
+}
+
+
+// TO STORE HEADER TAR INFO
+void store_header(int tar_fd){
+    if(check_archive(tar_fd) < 0){
+        printf("NOT A CORRECT HEADER\n");
+    }
+
+    tar_array = (tar_header_t*) malloc(sizeof(tar_header_t) * num_files);
+
+    // Read the whole tar file
+    void* read_buf = malloc(info.st_size);
+    read(tar_fd,read_buf,info.st_size);
+    int skip = 0;
+
+    for(int i = 0; i < num_files; i++){
+        put_tar_info(read_buf);
+        
+        if(TAR_INT(tar_info.size) == 0){
+            skip = 1;
+        }else{
+            skip = TAR_INT(tar_info.size)/512 + 2;
+            printf("to skip %d\n", skip);
+        }
+
+        memcpy( &(tar_array[i]), &tar_info, sizeof(tar_header_t));
+        
+        read_buf += skip*512;
+    }
+
+    print_tar_array();
 }
 
 
