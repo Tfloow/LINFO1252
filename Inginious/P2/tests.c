@@ -52,13 +52,15 @@ int main(int argc, char **argv) {
     if(is_directory == 0){printf("Rien\n");}
 
     printf("____LIST TEST____\n");
-    char* entries[4] = {"hard/hardone.txt", "hard/softone.txt", "hard/one.txt", "hard/notExisting.txt"};
     size_t amount = 4;
-    int listing = list(fd, "hard/", entries, &amount);
+    char* entries[4] = {"hard/subSym/hardone.txt", "hard/subSym/empty.txt", "hard/one.txt", "hard/notExisting.txt"};
+    int listing = list(fd, "hard/subSym", entries, &amount);
 
     printf("amount : %ld\n", amount);
 
     if(listing == 0){printf("Rien\n");}
+
+    return 0;
 
     printf("____READ FILE TEST____\n");
     size_t len = 100;

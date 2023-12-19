@@ -204,14 +204,67 @@ int reset_fd(int tar_fd){
     return 0;
 }
 
+/**
+ * A simple function that tells if a path is the sub-folder of one other
+ * @param root: the path that points to the root
+ * @param check_folder: the path where we want to check if it's a simple subfolder
+ * @return: -1 if it's deeper than a simple subfolder
+ *          0 if it's indeed a subfolder and no more
+ * **/
 int is_sub_sub_folder(char* root, char* check_folder){
-    printf("%s\n", root);
-    for(int i = 0; i < strlen(root)-1; i++){
-        //printf("%c",root[i]);
+    int max_depth = 1;
+    for(int j = strlen(root); j < strlen(check_folder); j++){
+        if(max_depth <= 0){
+            printf("TOO DEEP\n");
+            return -1;
+        }else if(check_folder[j] == '/'){
+            max_depth--;
+        }
     }
-    printf("\n");
+
     return 0;
 }
+
+/**
+ * A function that check if a certain directory is part of another directory (no matter how deep it is)
+ * @param root: root folder to check from
+ * @param check: the file or directory if it's part of the root directory
+ * @return: -1 if it's not part of the root directory
+ *          0 if it's part of the root directory
+ * **/
+int is_part_sub_folder(char* root, char* check){
+    if(strlen(check) < strlen(root)){
+        return -1;
+    }
+
+    for(int i = 0; i < strlen(root); i++){
+        if(root[i] != check[i]){
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * A simple function that takes the linkname of a symlink directory and fuse it to have a proper
+ * path of the tar archive
+ * @param linkTo: a linkname from a symlink directory
+ * @return: return the fused name 
+ * **/
+char* fuse_sub_symlink(char* linkTo){
+    char* res = (char*) malloc(sizeof(char) * (strlen(tar_array[0].name) + strlen(linkTo)+2));
+    for(int i = 0; i < strlen(tar_array[0].name) ; i++){
+        res[i] = tar_array[0].name[i];
+    }
+    for(int i = 0; i < strlen(linkTo) ; i++){
+        res[strlen(tar_array[0].name) + i] = linkTo[i];
+    }
+    res[strlen(tar_array[0].name) + strlen(linkTo)] = '/'; 
+    res[strlen(tar_array[0].name) + strlen(linkTo) + 1] = '\0'; 
+    return res;
+}
+
 
 /**
  * Checks whether the archive is valid.
@@ -449,22 +502,57 @@ int is_symlink(int tar_fd, char *path) {
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     int where_dir = is_dir(tar_fd, path);
-    if(is_dir(tar_fd, path) == 0){
-        return 0;
+
+    print_tar_array();
+    printf("%d\n", num_files);
+
+    printf("Entering\n");
+    if(where_dir == 0){
+        where_dir = is_symlink(tar_fd, path);
+        if(where_dir == 0){
+            *no_entries = 0;
+            return 0;
+            
+        }
+
+        // Case to handle symlink etc
+        //printf("Linked to %s for input %d and fusion %s\n", tar_array[where_dir-1].linkname, where_dir, fuse_sub_symlink(tar_array[where_dir-1].linkname));
+        where_dir = is_dir(tar_fd, fuse_sub_symlink(tar_array[where_dir-1].linkname));
+
+        if(where_dir == 0){
+            printf("dqlmskjfqdslmkfjsdklfkjd");
+            *no_entries = 0;
+            return 0;
+        }
     }
 
     int f = is_sub_sub_folder("hello/world/", "hello/world/test/");
     int g = is_sub_sub_folder("hello/world/", "hello/world/test/a/");
-    printf("%d %d \n", f, g);
+    printf("%d %d two\n", f, g);
 
-    int i = where_dir;
+    int i = where_dir-1;
+    char* root = tar_array[i].name;
+
+    printf("starting %d\n", i);
 
     int actual_num_file = 0;
+
+
     for(int j = i+1; j < num_files; j++){
+        // To stay in the same directory to avoid useless search
+        if(is_part_sub_folder(root, tar_array[j].name) != 0){
+            break;
+        }
+        printf("String %s\n", tar_array[j].name);
+
         for(int k = 0; k < *no_entries; k++){
+            printf("  Check %s and %d %d\n", entries[k], tar_array[j].typeflag, DIRTYPE);
             if(strcmp(tar_array[j].name,entries[k]) == 0){
-                actual_num_file++;
-                break;
+                if(tar_array[j].typeflag != DIRTYPE || is_sub_sub_folder(root, entries[k]) == 0){
+                    printf("GOOD: %s\n", tar_array[j].name);
+                    actual_num_file++;
+                    break;
+                }
             }
         }
     }
