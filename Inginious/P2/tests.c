@@ -46,5 +46,10 @@ int main(int argc, char **argv) {
 
     if(exist == 0){printf("Rien\n");}
 
+    printf("____IS DIR TEST____\n");
+    int is_directory = is_dir(fd, "hard/");
+
+    if(is_directory == 0){printf("Rien\n");}
+
     return 0;
 }

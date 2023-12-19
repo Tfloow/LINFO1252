@@ -328,23 +328,16 @@ int store_header(int tar_fd){
     return 0;
 }
 
-
+// Combining all is
 /**
- * Checks whether an entry exists in the archive.
- *
- * @param tar_fd A file descriptor pointing to the start of a valid tar archive file.
- * @param path A path to an entry in the archive.
- *
- * @return zero if no entry at the given path exists in the archive,
- *         any other value otherwise.
- */
-int exists(int tar_fd, char *path) {
-
-    /*
-    will be updated to check every file name in the tar_info array
-    
-    */
-
+ * Combining all the exists, is_dir, is_file, ... function into one and only function
+ * @param   tar_fd:   a file descriptor to a valid tar archive
+ * @param   path:     a path to a file or directory in the archive
+ * @param   typeflag: a flag to tell what kind of thing we are looking for. If we don't care about a
+ *                    type we must set typeflag to -1 in order to do so
+ * @return return 0 if it didn't find anything or encountered an issue and 1 if it did find it
+**/
+int is(int tar_fd, char* path, int typeflag){
     if(store_header(tar_fd) < 0){
         printf("The archive is not valid\n");
         return 0;
@@ -356,15 +349,36 @@ int exists(int tar_fd, char *path) {
 
 
     for(int i = 0; i < num_files; i++){ // iterate over the amount of file in the buffer
-        if(strcmp(tar_array[i].name, path) == 0){
-            printf("File does exist in archive\n");
-            return 1;
+        if(typeflag == -1){
+            if(strcmp(tar_array[i].name, path) == 0){
+                printf("File does exist in archive\n");
+                return 1;
+            }
+        }else{
+            if(strcmp(tar_array[i].name, path) == 0 && tar_array[i].typeflag == typeflag){
+                printf("File does exist in archive\n");
+                return 1;
+            }
         }
     }
     printf("No such file in archive\n");
 
     reset_fd(tar_fd);
     return 0;
+}
+
+
+/**
+ * Checks whether an entry exists in the archive.
+ *
+ * @param tar_fd A file descriptor pointing to the start of a valid tar archive file.
+ * @param path A path to an entry in the archive.
+ *
+ * @return zero if no entry at the given path exists in the archive,
+ *         any other value otherwise.
+ */
+int exists(int tar_fd, char *path) {
+    return is(tar_fd, path, -1);
 }
 
 /**
@@ -377,19 +391,7 @@ int exists(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_dir(int tar_fd, char *path) {
-
-    int exist = exists(tar_fd, path);
-    if(exist == 0){
-        printf("The entry does not exist\n");
-    return 0;}
-
-    //still needs to update tar_info for each header.
-
-    if(tar_info.typeflag == DIRTYPE){return 1;}
-
-    else{
-        printf("The entry is not a directory\n");
-    return 0;}
+    return is(tar_fd, path, DIRTYPE);    
 }
 
 /**
@@ -402,19 +404,7 @@ int is_dir(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_file(int tar_fd, char *path) {
-
-    int exist = exists(tar_fd, path);
-    if(exist == 0){
-        printf("The entry does not exist\n");
-    return 0;}
-
-    //still needs to update tar_info for each header.
-
-    if(tar_info.typeflag == REGTYPE){return 1;}
-
-    else{
-        printf("The entry is not a file\n");
-    return 0;}
+    return is(tar_fd, path, REGTYPE);
 }
 
 /**
@@ -426,19 +416,7 @@ int is_file(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_symlink(int tar_fd, char *path) {
-
-    int exist = exists(tar_fd, path);
-    if(exist == 0){
-        printf("The entry does not exist\n");
-    return 0;}
-
-    //still needs to update tar_info for each header.
-
-    if(tar_info.typeflag == SYMTYPE){return 1;}
-
-    else{
-        printf("The entry is not a symlink\n");
-    return 0;}
+    return is(tar_fd, path, SYMTYPE);
 }
 
 
