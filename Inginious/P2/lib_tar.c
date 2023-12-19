@@ -189,6 +189,22 @@ int checksum(void* read_buf){
 }
 
 /**
+ * A simple function that should always be called at the end of each function reading or calling a function
+ * that moves the pointer to a file (eg: check_archive, exists, store_header)
+ * @param tar_fd: a file descriptor to a tar archive
+ * @return 0 if it was successful or 1 if it wasn't. 
+ * **/
+int reset_fd(int tar_fd){
+    if (lseek(tar_fd, 0, SEEK_SET) == -1) {
+        perror("Error resetting file position");
+        close(tar_fd);
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
  * Checks whether the archive is valid.
  *
  * Each non-null header of a valid archive has:
@@ -204,9 +220,6 @@ int checksum(void* read_buf){
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
-
-    // NEED TO BE ADAPTED FOR MULTIPLE FILES IN ONE ARCHIVE LOLILOL
-
     if(fstat(tar_fd, &info) == -1){
         perror("fstat(tar_file)");
         return -4;
@@ -264,6 +277,8 @@ int check_archive(int tar_fd) {
     }
 
     num_files = tmp;
+    reset_fd(tar_fd);
+
     return tmp;
 }
 
@@ -279,9 +294,10 @@ void print_tar_array(){
 
 
 // TO STORE HEADER TAR INFO
-void store_header(int tar_fd){
+int store_header(int tar_fd){
     if(check_archive(tar_fd) < 0){
         printf("NOT A CORRECT HEADER\n");
+        return -1;
     }
 
     tar_array = (tar_header_t*) malloc(sizeof(tar_header_t) * num_files);
@@ -306,7 +322,10 @@ void store_header(int tar_fd){
         read_buf += skip*512;
     }
 
-    print_tar_array();
+    reset_fd(tar_fd);
+
+    //print_tar_array();
+    return 0;
 }
 
 
@@ -326,35 +345,26 @@ int exists(int tar_fd, char *path) {
     
     */
 
-
-    int check = check_archive(tar_fd);
-    if(check < 0){
+    if(store_header(tar_fd) < 0){
         printf("The archive is not valid\n");
-        return 0;}
-
-
-    char *buffer = (char *) malloc(1*sizeof(char)+1);
-
-    
+        return 0;
+    }
 
     int size_path = strlen(path);
 
     printf("size of path: %d\n", size_path);
 
 
-    for(int i = 0; i < size_path; i++){
-        read(tar_fd, (void *) (buffer),1);
-        if(*(path + i) != *buffer){
-            printf("the entry does not exist\n");
-            return 0;
+    for(int i = 0; i < num_files; i++){ // iterate over the amount of file in the buffer
+        if(strcmp(tar_array[i].name, path) == 0){
+            printf("File does exist in archive\n");
+            return 1;
         }
-        
     }
+    printf("No such file in archive\n");
 
-
-    
-
-    return 1;
+    reset_fd(tar_fd);
+    return 0;
 }
 
 /**

@@ -36,14 +36,15 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    printf("____CHECK ARCHIVE TEST____\n");
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
 
     store_header(fd);
+    printf("____EXIST TEST____\n");
+    int exist = exists(fd, "tarInfo.txt");
 
-    //int exist = exists(fd, "tarInfo.txt");
-
-    //if(exist == 100){printf("Rien\n");}
+    if(exist == 0){printf("Rien\n");}
 
     return 0;
 }

@@ -150,6 +150,6 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
 
 // PERSONAL ADDITION
 
-void store_header(int tar_fd);
+int store_header(int tar_fd);
 
 #endif
