@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include "lib_tar.h"
 
@@ -53,10 +54,19 @@ int main(int argc, char **argv) {
 
     printf("____LIST TEST____\n");
     size_t amount = 4;
-    char* entries[4] = {"hard/subSym/hardone.txt", "hard/subSym/empty.txt", "hard/one.txt", "hard/notExisting.txt"};
+    char** entries = (char**) malloc(amount * sizeof(char*));
+    for(int i = 0; i < amount; i++){
+        entries[i] = (char*) malloc(100 * sizeof(char));
+    }
+
     int listing = list(fd, "hard/subSym", entries, &amount);
 
     printf("amount : %ld\n", amount);
+    if(strcmp(entries[0], "hard/sub/empty.txt") == 0){
+        printf("Success !\n");
+    }else{
+        printf("Back to the drawing board\n");
+    }
 
     if(listing == 0){printf("Rien\n");}
 

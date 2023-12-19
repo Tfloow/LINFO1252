@@ -501,6 +501,11 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
+    entries = (char**) malloc(*no_entries * sizeof(char*));
+    for(int i = 0; i < *no_entries; i++){
+        entries[i] = (char*) malloc(100 * sizeof(char));
+    }
+
     int where_dir = is_dir(tar_fd, path);
 
     print_tar_array();
@@ -526,10 +531,6 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
         }
     }
 
-    int f = is_sub_sub_folder("hello/world/", "hello/world/test/");
-    int g = is_sub_sub_folder("hello/world/", "hello/world/test/a/");
-    printf("%d %d two\n", f, g);
-
     int i = where_dir-1;
     char* root = tar_array[i].name;
 
@@ -537,24 +538,22 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
 
     int actual_num_file = 0;
 
-
     for(int j = i+1; j < num_files; j++){
         // To stay in the same directory to avoid useless search
         if(is_part_sub_folder(root, tar_array[j].name) != 0){
+            printf("CIAOOO\n");
             break;
         }
-        printf("String %s\n", tar_array[j].name);
 
-        for(int k = 0; k < *no_entries; k++){
-            printf("  Check %s and %d %d\n", entries[k], tar_array[j].typeflag, DIRTYPE);
-            if(strcmp(tar_array[j].name,entries[k]) == 0){
-                if(tar_array[j].typeflag != DIRTYPE || is_sub_sub_folder(root, entries[k]) == 0){
-                    printf("GOOD: %s\n", tar_array[j].name);
-                    actual_num_file++;
-                    break;
-                }
-            }
+        printf("String %s from %s\n", tar_array[j].name, root);
+
+
+        if(is_sub_sub_folder(root, tar_array[j].name) == 0){
+            printf("added \n");
+            entries[actual_num_file] = tar_array[j].name;
+            actual_num_file++;
         }
+
     }
 
     *no_entries = actual_num_file;
