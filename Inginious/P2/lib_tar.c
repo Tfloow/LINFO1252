@@ -204,6 +204,15 @@ int reset_fd(int tar_fd){
     return 0;
 }
 
+int is_sub_sub_folder(char* root, char* check_folder){
+    printf("%s\n", root);
+    for(int i = 0; i < strlen(root)-1; i++){
+        //printf("%c",root[i]);
+    }
+    printf("\n");
+    return 0;
+}
+
 /**
  * Checks whether the archive is valid.
  *
@@ -242,13 +251,13 @@ int check_archive(int tar_fd) {
             printf("bye: %d\n", tmp);
             break;
         }
-        print_tar_header(tar_info);
+        //print_tar_header(tar_info);
 
         if(TAR_INT(tar_info.size) == 0){
             skip = 1;
         }else{
             skip = TAR_INT(tar_info.size)/512 + 2;
-            printf("to skip %d\n", skip);
+            //printf("to skip %d\n", skip);
         }
 
         // Check for the magic string
@@ -271,7 +280,7 @@ int check_archive(int tar_fd) {
         }
 
         read_buf += skip*512;
-        printf("skipped: %d\n", skip*512);
+        //printf("skipped: %d\n", skip*512);
         tmp++;
 
     }
@@ -299,6 +308,7 @@ int store_header(int tar_fd){
         printf("NOT A CORRECT HEADER\n");
         return -1;
     }
+    printf("Checking\n");
 
     tar_array = (tar_header_t*) malloc(sizeof(tar_header_t) * num_files);
 
@@ -314,7 +324,7 @@ int store_header(int tar_fd){
             skip = 1;
         }else{
             skip = TAR_INT(tar_info.size)/512 + 2;
-            printf("to skip %d\n", skip);
+            //printf("to skip %d\n", skip);
         }
 
         memcpy( &(tar_array[i]), &tar_info, sizeof(tar_header_t));
@@ -342,11 +352,6 @@ int is(int tar_fd, char* path, int typeflag){
         printf("The archive is not valid\n");
         return 0;
     }
-
-    int size_path = strlen(path);
-
-    printf("size of path: %d\n", size_path);
-
 
     for(int i = 0; i < num_files; i++){ // iterate over the amount of file in the buffer
         if(typeflag == -1){
@@ -443,17 +448,16 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
-
+    int where_dir = is_dir(tar_fd, path);
     if(is_dir(tar_fd, path) == 0){
         return 0;
     }
-    int i = 0;
-    for( ; i < num_files; i++){
-        if(strcmp(tar_array[i].name, path) == 0){
-            // We found where it starts let's go
-            break;
-        }
-    }
+
+    int f = is_sub_sub_folder("hello/world/", "hello/world/test/");
+    int g = is_sub_sub_folder("hello/world/", "hello/world/test/a/");
+    printf("%d %d \n", f, g);
+
+    int i = where_dir;
 
     int actual_num_file = 0;
     for(int j = i+1; j < num_files; j++){
@@ -495,8 +499,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     int size = TAR_INT(tar_array[exist-1].size);
     if(offset > size){return -2;}
 
-    
-
+    // THERE IS A SEGFAULT !
+    return 0;
 
     //in case the buffer is too big:
     if(*len > size - offset){*len = size - offset;}
