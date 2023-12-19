@@ -335,7 +335,7 @@ int store_header(int tar_fd){
  * @param   path:     a path to a file or directory in the archive
  * @param   typeflag: a flag to tell what kind of thing we are looking for. If we don't care about a
  *                    type we must set typeflag to -1 in order to do so
- * @return return 0 if it didn't find anything or encountered an issue and 1 if it did find it
+ * @return return 0 if it didn't find anything or encountered an issue and index+1 if it did find it
 **/
 int is(int tar_fd, char* path, int typeflag){
     if(store_header(tar_fd) < 0){
@@ -352,12 +352,12 @@ int is(int tar_fd, char* path, int typeflag){
         if(typeflag == -1){
             if(strcmp(tar_array[i].name, path) == 0){
                 printf("File does exist in archive\n");
-                return 1;
+                return i+1;
             }
         }else{
             if(strcmp(tar_array[i].name, path) == 0 && tar_array[i].typeflag == typeflag){
                 printf("File does exist in archive\n");
-                return 1;
+                return i+1;
             }
         }
     }
@@ -444,12 +444,29 @@ int is_symlink(int tar_fd, char *path) {
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
 
-    int check = check_archive(tar_fd);
-    if(check < 0){
-        printf("The archive is not valid\n");
-        return 0;}
+    if(is_dir(tar_fd, path) == 0){
+        return 0;
+    }
+    int i = 0;
+    for( ; i < num_files; i++){
+        if(strcmp(tar_array[i].name, path) == 0){
+            // We found where it starts let's go
+            break;
+        }
+    }
 
-    return 0;
+    int actual_num_file = 0;
+    for(int j = i+1; j < num_files; j++){
+        for(int k = 0; k < *no_entries; k++){
+            if(strcmp(tar_array[j].name,entries[k]) == 0){
+                actual_num_file++;
+                break;
+            }
+        }
+    }
+
+    *no_entries = actual_num_file;
+    return 1;
 }
 
 /**
@@ -472,10 +489,10 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
 
-    int exist = exists(tar_fd, path);
+    int exist = is_file(tar_fd, path);
     if(exist == 0){return -1;}
 
-    int size = TAR_INT(tar_info.size);
+    int size = TAR_INT(tar_array[exist-1].size);
     if(offset > size){return -2;}
 
     
