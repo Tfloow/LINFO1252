@@ -16,6 +16,7 @@ struct stat info;
 tar_header_t tar_info;
 tar_header_t* tar_array;
 int num_files;
+int stored = 0;
 
 // For readable date
 time_t     now;
@@ -164,7 +165,7 @@ int put_tar_info(void* read_buf){
         read_buf++;
     }
 
-    printf("Name: %s\n", tar_info.name);
+    //printf("Name: %s\n", tar_info.name);
 
     if(TAR_INT(tar_info.chksum) == 0){
         return -1;
@@ -357,6 +358,10 @@ void print_tar_array(){
 
 // TO STORE HEADER TAR INFO
 int store_header(int tar_fd){
+    if(stored != 0){
+        return 0;
+    }
+
     if(check_archive(tar_fd) < 0){
         printf("NOT A CORRECT HEADER\n");
         return -1;
@@ -386,7 +391,7 @@ int store_header(int tar_fd){
     }
 
     reset_fd(tar_fd);
-
+    stored = 1;
     //print_tar_array();
     return 0;
 }
@@ -477,6 +482,82 @@ int is_symlink(int tar_fd, char *path) {
     return is(tar_fd, path, SYMTYPE);
 }
 
+char* easy_fuse(int index){
+    char* link = tar_array[index-1].linkname;
+    int depth = 0;
+
+    for(int i = 0; i < strlen(link); i++){
+        if(link[i] == '/'){
+            depth++;
+        }
+    }
+
+    static char new_path[100];
+    int root = 0;
+    char* from = tar_array[index-1].name;
+    for(int i = 0; i < strlen(from); i++){
+        if(from[i] == '/'){
+            root++;
+        }
+    }
+
+    int go_back = root - depth;
+
+    printf("  from %s and linked to %s and depth %d\n", from, link, go_back);
+
+
+    int i = 0;
+    int j = 0;
+    for(; i < strlen(from); i++){
+        if(go_back <= 0){
+            break;
+        }
+
+        printf("%c ", from[i]);
+
+        new_path[i] = from[i];
+        if(from[i] == '/'){
+            go_back--;
+        }
+        j++;
+
+    }
+    printf("\n %d", i-j);
+
+    for( ; i-j < strlen(link); i++){
+        new_path[i] = link[i-j];
+
+        printf("%d %c ",i-j, link[i-j]);
+
+    }
+    printf("\n");
+
+    new_path[i] = '\0';
+
+    printf(" RES easy fuse %s\n", new_path);
+
+    return new_path;
+}
+
+int resolve_sym(int tar_fd, char* path){
+    int where = is_file(tar_fd, path);
+    if(where == 0){
+        where = is_dir(tar_fd, path);
+        if(where == 0){
+            int sym = is_symlink(tar_fd, path);
+            while( sym != 0 ){
+                printf("    aaaaaaah\n");
+                where = is_dir(tar_fd, easy_fuse(sym));
+                sym = is_symlink(tar_fd, easy_fuse(sym));
+            }
+            printf("FINI WHILE\n");
+
+        }
+    }
+
+    return where;
+}
+
 
 /**
  * Lists the entries at a given path in the archive.
@@ -508,27 +589,20 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
 
     int where_dir = is_dir(tar_fd, path);
 
-    print_tar_array();
-    printf("%d\n", num_files);
-
-    printf("Entering\n");
     if(where_dir == 0){
         where_dir = is_symlink(tar_fd, path);
         if(where_dir == 0){
             *no_entries = 0;
             return 0;
-            
         }
+        where_dir = resolve_sym(tar_fd, path);
+    }
 
-        // Case to handle symlink etc
-        //printf("Linked to %s for input %d and fusion %s\n", tar_array[where_dir-1].linkname, where_dir, fuse_sub_symlink(tar_array[where_dir-1].linkname));
-        where_dir = is_dir(tar_fd, fuse_sub_symlink(tar_array[where_dir-1].linkname));
+    printf("   where dir %d with %s\n", where_dir, tar_array[where_dir-1].name);
 
-        if(where_dir == 0){
-            printf("dqlmskjfqdslmkfjsdklfkjd");
-            *no_entries = 0;
-            return 0;
-        }
+    if(tar_array[where_dir].typeflag != REGTYPE || where_dir == 0){
+        *no_entries = 0;
+        return 0;
     }
 
     int i = where_dir-1;
