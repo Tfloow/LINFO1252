@@ -358,9 +358,11 @@ void print_tar_array(){
 
 // TO STORE HEADER TAR INFO
 int store_header(int tar_fd){
+    /*
     if(stored != 0){
         return 0;
     }
+    */
 
     if(check_archive(tar_fd) < 0){
         printf("NOT A CORRECT HEADER\n");
@@ -415,6 +417,7 @@ int is(int tar_fd, char* path, int typeflag){
         if(typeflag == -1){
             if(strcmp(tar_array[i].name, path) == 0){
                 //printf("File does exist in archive\n");
+                printf("---------------------------\n");
                 return i+1;
             }
         }else{
@@ -482,7 +485,7 @@ int is_symlink(int tar_fd, char *path) {
     return is(tar_fd, path, SYMTYPE);
 }
 
-char* easy_fuse(int index){
+char* easy_fuse(int tar_fd, int index){
     char* link = tar_array[index-1].linkname;
     int depth = 0;
 
@@ -530,28 +533,26 @@ char* easy_fuse(int index){
     new_path[i] = '\0';
 
     printf(" RES easy fuse %s for index %d\n", new_path, index);
+    if(exists(tar_fd, new_path) == 0){
+        // In case it's a directory we need to add another /
+        new_path[i] = '/';
+        new_path[i+1] = '\0';
+    }
 
     return new_path;
 }
 
 int resolve_sym(int tar_fd, char* path){
     int sym = is_symlink(tar_fd, path);
-    int prev = 0;
 
     while(sym != 0){
-        printf("while\n");
-        prev = sym;
-        sym = is_symlink(tar_fd, easy_fuse(prev));
+        path = easy_fuse(tar_fd, sym);
+        sym = is_symlink(tar_fd, easy_fuse(tar_fd, sym));
     }
 
-    sym = is_dir(tar_fd, easy_fuse(prev));
-    if(sym == 0){
-        sym = is_file(tar_fd, easy_fuse(prev));
-    }
+    printf("[LOG] new index is %d for path %s\n", exists(tar_fd, path), path);
 
-    printf("     file is %d and %s\n", sym-1, tar_array[sym-1].name);
-
-    return sym;
+    return exists(tar_fd, path);
 }
 
 
@@ -578,59 +579,55 @@ int resolve_sym(int tar_fd, char* path){
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
-    // Initialize entries
-    entries = (char**) malloc(*no_entries * sizeof(char*));
-    for(int i = 0; i < *no_entries; i++){
-        entries[i] = (char*) malloc(100 * sizeof(char));
+    printf("\nPath is %s\n", path);
+
+
+    // Get the index of the directory in the tar array
+    // Check if it's a symlink
+    int dir_index = is_symlink(tar_fd, path);
+    if(dir_index != 0){
+        // Resolve the symlink to the appropriate path
+        dir_index = resolve_sym(tar_fd, path);
+        printf("new index %d\n", dir_index);
+        path = tar_array[dir_index-1].name; // Update the new path that is no longer a symlink
     }
+    
+    printf("\nPath is %s\n", path);
 
-
-    int where_dir = is_dir(tar_fd, path);
-
-    if(where_dir == 0){
-        where_dir = is_symlink(tar_fd, path);
-        if(where_dir == 0){
-            printf("It's a file\n");
-            *no_entries = 0;
-            return 0;
-        }
-        printf("SYM LINK\n");
-        where_dir = resolve_sym(tar_fd, path);
-    }
-
-    printf("   where dir %d with %s\n", where_dir, tar_array[where_dir-1].name);
-
-    if(tar_array[where_dir].typeflag != REGTYPE || where_dir == 0){
+    // Check if it's a directory
+    dir_index = is_dir(tar_fd, path);
+    if(dir_index == 0){
+        // This means it's not a directory
+        free(entries);
         *no_entries = 0;
         return 0;
     }
 
-    int i = where_dir-1;
-    char* root = tar_array[i].name;
+    printf("yup\n");
 
-    printf("starting %d\n", i);
+    // Listing all subfiles and subfolder
+    char* root = tar_array[dir_index-1].name;
+    int actual_num_files = 0;
 
-    int actual_num_file = 0;
-
-    for(int j = i+1; j < num_files; j++){
-        // To stay in the same directory to avoid useless search
-        if(is_part_sub_folder(root, tar_array[j].name) != 0){
-            printf("CIAOOO\n");
+    for(int i = dir_index; i < num_files; i++){
+        // We have reached something that outside of our subfolder
+        if(is_part_sub_folder(root, tar_array[i].name) != 0){
             break;
         }
 
-        printf("String %s from %s\n", tar_array[j].name, root);
-
-
-        if(is_sub_sub_folder(root, tar_array[j].name) == 0){
-            printf("added \n");
-            entries[actual_num_file] = tar_array[j].name;
-            actual_num_file++;
+        // Check if it doesn't list something too deep
+        if(is_sub_sub_folder(root, tar_array[i].name) == 0){
+            if(actual_num_files >= *no_entries){
+                break;
+            }
+            printf("%s\n", tar_array[i].name);
+            memcpy(entries[actual_num_files], tar_array[i].name, sizeof(char)*(strlen(tar_array[i].name)+1));
+            actual_num_files++;
         }
-
     }
 
-    *no_entries = actual_num_file;
+    *no_entries = actual_num_files;
+
     return 1;
 }
 

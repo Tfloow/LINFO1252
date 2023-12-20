@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     if(is_directory == 0){printf("Rien\n");}
 
     printf("____LIST TEST____\n");
-    size_t amount = 4;
+    size_t amount = 5;
     char** entries = (char**) malloc(amount * sizeof(char*));
     for(int i = 0; i < amount; i++){
         entries[i] = (char*) malloc(100 * sizeof(char));
@@ -61,14 +61,11 @@ int main(int argc, char **argv) {
 
     int listing = list(fd, "hard/subSym", entries, &amount);
 
-    printf("amount : %ld\n", amount);
-    if(strcmp(entries[0], "hard/sub/empty.txt") == 0){
-        printf("Success !\n");
-    }else{
-        printf("Back to the drawing board\n");
+    printf("amount : %ld and return %d\n", amount, listing);
+    for(int i = 0; i < amount; i++){
+        printf("| %s\n", entries[i]);
     }
-
-    if(listing == 0){printf("Rien\n");}
+    printf("____\n");
 
     return 0;
 
