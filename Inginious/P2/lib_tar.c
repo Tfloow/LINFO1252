@@ -690,8 +690,6 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     }
 
     
-    /*THERE IS A SEGFAULT !
-    return 0;*/
 
     //in case the buffer is too big:
     if(*len > size - offset){*len = size - offset;}
@@ -708,19 +706,6 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     int err_seek = lseek(tar_fd, real_offset + offset + 512, SEEK_SET);
     if(err_seek == -1){printf("Error during lseek\n");}
 
-
-    /*
-    ///Memory map:///
-    void* content = mmap(NULL, *len, PROT_READ, MAP_SHARED, tar_fd,0);
-    if(content == (void *) -1){printf("Error during mmap\n");}
-
-    ///Copy to dest:///
-    memcpy(content, dest, *len);
-
-    ///Memory unmap:///
-    int err_munmap = munmap(content, *len);
-    if(err_munmap<0){printf("Error during munmap\n");}
-    */
 
    int palu = read(tar_fd, dest, *len);
    if(palu == -1){printf("Error during lecture time\n");}
