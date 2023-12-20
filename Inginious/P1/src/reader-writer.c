@@ -81,7 +81,7 @@ void *reader(void* rien){
 void* writer(void* rien){
     while(true){
 
-
+        printf("writecount = %d\n", writecount);
 
         pthread_mutex_lock(&mutex_write_count);
         //Section critique

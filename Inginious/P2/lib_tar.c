@@ -578,37 +578,64 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  *         the end of the file.
  *
  */
+
+
+
+    size_t pad(size_t size_file){
+
+        int mod = size_file % 512;
+        if(mod == 0){return size_file;}
+        int div = size_file/512;
+        return 512*(div + 1);
+    }
+
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
 
+    size_t real_offset = 0;
+
+
     int exist = is_file(tar_fd, path);
-    if(exist == 0){return -1;}
+    if(exist == 0){
+        exist =  is_symlink(tar_fd, path);
+        if(exist == 0){
+            return -1;
+        }
+        exist = is_file(tar_fd, tar_array[exist-1].linkname);
+        if(exist == 0){
+            return -1;
+        }
+    }
 
     int size = TAR_INT(tar_array[exist-1].size);
     if(offset > size){return -2;}
 
-    // THERE IS A SEGFAULT !
-    return 0;
+    for(int i = 0; i< num_files; i++){
+        if(strcmp(tar_array[i].name, path) == 0){break;}
+
+        real_offset += pad(TAR_INT(tar_array[i].size)) + 512;
+    }
+
+    
+    /*THERE IS A SEGFAULT !
+    return 0;*/
 
     //in case the buffer is too big:
     if(*len > size - offset){*len = size - offset;}
 
 
     //compute the remaining amount of bytes
-    int rem_bytes = size - offset - *len;
+    ssize_t rem_bytes = size - offset - *len;
     //the whole file is read and dest contains too much space:
     if(rem_bytes < 0){rem_bytes = 0;}
 
 
     /// Set offset:///
 
-    //offset to reach the file of interest, TO CHANGE
-    int size_files_before = 0;
-
-    size_t real_offset = offset + size_files_before;
-    int err_seek = lseek(tar_fd, real_offset, SEEK_SET);
+    int err_seek = lseek(tar_fd, real_offset + offset + 512, SEEK_SET);
     if(err_seek == -1){printf("Error during lseek\n");}
 
 
+    /*
     ///Memory map:///
     void* content = mmap(NULL, *len, PROT_READ, MAP_SHARED, tar_fd,0);
     if(content == (void *) -1){printf("Error during mmap\n");}
@@ -619,6 +646,14 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     ///Memory unmap:///
     int err_munmap = munmap(content, *len);
     if(err_munmap<0){printf("Error during munmap\n");}
+    */
+
+   int palu = read(tar_fd, dest, *len);
+   if(palu == -1){printf("Error during lecture time\n");}
+
+   int reset = lseek(tar_fd, 0, SEEK_SET);
+   if(reset == -1){printf("Error during pointer rester\n");}
+
 
     return rem_bytes;
 }
