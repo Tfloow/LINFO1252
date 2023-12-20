@@ -678,7 +678,7 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
         if(exist == 0){
             return -1;
         }
-    }
+    path = tar_array[exist-1].name;}
 
     int size = TAR_INT(tar_array[exist-1].size);
     if(offset > size){return -2;}
