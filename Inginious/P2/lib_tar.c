@@ -407,24 +407,24 @@ int store_header(int tar_fd){
 **/
 int is(int tar_fd, char* path, int typeflag){
     if(store_header(tar_fd) < 0){
-        printf("The archive is not valid\n");
+        //printf("The archive is not valid\n");
         return 0;
     }
 
     for(int i = 0; i < num_files; i++){ // iterate over the amount of file in the buffer
         if(typeflag == -1){
             if(strcmp(tar_array[i].name, path) == 0){
-                printf("File does exist in archive\n");
+                //printf("File does exist in archive\n");
                 return i+1;
             }
         }else{
             if(strcmp(tar_array[i].name, path) == 0 && tar_array[i].typeflag == typeflag){
-                printf("File does exist in archive\n");
+                //printf("File does exist in archive\n");
                 return i+1;
             }
         }
     }
-    printf("No such file in archive\n");
+    //printf("No such file in archive\n");
 
     reset_fd(tar_fd);
     return 0;
@@ -513,8 +513,6 @@ char* easy_fuse(int index){
             break;
         }
 
-        printf("%c ", from[i]);
-
         new_path[i] = from[i];
         if(from[i] == '/'){
             go_back--;
@@ -522,40 +520,38 @@ char* easy_fuse(int index){
         j++;
 
     }
-    printf("\n %d", i-j);
 
     for( ; i-j < strlen(link); i++){
         new_path[i] = link[i-j];
 
-        printf("%d %c ",i-j, link[i-j]);
 
     }
-    printf("\n");
 
     new_path[i] = '\0';
 
-    printf(" RES easy fuse %s\n", new_path);
+    printf(" RES easy fuse %s for index %d\n", new_path, index);
 
     return new_path;
 }
 
 int resolve_sym(int tar_fd, char* path){
-    int where = is_file(tar_fd, path);
-    if(where == 0){
-        where = is_dir(tar_fd, path);
-        if(where == 0){
-            int sym = is_symlink(tar_fd, path);
-            while( sym != 0 ){
-                printf("    aaaaaaah\n");
-                where = is_dir(tar_fd, easy_fuse(sym));
-                sym = is_symlink(tar_fd, easy_fuse(sym));
-            }
-            printf("FINI WHILE\n");
+    int sym = is_symlink(tar_fd, path);
+    int prev = 0;
 
-        }
+    while(sym != 0){
+        printf("while\n");
+        prev = sym;
+        sym = is_symlink(tar_fd, easy_fuse(prev));
     }
 
-    return where;
+    sym = is_dir(tar_fd, easy_fuse(prev));
+    if(sym == 0){
+        sym = is_file(tar_fd, easy_fuse(prev));
+    }
+
+    printf("     file is %d and %s\n", sym-1, tar_array[sym-1].name);
+
+    return sym;
 }
 
 
@@ -582,19 +578,23 @@ int resolve_sym(int tar_fd, char* path){
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
+    // Initialize entries
     entries = (char**) malloc(*no_entries * sizeof(char*));
     for(int i = 0; i < *no_entries; i++){
         entries[i] = (char*) malloc(100 * sizeof(char));
     }
+
 
     int where_dir = is_dir(tar_fd, path);
 
     if(where_dir == 0){
         where_dir = is_symlink(tar_fd, path);
         if(where_dir == 0){
+            printf("It's a file\n");
             *no_entries = 0;
             return 0;
         }
+        printf("SYM LINK\n");
         where_dir = resolve_sym(tar_fd, path);
     }
 
