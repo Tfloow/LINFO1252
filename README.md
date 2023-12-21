@@ -15,6 +15,10 @@
 - [cours 7](résumé/cours7.md)
 - [cours 8](résumé/cours8.md)
 - [cours 9](résumé/cours9.md)
+- [cours 10](résumé/cours10.md)
+- [cours 11](résumé/cours11.md)
+- [cours 12](résumé/cours12.md)
+
 
 ## Projet
 
