@@ -30,9 +30,17 @@ différent d'un mutex où c'est généralement le même thread appelle
 
 \paragraph{Problème du Rendez-Vous}\label{probluxe8me-du-rendez-vous}
 
-2 phases: 1. N threads s'exécutent indépendamment 2. Commence quand tous
-les threads ont finit la phase 1. (on peut utiliser la structure
-\texttt{pthread\_barrier\_init})
+2 phases:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  N threads s'exécutent indépendamment
+\item
+  Commence quand tous les threads ont finit la phase 1. (on peut
+  utiliser la structure \texttt{pthread\_barrier\_init})
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]

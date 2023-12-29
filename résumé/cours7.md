@@ -26,6 +26,7 @@ Donc une sémaphore avec `value = 1` est une sorte de mutex. Attention, un autre
 #### Problème du Rendez-Vous
 
 2 phases:
+
 1. N threads s'exécutent indépendamment
 2. Commence quand tous les threads ont finit la phase 1. (on peut utiliser la structure `pthread_barrier_init`)
 
