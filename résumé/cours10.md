@@ -46,3 +46,46 @@ Il doit avoir accès à l'allocation actuelle entre pages virtuelles et cadres d
 - Si valide: ligne du tableau indique le lien vers le numéro de cadre de page.
 
 ![Traduction](image-54.png)
+
+Chaque processus possède donc sa **propre table des pages** (pas pour le kernel). On a un registre spécial qui contient l'adresse de base en mémoire de la table des pages du processus actuel (restauré à chaque rétablissement de contexte).
+
+#### Exemple pour 2 processus
+
+Si on a un système 8 bits (RAM maximum de 256) ce qui nous donne 16 cadres de pages de 16 octets chacun. On décide d'avoir des adresses virtuelles sur 6 bits donc un maximum de 64 octets par processus (chaque processus va donc utiliser 4 pages --> 2 bits pour la page 4 pour l'offset).
+
+Imaginons 2 processus `P1` et `P2` qui requiert 3 pages (2 pour leur text et 1 pour leur stack).
+
+![Exemple P1 et P2](image-55.png)
+
+On remarque que faire la traduction entre adresse physique et virtuelle requiert 1 accès en plus. On va donc mettre en *cache* les traductions souvent utilisées via un **TLB** ou **Translation Lookaside Buffer** ce qui nous donne un fonctionnement de la sorte.
+
+![TLB hit et miss](image-56.png)
+
+### Protection des Pages
+
+On peut encoder les droits d'une page sur 3 bits: `R`, `W` et `X`. Si on essaye de faire une action invalide, on génère ainsi un trap qui passe la main au SE.
+
+On peut retirer des droits à une page via:
+
+```c
+#include <sys/mman.h> 
+
+int mprotect(const void *addr, size_t len, int prot);
+```
+
+### Problème du Swap
+
+On a 2 façon de faire du swap (qui permet d'avoir plus de pages virtuelles):
+
+1. Partition de Swap:
+   - ✅ Rapide
+   - ❌ Portion du disque dédiée
+2. Fichier de Swap:
+   - ✅ Flexible
+   - ❌ Performance moindre (fragmentation du fichier)
+
+#### Fonctionnement par défaut d'un accès à une page
+
+![Défauts de page](image-57.png)
+
+![Traitement d'un défaut de page](image-58.png)

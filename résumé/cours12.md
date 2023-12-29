@@ -182,10 +182,5 @@ On va donc avoir de la redondance et des vérificateurs de fichiers. On peut vé
 
 #### Journalisation
 
-
-
-
-
-
-TODO
+On y écrit dedans toutes les transactions effectuées afin de pouvoir voir à quel endroit cela a causé un soucis. Le journal est performant car écriture locale et contiguë.
 
