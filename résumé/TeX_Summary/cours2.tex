@@ -5,13 +5,26 @@
 \subsubsection{Hello world}\label{hello-world}
 
 On se souvient que pour faire un programme en C il faut des choses
-cruciales: 1. Directives préprocesseur
-\texttt{\#include\ \textless{}stdio.h\textgreater{}} 2. Avoir une
-fonction \texttt{main} qui est le point d'entrée de l'exécution 1.
-Fournir les arguments \texttt{argc} et \texttt{argv{[}{]}} pour prendre
-les arguments en ligne de commande. 3. Retourner un succès avec
-\texttt{EXIT\_SUCCESS} 4. Compiler le programme avec \texttt{gcc} comme
-cela \texttt{gcc\ -o\ output\ input.c}
+cruciales:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Directives préprocesseur
+  \texttt{\#include\ \textless{}stdio.h\textgreater{}}
+\item
+  Avoir une fonction \texttt{main} qui est le point d'entrée de
+  l'exécution
+\item
+  Fournir les arguments \texttt{argc} et \texttt{argv{[}{]}} pour
+  prendre les arguments en ligne de commande.
+\item
+  Retourner un succès avec \texttt{EXIT\_SUCCESS}
+\item
+  Compiler le programme avec \texttt{gcc} comme cela
+  \texttt{gcc\ -o\ output\ input.c}
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -57,10 +70,19 @@ header standard. On peut avoir des infos sur un header via
 
 Voir les slides car très basique
 
-Il faut faire attention en C avec les notations des \texttt{int}: -
-Notation classique: \texttt{i\ =\ 123} - Hexadécimal:
-\texttt{i\ =\ 0x7b} - Octal: \texttt{i\ =\ 0173} - Binaire:
-\texttt{i\ =\ 0b1111011}
+Il faut faire attention en C avec les notations des \texttt{int}:
+
+\begin{itemize}
+\tightlist
+\item
+  Notation classique: \texttt{i\ =\ 123}
+\item
+  Hexadécimal: \texttt{i\ =\ 0x7b}
+\item
+  Octal: \texttt{i\ =\ 0173}
+\item
+  Binaire: \texttt{i\ =\ 0b1111011}
+\end{itemize}
 
 La différence entre octal et classique est ce 0 au début.
 
@@ -78,7 +100,7 @@ On se souvient qu'en C, la taille d'un array doit être connu à l'avance
 \begin{figure}
 \centering
 \includegraphics{image-6.png}
-\caption{Alt text}
+\caption{Table ASCII}
 \end{figure}
 
 \subsubsection{Les pointeurs}\label{les-pointeurs}
@@ -204,10 +226,12 @@ Opération & Explication \\
 \endlastfoot
 \texttt{\textasciitilde{}} & Inversion des bits \\
 \texttt{\&} & Le ET \\
-\texttt{\textbackslash{}\textbar{}} & le OU \\
+\texttt{\textbackslash{}\textbar{}} & le OU (sans le '' ~'' ) \\
 \texttt{\^{}} & le XOR (seulement si 1 bit est 1) \\
 \texttt{\textgreater{}\textgreater{}} & Shift les bits de x places vers
 la droite \\
+\texttt{\textless{}\textless{}} & Shift les bits de x places vers la
+gauche \\
 \end{longtable}
 
 \subsubsection{Constante}\label{constante}

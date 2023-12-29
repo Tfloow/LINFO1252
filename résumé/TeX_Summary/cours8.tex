@@ -3,8 +3,15 @@
 \subsection{Rappel}\label{rappel}
 
 On se souvient que l'accès à une variable partagée doit être protégée.
-soit via: - Mutex: \texttt{lock()} et \texttt{unlock()} - Sémaphore:
-\texttt{wait()} et \texttt{post()}
+soit via:
+
+\begin{itemize}
+\tightlist
+\item
+  Mutex: \texttt{lock()} et \texttt{unlock()}
+\item
+  Sémaphore: \texttt{wait()} et \texttt{post()}
+\end{itemize}
 
 \subsection{Problème d'exclusion
 fondamentale}\label{probluxe8me-dexclusion-fondamentale}
@@ -20,8 +27,15 @@ opérations de lecture et d'écriture.
 \paragraph{Les bases}\label{les-bases}
 
 Si on a 2 threads qui doivent accéder à une section critique, il faut
-garantir: - La \emph{Safety}: ils ne vont pas y accéder de manière
-conjointe - La \emph{Liveness}: ils doivent y accéder en un temps fini.
+garantir:
+
+\begin{itemize}
+\tightlist
+\item
+  La \emph{Safety}: ils ne vont pas y accéder de manière conjointe
+\item
+  La \emph{Liveness}: ils doivent y accéder en un temps fini.
+\end{itemize}
 
 \paragraph{Premier Essai}\label{premier-essai}
 
@@ -192,8 +206,15 @@ On a ainsi \textbf{N-1 niveaux} et chaque niveau est une salle d'attente
 \caption{Alt text}
 \end{figure}
 
-Si des threads veulent passer il faut que: - Au moins 1 passe - Au moins
-1 reste
+Si des threads veulent passer il faut que:
+
+\begin{itemize}
+\tightlist
+\item
+  Au moins 1 passe
+\item
+  Au moins 1 reste
+\end{itemize}
 
 Quand on est au dernier niveau avec 2 threads, un des deux passe et
 l'autre attend.
@@ -201,10 +222,18 @@ l'autre attend.
 Pour mettre cela en oeuvre, un thread qui annonce qu'il rentre dans un
 nouveau niveau va laisser passer les autres d'abord.
 
-On a 2 tableaux partagés. 1. \texttt{level{[}N{]}}: indexé par le
-\textbf{numéro de Thread} et indique son niveau 2.
-\texttt{victim{[}N{]}}: indexé par le \textbf{niveau} et dit quel thread
-est en attente.
+On a 2 tableaux partagés:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{level{[}N{]}}: indexé par le \textbf{numéro de Thread} et
+  indique son niveau
+\item
+  \texttt{victim{[}N{]}}: indexé par le \textbf{niveau} et dit quel
+  thread est en attente.
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -235,9 +264,15 @@ est en attente.
 \end{Highlighting}
 \end{Shaded}
 
-Si on décompose le code, on voit qu'un thread progresse si: - Il n'y
-aucun thread en attente à son niveau - Il y a un autre thread qui a pris
-le rôle de victime.
+Si on décompose le code, on voit qu'un thread progresse si:
+
+\begin{itemize}
+\tightlist
+\item
+  Il n'y aucun thread en attente à son niveau
+\item
+  Il y a un autre thread qui a pris le rôle de victime.
+\end{itemize}
 
 Au plus N-L threads peuvent dépasser le niveau L. Donc au plus 1 seul
 thread peut accéder au niveau N-1.
@@ -264,10 +299,17 @@ Ceci arrive à partir de 3 threads.
 
 On peut donc définir l'équité et rendre l'algorithme plus équitable
 (permettant d'assurer la propriété de \textbf{liveness}). On va
-subdiviser en 2 la partie d'accès à la section critique: 1.
-\emph{Doorway}: en un nombre de pas borné, configuration de variables
-partagées 2. \emph{Waiting}: boucle \texttt{while()} qui vérifie une
-condition.
+subdiviser en 2 la partie d'accès à la section critique:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \emph{Doorway}: en un nombre de pas borné, configuration de variables
+  partagées
+\item
+  \emph{Waiting}: boucle \texttt{while()} qui vérifie une condition.
+\end{enumerate}
 
 Garantie formelle d'équité : si la section doorway \(D_A\) d'un thread
 \(T_A\) termine avant le début de la section doorway \(D_B\) d'un thread
@@ -282,10 +324,18 @@ différences entre deux threads. FIFO c'est un 1-bounded waiting.
 \subsection{Bakery Algorithm}\label{bakery-algorithm}
 
 Se base sur les tickets de boucherie. On doit toujours savoir combien de
-threads on a à l'avance. On a également 2 tableaux partagées: 1.
-\texttt{drapeau{[}N{]}}: indexé par le \textbf{numéro du Thread} et
-indique s'il veut rentrer en SC. 2. \texttt{ticket{[}N{]}}: indexé par
-le \textbf{numéro du Thread} et indique le numéro dans la file.
+threads on a à l'avance. On a également 2 tableaux partagées:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{drapeau{[}N{]}}: indexé par le \textbf{numéro du Thread} et
+  indique s'il veut rentrer en SC.
+\item
+  \texttt{ticket{[}N{]}}: indexé par le \textbf{numéro du Thread} et
+  indique le numéro dans la file.
+\end{enumerate}
 
 \textbf{HYPOTHÈSES:} On a également des sections \textbf{doorway} qui ne
 sont jamais concurrentes. On aura jamais 2 threads avec le même numéro
@@ -386,12 +436,31 @@ qui était libre 0).
 
 \subsubsection{Exclusion Mutuelle}\label{exclusion-mutuelle}
 
-Après un appel à un \texttt{xcgh} il y a deux possibilités: 1.
-\texttt{\%eax} contient 0 : l'adresse (\texttt{lock}) a été mise de 0 à
-1. * Donc est maintenant réservé et le thread peut rentrer en SC. 2.
-\texttt{\%eax} contient 1 : l'adresse (\texttt{lock}) a été mise à 1
-mais valait déjà 1 avant l'appel ! * Donc le \texttt{lock} n'était pas
-libre ! On va donc boucler et ré-essayer
+Après un appel à un \texttt{xcgh} il y a deux possibilités:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{\%eax} contient 0 : l'adresse (\texttt{lock}) a été mise de 0
+  à 1.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Donc est maintenant réservé et le thread peut rentrer en SC.
+  \end{itemize}
+\item
+  \texttt{\%eax} contient 1 : l'adresse (\texttt{lock}) a été mise à 1
+  mais valait déjà 1 avant l'appel !
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Donc le \texttt{lock} n'était pas libre ! On va donc boucler et
+    ré-essayer
+  \end{itemize}
+\end{enumerate}
 
 C'est une approche \emph{test-and-set}.
 
@@ -456,12 +525,21 @@ répondre aux requêtes de lecture/écriture.
 \subsubsection{Protocole de Cohérence de Cache
 MSI}\label{protocole-de-cohuxe9rence-de-cache-msi}
 
-Chaque ligne de cache a donc 3 états: - \textbf{M} \emph{modified}: la
-valeur en cache est plus récente que celle en mémoire principale. -
-\textbf{S} \emph{shared}: lignes présentes à d'autres endroits et
-identiques. - \textbf{I} \emph{invalid}: on ne peut pas utiliser cette
-ligne. L'accès doit retourner vers le bus pour avoir la version la plus
-à jour.
+Chaque ligne de cache a donc 3 états:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{M} \emph{modified}: la valeur en cache est plus récente que
+  celle en mémoire principale.
+\item
+  \textbf{S} \emph{shared}: lignes présentes à d'autres endroits et
+  identiques.
+\item
+  \textbf{I} \emph{invalid}: on ne peut pas utiliser cette ligne.
+  L'accès doit retourner vers le bus pour avoir la version la plus à
+  jour.
+\end{itemize}
 
 \begin{figure}
 \centering

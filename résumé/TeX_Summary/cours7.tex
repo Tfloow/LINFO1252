@@ -5,9 +5,15 @@ Threads}\label{suxe9maphores-et-compluxe9ments-sur-les-threads}
 
 \subsubsection{Sémaphore}\label{suxe9maphore}
 
-Une sémaphore est donc une structure qui contient: - Entier non-signé:
-positif ou nul - File vers les pointeurs de threads en attente
-(\emph{Blocked})
+Une sémaphore est donc une structure qui contient:
+
+\begin{itemize}
+\tightlist
+\item
+  Entier non-signé: positif ou nul
+\item
+  File vers les pointeurs de threads en attente (\emph{Blocked})
+\end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -197,11 +203,21 @@ les fichiers midi).
 
 \subsubsection{Création d'un processus}\label{cruxe9ation-dun-processus}
 
-Les étapes: 1. Le shell doit localiser le fichier exécutable dans le
-\texttt{PATH} 2. Demande au kernel de créer un nouveau processus 3. Le
-processus demande au kernel le chargement et l'exécution du code du
-fichier programme 4. On peut bloqué le shell et attendre de récupérer la
-valeur de retour
+Les étapes:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Le shell doit localiser le fichier exécutable dans le \texttt{PATH}
+\item
+  Demande au kernel de créer un nouveau processus
+\item
+  Le processus demande au kernel le chargement et l'exécution du code du
+  fichier programme
+\item
+  On peut bloqué le shell et attendre de récupérer la valeur de retour
+\end{enumerate}
 
 On peut créer de nouveau processus via un \texttt{fork}. Cela fait des
 \textbf{copies} distinctes qui ne partagent rien entre elles.

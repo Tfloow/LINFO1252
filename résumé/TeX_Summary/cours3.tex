@@ -40,7 +40,7 @@ mémoire dessus. On reçoit un pointeur vers le début de la zone.
 Stack & Démarre vers le haut de l'espace mémoire. Cela stocke les
 variables \textbf{locales} et permet l'appel de fonction. (paramètre
 d'appel, valeur de retour) et c'est LIFO. \\
-Arguments et varaibles d'environnement & Tout d'au-dessus, on a les
+Arguments et variables d'environnement & Tout d'au-dessus, on a les
 données fournies par le SE en lecture seule. Typiquement les données
 qu'on passe quand on lance un programme + variable d'environnement
 (\texttt{getenv}, \texttt{unsetenv}, \texttt{setenv}, \ldots). \\
@@ -80,9 +80,18 @@ La limite se trouve via \texttt{ulimit\ -a}.
 
 \subsubsection{Allouer de la mémoire}\label{allouer-de-la-muxe9moire}
 
-On a différentes contraintes: - Conserver l'information sur les blocs
-libres et allouées (via méta-données) - méta-données dans le heap -
-Trouver le bon endroit pour les mettre
+On a différentes contraintes:
+
+\begin{itemize}
+\tightlist
+\item
+  Conserver l'information sur les blocs libres et allouées (via
+  méta-données)
+\item
+  méta-données dans le heap
+\item
+  Trouver le bon endroit pour les mettre
+\end{itemize}
 
 \paragraph{Alignement}\label{alignement}
 
@@ -93,17 +102,26 @@ c'est 16 octets (128bits).
 Donc allouer 17 octets va en réalité nous couter 32 octets.
 
 L'utilité principale (comme vu dans le projet) est que les bits de poids
-faibles seront toujours à 0. (effectivement \texttt{0x00000000}
---\textgreater{} \texttt{0x00010000} --\textgreater{}
-\texttt{0x00100000} --\textgreater{} \ldots). Ainsi, on peut prendre
-avatange de ces 4 bits toujours mis à 0 en les utilisant comme des
+faibles seront toujours à 0. (effectivement \texttt{0b00000000}
+--\textgreater{} \texttt{0b00010000} --\textgreater{}
+\texttt{0b00100000} --\textgreater{} \ldots). Ainsi, on peut prendre
+avantages de ces 4 bits toujours mis à 0 en les utilisant comme des
 méta-données.
 
 \paragraph{Objectifs}\label{objectifs}
 
-3 critères pour un bon algorithme de mémoire dynamique: 1. Temps
-d'exécution faible, stable 2. Peu de fragmentation (avoir des trous
-vides) 3. Bonne localité (garder les données proches l'une des autres)
+3 critères pour un bon algorithme de mémoire dynamique:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Temps d'exécution faible, stable
+\item
+  Peu de fragmentation (avoir des trous vides)
+\item
+  Bonne localité (garder les données proches l'une des autres)
+\end{enumerate}
 
 Fragmentation: interne si espace perdu à cause du padding, externe si
 manque de place et blocs vides.
@@ -137,8 +155,7 @@ Le cache joue sur la localité:
 Malloc}\label{impluxe9mentation-de-notre-malloc}
 
 On stocke dans 1 bloc de métadonnées la taille de bloc qui est libre + 1
-(pour le bloc de métadonnées) et dans le bit de poids faible le drapeau
-si c'est alloué ou pas.
+et dans le bit de poids faible le drapeau si c'est alloué ou pas.
 
 C'est pour ça qu'on alloue de minimum 2 comme ça le dernier bit peut
 être comme un flag. On peut l'isoler en utilisant des masques
@@ -165,18 +182,45 @@ linkedlist} pour ça.
 
 \paragraph{Politique}\label{politique}
 
-First fit: - {[}x{]} Rapide car trouve le premier bloc libre - {[} {]}
-Fragmentation - {[} {]} Localité faible et devient de pire en pire
+First fit:
 
-Next fit (un first fit qui commence au dernier bloc alloué): - {[}x{]}
-Rapide - {[} {]} Fragmentation de fou furieux - {[}x{]} Bonne localité
+\begin{itemize}
+\tightlist
+\item
+  ✅ Rapide car trouve le premier bloc libre
+\item
+  ❌ Fragmentation
+\item
+  ❌ Localité faible et devient de pire en pire
+\end{itemize}
+
+Next fit (un first fit qui commence au dernier bloc alloué):
+
+\begin{itemize}
+\tightlist
+\item
+  ✅ Rapide
+\item
+  ❌ Fragmentation de fou furieux
+\item
+  ✅ Bonne localité
+\end{itemize}
 
 Best fit (parcours la liste pour trouver le bloc le plus petit possible
-pour notre nouvelle donnée): - {[} {]} Lenttttt - {[}x{]} Fragmentation
-minime - {[} {]} Localité pas ouf
+pour notre nouvelle donnée):
 
-\subsubsection{Approche par List
-Explicite}\label{approche-par-list-explicite}
+\begin{itemize}
+\tightlist
+\item
+  ❌ Lenttttt
+\item
+  ✅ Fragmentation minime
+\item
+  ❌ Localité pas ouf
+\end{itemize}
+
+\subsubsection{Approche par Liste
+Explicite}\label{approche-par-liste-explicite}
 
 On lit les blocs vides entre eux ! Le premier bloc vide sera la taille
 de l'ensemble et son second indiquera le prochain bloc vide. On peut
@@ -189,9 +233,16 @@ combiner cela à une approche doublement chaînée.
 \end{figure}
 
 On doit donc gérer les insertions et suppressions de blocs. 2 solutions:
-1. Insérer en fonction de l'adresse: nous coûte cher car on doit tout
-parcourir mais simple à fusionner 2. LIFO: on supprime au bout (facile)
-mais fusion plus compliquée.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Insérer en fonction de l'adresse: nous coûte cher car on doit tout
+  parcourir mais simple à fusionner
+\item
+  LIFO: on supprime au bout (facile) mais fusion plus compliquée.
+\end{enumerate}
 
 On peut aussi voir une approche différente où on a plusieurs listes en
 fonction de la taille de bloc disponible mais ça devient très couteux et

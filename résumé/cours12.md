@@ -7,6 +7,7 @@
 Le *système de fichier* est une interface *unifiée* et unique des différents périphériques de stockage (car bcp de type différent). On a une hiérarchie en **point de montage** (`mnt`)
 
 On a une grande diversité des supports:
+
 1. Les Disques Durs avec des têtes de lectures basé sur les champs électro-magnétique
 
 ![Alt text](image-35.png)
@@ -75,9 +76,9 @@ On écrit simplement les blocs les un à la suite de l'autre et on stocke simple
 
 ![Alt text](image-41.png)
 
-- [x] Simple
-- [ ] Compliqué d'agrandir un fichier
-- [ ] Fragmentation --> on a plein de blocs vides entre les blocs alloués
+- ✅ Simple
+- ❌ Compliqué d'agrandir un fichier
+- ❌ Fragmentation --> on a plein de blocs vides entre les blocs alloués
 
 ### Option 2
 
@@ -85,9 +86,9 @@ On stocke l'entrée pour le premier bloc puis on fait des pointeurs vers le suiv
 
 ![Alt text](image-42.png)
 
-- [x] N'empêche pas de réserver tout l'espace libre
-- [ ] Localité HORRIBLE (le pire c'est sur un HDD)
-- [ ] On doit parcourir le fichier pour accéder au milieu
+- ✅ N'empêche pas de réserver tout l'espace libre
+- ❌ Localité HORRIBLE (le pire c'est sur un HDD)
+- ❌ On doit parcourir le fichier pour accéder au milieu
 
 ### FAT32
 
@@ -97,8 +98,8 @@ Pour **File Allocation Table** utilisé sur MS-DOS et Windows (standard sur clé
 
 On a une allocation des blocs *contiguës* et liste chainé entre *groupe de blocs*. Croissance possible sans déplacement de blocs.
 
-- [x] Simple
-- [ ] Grande fragmentation et perte de la localité avec le temps
+- ✅ Simple
+- ❌ Grande fragmentation et perte de la localité avec le temps
 
 #### (Dé)Fragmentation
 
@@ -112,8 +113,8 @@ On ne va plus utiliser une table de en début de partition mais on va utiliser c
 
 ![Alt text](image-43.png)
 
-- [x] Pas de limitation à l'avance du nombre de fichiers.
-- [ ] On a besoin de 1 bloc en plus même pour des petits fichiers.
+- ✅ Pas de limitation à l'avance du nombre de fichiers.
+- ❌ On a besoin de 1 bloc en plus même pour des petits fichiers.
 
 On peut utiliser tout l'espace mais on fait face à un risque d'*éparpillement*.
 
@@ -167,6 +168,7 @@ On peut utiliser la mémoire comme cache pour les accès disque. On peut faire c
 On va éviter de faire trop bouger la tête de lecture, donc on écrit sur la partie la plus extérieure du disque.
 
 On a un accès souvent séquentiel aux fichiers donc pas de retour en arrière, on lit tout d'une traite:
+
 - *read-ahead*: on charge les blocs suivants
 - *read-behind*: on libère les pages du cache au fur et à mesure.
 

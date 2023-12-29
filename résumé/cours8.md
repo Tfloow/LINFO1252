@@ -6,6 +6,7 @@
 ## Rappel
 
 On se souvient que l'accès à une variable partagée doit être protégée. soit via:
+
 - Mutex: `lock()` et `unlock()`
 - Sémaphore: `wait()` et `post()`
 
@@ -20,6 +21,7 @@ il est impossible de réaliser un algorithme d’exclusion mutuelle pour N threa
 #### Les bases
 
 Si on a 2 threads qui doivent accéder à une section critique, il faut garantir:
+
 - La *Safety*: ils ne vont pas y accéder de manière conjointe
 - La *Liveness*: ils doivent y accéder en un temps fini.
 
@@ -143,6 +145,7 @@ On a ainsi **N-1 niveaux** et chaque niveau est une salle d'attente
 ![Alt text](image-25.png)
 
 Si des threads veulent passer il faut que:
+
 - Au moins 1 passe
 - Au moins 1 reste
 
@@ -150,7 +153,8 @@ Quand on est au dernier niveau avec 2 threads, un des deux passe et l'autre atte
 
 Pour mettre cela en oeuvre, un thread qui annonce qu'il rentre dans un nouveau niveau va laisser passer les autres d'abord.
 
-On a 2 tableaux partagés.
+On a 2 tableaux partagés:
+
 1. `level[N]`: indexé par le **numéro de Thread** et indique son niveau
 2. `victim[N]`: indexé par le **niveau** et dit quel thread est en attente.
 
@@ -182,6 +186,7 @@ level[i]=0;
 ```
 
 Si on décompose le code, on voit qu'un thread progresse si:
+
 - Il n'y aucun thread en attente à son niveau
 - Il y a un autre thread qui a pris le rôle de victime.
 
@@ -198,6 +203,7 @@ On n'a pas la garantie qu'un thread arrivé en premier tout au-dessus des niveau
 Ceci arrive à partir de 3 threads.
 
 On peut donc définir l'équité et rendre l'algorithme plus équitable (permettant d'assurer la propriété de **liveness**). On va subdiviser en 2 la partie d'accès à la section critique:
+
 1. *Doorway*: en un nombre de pas borné, configuration de variables partagées
 2. *Waiting*: boucle `while()` qui vérifie une condition.
 
@@ -208,6 +214,7 @@ Garantie formelle d’équité : si la section doorway $D_A$ d’un thread $T_A$
 ## Bakery Algorithm
 
 Se base sur les tickets de boucherie. On doit toujours savoir combien de threads on a à l'avance. On a également 2 tableaux partagées:
+
 1. `drapeau[N]`: indexé par le **numéro du Thread** et indique s'il veut rentrer en SC.
 2. `ticket[N]`: indexé par le **numéro du Thread** et indique le numéro dans la file.
 
@@ -283,6 +290,7 @@ On a une exclusion mutuelle en utilisant simplement un unique mot mémoire parta
 ### Exclusion Mutuelle
 
 Après un appel à un `xcgh` il y a deux possibilités:
+
 1. `%eax` contient 0 : l’adresse (``lock``) a été mise de 0 à 1. 
    * Donc est maintenant réservé et le thread peut rentrer en SC.
 2. ``%eax`` contient 1 : l’adresse (``lock``) a été mise à 1 mais valait déjà 1 avant l’appel ! 
@@ -331,6 +339,7 @@ On a chaque contrôleur qui *snoop* le bus. Un seul contrôleur peut utiliser le
 ### Protocole de Cohérence de Cache MSI 
 
 Chaque ligne de cache a donc 3 états:
+
 - **M** *modified*: la valeur en cache est plus récente que celle en mémoire principale.
 - **S** *shared*: lignes présentes à d'autres endroits et identiques.
 - **I** *invalid*: on ne peut pas utiliser cette ligne. L'accès doit retourner vers le bus pour avoir la version la plus à jour.

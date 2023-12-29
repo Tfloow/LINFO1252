@@ -7,6 +7,7 @@
 ### Sémaphore
 
 Une sémaphore est donc une structure qui contient:
+
 - Entier non-signé: positif ou nul
 - File vers les pointeurs de threads en attente (*Blocked*)
 
@@ -162,6 +163,7 @@ On utilise souvent des librairies en C sous la forme de header `math.h`. Un proc
 ### Création d'un processus
 
 Les étapes:
+
 1. Le shell doit localiser le fichier exécutable dans le `PATH`
 2. Demande au kernel de créer un nouveau processus
 3. Le processus demande au kernel le chargement et l'exécution du code du fichier programme

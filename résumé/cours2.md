@@ -8,11 +8,12 @@
 ### Hello world
 
 On se souvient que pour faire un programme en C il faut des choses cruciales:
+
 1. Directives préprocesseur `#include <stdio.h>`
 2. Avoir une fonction `main` qui est le point d'entrée de l'exécution
-   1. Fournir les arguments `argc` et `argv[]` pour prendre les arguments en ligne de commande.
-3. Retourner un succès avec `EXIT_SUCCESS`
-4. Compiler le programme avec `gcc` comme cela `gcc -o output input.c`
+3.  Fournir les arguments `argc` et `argv[]` pour prendre les arguments en ligne de commande.
+4. Retourner un succès avec `EXIT_SUCCESS`
+5. Compiler le programme avec `gcc` comme cela `gcc -o output input.c`
 
 ```C
 #include <stdio.h>
@@ -47,6 +48,7 @@ On fait `#include "monheader.h"` pour inclure du dossier courant et `#include <h
 Voir les slides car très basique
 
 Il faut faire attention en C avec les notations des `int`:
+
 - Notation classique: `i = 123`
 - Hexadécimal: `i = 0x7b`
 - Octal: `i = 0173`
@@ -62,7 +64,7 @@ On se souvient qu'en C, la taille d'un array doit être connu à l'avance ! (sin
 
 ### Caractères ASCII
 
-![Alt text](image-6.png)
+![Table ASCII](image-6.png)
 
 
 ### Les pointeurs
@@ -164,9 +166,11 @@ Ensuite pour faire un appel, on doit déréférencer le pointeur.
 | :-------: | :---------------------------------------: |
 |    `~`    |            Inversion des bits             |
 |    `&`    |                   Le ET                   |
-|   `\|`    |                   le OU                   |
+|   `\|`    |          le OU (sans le " \ " )           |
 |    `^`    |     le XOR (seulement si 1 bit est 1)     |
 |   `>>`    | Shift les bits de x places vers la droite |
+|   `<<`    | Shift les bits de x places vers la gauche |
+
 
 ### Constante
 

@@ -20,6 +20,7 @@ Donc on peut avoir plusieurs politiques possibles sur la base du même mécanism
 ![Alt text](image-28.png)
 
 On a une alternance entre:
+
 1. **Burst CPU**
 2. **Opération bloquante**
 
@@ -105,10 +106,10 @@ On peut libérer le processeur à chaque tick de l'horloge système. C'est un é
 
 ![Alt text](image-32.png)
 
-- [x] Ainsi, on a un temps d'attente moyen assez court.
-- [ ] Pas de relation directe entre *attente* et *temps de réponse*
-- [ ] Beaucoup de changement de contexte
-- [ ] Pas de distinction entre threads avec bursts courts et longs
+- ✅ Ainsi, on a un temps d'attente moyen assez court.
+- ❌ Pas de relation directe entre *attente* et *temps de réponse*
+- ❌ Beaucoup de changement de contexte
+- ❌ Pas de distinction entre threads avec bursts courts et longs
 
 
 #### Fréquence d'horloge
@@ -163,12 +164,14 @@ Par défaut, les threads d'un processus héritent de la priorité du premier thr
 Si on est pas `root`, on ne peut pas demander des priorités plus élevés mais *seulement* plus faibles. 
 
 On fait cela via l'utilitaire `nice(1)` ou la fonction `nice(2)`.
+
 - $>0$: priorité plus faible (jusqu'à 20)
 - $<0$; priorité plus élevé (jusqu'à -19)
 
 ## Conclusion
 
 À la base d’un même mécanisme de changement de contexte, plusieurs politiques différentes possibles
+
 - On peut utiliser de l'apprentissage automatique pour améliorer les paramètre d'un scheduler
 
 Dans Linux, les priorités sont dynamiques et prise en compte des threads *interactifs*/*intensifs* en CPU.

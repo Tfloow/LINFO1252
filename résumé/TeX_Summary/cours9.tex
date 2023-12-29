@@ -31,8 +31,16 @@ mécanisme.
 \caption{Alt text}
 \end{figure}
 
-On a une alternance entre: 1. \textbf{Burst CPU} 2. \textbf{Opération
-bloquante}
+On a une alternance entre:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Burst CPU}
+\item
+  \textbf{Opération bloquante}
+\end{enumerate}
 
 Sur le schéma ci-dessus, on voit la durée de différent burst CPU et les
 moments d'attente.
@@ -193,15 +201,15 @@ un équivalent de \emph{Round-Robin} (ruban rond).
 
 \begin{itemize}
 \tightlist
-\item[$\boxtimes$]
-  Ainsi, on a un temps d'attente moyen assez court.
-\item[$\square$]
-  Pas de relation directe entre \emph{attente} et \emph{temps de
+\item
+  ✅ Ainsi, on a un temps d'attente moyen assez court.
+\item
+  ❌ Pas de relation directe entre \emph{attente} et \emph{temps de
   réponse}
-\item[$\square$]
-  Beaucoup de changement de contexte
-\item[$\square$]
-  Pas de distinction entre threads avec bursts courts et longs
+\item
+  ❌ Beaucoup de changement de contexte
+\item
+  ❌ Pas de distinction entre threads avec bursts courts et longs
 \end{itemize}
 
 \paragraph{Fréquence d'horloge}\label{fruxe9quence-dhorloge}
@@ -313,14 +321,27 @@ Si on est pas \texttt{root}, on ne peut pas demander des priorités plus
 élevés mais \emph{seulement} plus faibles.
 
 On fait cela via l'utilitaire \texttt{nice(1)} ou la fonction
-\texttt{nice(2)}. - \(>0\): priorité plus faible (jusqu'à 20) - \(<0\);
-priorité plus élevé (jusqu'à -19)
+\texttt{nice(2)}.
+
+\begin{itemize}
+\tightlist
+\item
+  \(>0\): priorité plus faible (jusqu'à 20)
+\item
+  \(<0\); priorité plus élevé (jusqu'à -19)
+\end{itemize}
 
 \subsection{Conclusion}\label{conclusion}
 
 À la base d'un même mécanisme de changement de contexte, plusieurs
-politiques différentes possibles - On peut utiliser de l'apprentissage
-automatique pour améliorer les paramètre d'un scheduler
+politiques différentes possibles
+
+\begin{itemize}
+\tightlist
+\item
+  On peut utiliser de l'apprentissage automatique pour améliorer les
+  paramètre d'un scheduler
+\end{itemize}
 
 Dans Linux, les priorités sont dynamiques et prise en compte des threads
 \emph{interactifs}/\emph{intensifs} en CPU.

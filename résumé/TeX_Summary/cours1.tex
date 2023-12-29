@@ -2,7 +2,13 @@
 
 \subsection{Fondamentaux}\label{fondamentaux}
 
-On a des composants: - RAM, CPU, IO devices, \ldots{}
+On a des composants:
+
+\begin{itemize}
+\tightlist
+\item
+  RAM, CPU, IO devices, \ldots{}
+\end{itemize}
 
 Le processeur exécute des \emph{instructions}.
 
@@ -33,7 +39,7 @@ On a typiquement:
 
 \begin{longtable}[]{@{}cc@{}}
 \toprule\noalign{}
-taille & nome \\
+taille & nom \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -53,11 +59,11 @@ Le processeur doit transporter les infos de la mémoire classique à la
 zone des contrôleurs.
 
 Un processeur n'est pas de base parallélisé. À chaque frappe du clavier,
-une \textbf{interruption} est lancée pour intercepté ce stimulis.
+une \textbf{interruption} est lancée pour intercepter ce stimulis.
 
 \subsubsection{Interruption}\label{interruption}
 
-Le processeur va s'arrêté dans son exécution et va \emph{transférer} le
+Le processeur va s'arrêter dans son exécution et va \emph{transférer} le
 contrôle du processeur à une routine de traitement.
 
 La routine de traitement va déterminer la source de l'interruption
@@ -127,7 +133,7 @@ ressources matérielles. On va donc utiliser des API,\ldots{}
 \item
   Processus coexiste et s'entremêle
 \item
-  Partage du temps dt des ressources
+  Partage du temps et des ressources
 \item
   Virtualisation de la mémoire
 
@@ -232,12 +238,21 @@ d'utilitaires et de librairies associés.
 \begin{figure}
 \centering
 \includegraphics{image-3.png}
-\caption{Alt text}
+\caption{La grande famille UNIX}
 \end{figure}
 
-Il y a la philosophie \emph{KISS}: - \emph{Keep It Simple, Stupid} -
-Programme simple, petit, parfaitement adapté à une tâche ou fonction
-unique - Facilité de composition de commandes
+Il y a la philosophie \emph{KISS}:
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Keep It Simple, Stupid}
+\item
+  Programme simple, petit, parfaitement adapté à une tâche ou fonction
+  unique
+\item
+  Facilité de composition de commandes
+\end{itemize}
 
 \begin{longtable}[]{@{}
   >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1134}}
@@ -257,7 +272,7 @@ cat & lire/afficher le contenu d'un fichier. ex :
 echo & afficher une chaîne de caractère \\
 head / tail & affiche le début ou la fin d'un fichier \\
 wc & compte le nombre de caractères \\
-wc & trie un fichier. ex:\texttt{sort\ -n\ -r\ scores.txt} \\
+sort & trie un fichier. ex:\texttt{sort\ -n\ -r\ scores.txt} \\
 uniq & extrait les lignes uniques ou dupliquées d'un fichier trié. ex:
 \texttt{uniq\ -d\ students.dat} \\
 \end{longtable}
@@ -268,8 +283,8 @@ Chaque utilitaire possède une manpage.
 
 \texttt{man\ nom\_utilitaire}
 
-On a des sections de manuelles qui différencies et trie les utilitaires
-(librairie standard, appel système, \ldots)
+On a des sections de manuelles qui différencient et trient les
+utilitaires (librairie standard, appel système, \ldots)
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -299,7 +314,7 @@ Donc parfois on doit préciser \texttt{man\ 1\ printf}.
 \begin{figure}
 \centering
 \includegraphics{image-4.png}
-\caption{Alt text}
+\caption{Flux}
 \end{figure}
 
 On a 1 entrées, 1 sorties par défaut dans le shell (STDOUT) et une

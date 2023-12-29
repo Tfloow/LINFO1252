@@ -18,7 +18,7 @@ On a donc 6 segments distincts.
 |      *Statique*: non-initialisée       |                                                                                       mise à 0 par le compilateur.                                                                                        |
 |                  Heap                  |                                  juste après les non-init. Un programme peut y réserver de la mémoire dessus. On reçoit un pointeur vers le début de la zone. (`malloc`)                                  |
 |                 Stack                  |                    Démarre vers le haut de l'espace mémoire. Cela stocke les variables **locales** et permet l'appel de fonction. (paramètre d'appel, valeur de retour) et c'est LIFO.                    |
-| Arguments et varaibles d'environnement | Tout d'au-dessus, on a les données fournies par le SE en lecture seule. Typiquement les données qu'on passe quand on lance un programme + variable d'environnement (`getenv`, `unsetenv`, `setenv`, ...). |
+| Arguments et variables d'environnement | Tout d'au-dessus, on a les données fournies par le SE en lecture seule. Typiquement les données qu'on passe quand on lance un programme + variable d'environnement (`getenv`, `unsetenv`, `setenv`, ...). |
 
 Il faut savoir que les variables locales non initialisées **ne sont pas mises à 0**. Donc attention au garbage data !
 
@@ -43,6 +43,7 @@ Attention à ne pas trop incrémenter sous peine de cause une erreur. --> `ENOME
 ### Allouer de la mémoire
 
 On a différentes contraintes:
+
 - Conserver l'information sur les blocs libres et allouées (via méta-données)
 - méta-données dans le heap
 - Trouver le bon endroit pour les mettre
@@ -53,11 +54,12 @@ Les données dans la mémoire sont toutes **alignées**. Souvent sous un nombre 
 
 Donc allouer 17 octets va en réalité nous couter 32 octets. 
 
-L'utilité principale (comme vu dans le projet) est que les bits de poids faibles seront toujours à 0. (effectivement `0x00000000` --> `0x00010000` --> `0x00100000` --> ...). Ainsi, on peut prendre avatange de ces 4 bits toujours mis à 0 en les utilisant comme des méta-données.
+L'utilité principale (comme vu dans le projet) est que les bits de poids faibles seront toujours à 0. (effectivement `0b00000000` --> `0b00010000` --> `0b00100000` --> ...). Ainsi, on peut prendre avantages de ces 4 bits toujours mis à 0 en les utilisant comme des méta-données.
 
 #### Objectifs
 
 3 critères pour un bon algorithme de mémoire dynamique:
+
 1. Temps d'exécution faible, stable
 2. Peu de fragmentation (avoir des trous vides)
 3. Bonne localité (garder les données proches l'une des autres)
@@ -79,7 +81,7 @@ Le cache joue sur la localité:
 
 ### Implémentation de Notre Malloc
 
-On stocke dans 1 bloc de métadonnées la taille de bloc qui est libre + 1 (pour le bloc de métadonnées) et dans le bit de poids faible le drapeau si c'est alloué ou pas.
+On stocke dans 1 bloc de métadonnées la taille de bloc qui est libre + 1 et dans le bit de poids faible le drapeau si c'est alloué ou pas.
 
 C'est pour ça qu'on alloue de minimum 2 comme ça le dernier bit peut être comme un flag. On peut l'isoler en utilisant des masques `c & 0x1`.
 
@@ -96,27 +98,31 @@ Mais faire cela va fragmenter notre mémoire, on va généralement fusionner le 
 #### Politique
 
 First fit:
-- [x] Rapide car trouve le premier bloc libre
-- [ ] Fragmentation
-- [ ] Localité faible et devient de pire en pire
+
+- ✅ Rapide car trouve le premier bloc libre
+- ❌ Fragmentation
+- ❌ Localité faible et devient de pire en pire
 
 Next fit (un first fit qui commence au dernier bloc alloué):
-- [x] Rapide
-- [ ] Fragmentation de fou furieux
-- [x] Bonne localité
+
+- ✅ Rapide
+- ❌ Fragmentation de fou furieux
+- ✅ Bonne localité
 
 Best fit (parcours la liste pour trouver le bloc le plus petit possible pour notre nouvelle donnée):
-- [ ] Lenttttt
-- [x] Fragmentation minime
-- [ ] Localité pas ouf
 
-### Approche par List Explicite
+- ❌ Lenttttt
+- ✅ Fragmentation minime
+- ❌ Localité pas ouf
+
+### Approche par Liste Explicite
 
 On lit les blocs vides entre eux ! Le premier bloc vide sera la taille de l'ensemble et son second indiquera le prochain bloc vide. On peut combiner cela à une approche doublement chaînée.
 
 ![Double LinkedList Explicite](image-51.png)
 
 On doit donc gérer les insertions et suppressions de blocs. 2 solutions:
+
 1. Insérer en fonction de l'adresse: nous coûte cher car on doit tout parcourir mais simple à fusionner
 2. LIFO: on supprime au bout (facile) mais fusion plus compliquée.
 

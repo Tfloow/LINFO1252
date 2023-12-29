@@ -22,6 +22,7 @@ On a un système pour le batch (traitement par lot).
 ### Services aux concepteurs d'applications
 
 On facilite le déploiement d'applications sur d'autres systèmes que celui de la machine du dev via:
+
 - **Linker**: Assemble différents fichiers *objets* en un *exécutable unique*
   - `ld` sur Linux
   - `-static` avec `gcc` pour avoir l'ensemble des libraires
@@ -38,6 +39,7 @@ On peut aussi facilement débugger via `gdb` et ses breakpoints. Les breakpoints
 ### Services aux applications
 
 Le SE gère les entrées sorties mais il y a quelques règles:
+
 - Une app **ne peut pas** envoyer d'instructions aux gestionnaires de périphériques
 - **Ne peut pas** traiter les interruptions
 - Hétérogénéité des périphériques eux-mêmes 
@@ -46,22 +48,26 @@ Le SE gère les entrées sorties mais il y a quelques règles:
 Un des buts du SE est de faire **correspondre** des abstractions *haut niveau* et des opérations *bas niveau*. On a des drivers qui permettent de contrôler le matériel.
 
 Un SE va partager les ressources. Il va faire:
+
 - Maximisation de l'utilisation
 - Équité d'accès
 - Isolation
 
 Il fournit aussi d'autres services spécifiques:
+
 - Allocations des ressources:
   - Exclusive ou non (typique des ports)
   - Contrôle générique ou spécifique
   - Protection et contrôle d'accès
 
 ### Accès aux services du SE
+
 - Utilisation d'utilitaire systèmes
 - Appel direct des fonctions du noyau
 - Librairie Standard
 
 On a une API par le noyau pour les *appels système*:
+
 - A un numéro précis
 - Point d'entrée unique pour accéder aux fonctions du noyau
 
@@ -81,15 +87,18 @@ On change de mode d'exécution. On change d'espace mémoire !
 #### Réalisation concrète 
 
 Problème 1: placer des arguments qui seront accessibles par le noyau. On va le mettre soit dans:
+
 - Un espace mémoire fixe dédié (data)
 - Sur la pile
 - Registres (`%ebx` pour premier argument puis `%ecx`)
 
 Problème 2: adresse de retour
+
 - Pointeur de programme sauvegardé sur la pile.
 - Restauré au retour
 
 Problème 3: appel effectif
+
 - Passer en mode protégé
 - Instructions spéciales (IA32 `int 0x80` crée une interruption) ou simplement `syscall`.
 - Point d'entrée du kernel est connu par le processeur.
@@ -97,6 +106,7 @@ Problème 3: appel effectif
 ![Alt text](image-13.png)
 
 Problème 4: récupération du code de retour
+
 1. Opération autorisée et paramètre corrects:
     - Résultat mis dans le registre `%eax`
     - Instruction de retour au mode utilisateur, dépile l'adresse de retour et positionne le compteur de programme
@@ -165,6 +175,7 @@ exit_group(0)                           = ?
 SE des systèmes *IBM-PC* pas basé sur UNIX, c'est Microsoft.
 
 Objectifs:
+
 - Mono-utilisateur et mono-application (Pas de temps partagé)
 - Visant des processeurs **ne supportant pas** les modes utilisateur/protégé (Pas d'isolation)
 - Contrainte forte sur l'utilisation de la mémoire (coutait extrêmement cher à l'époque)
@@ -182,11 +193,13 @@ Système avec une vision **monolithique** pour éviter de consommer trop de mém
 #### Monolithe
 
 Plus vieux que [MS-DOS](#ms-dos) mais pensé pour des ordinateurs à plus grande capacité.
+
 - Multi utilisateur et temps partagé
 - Processeur supportant les deux modes
 - Séparation claire entre *noyau* et *programmes utilisateurs*
 
 Organisation originelle: *monolithe*:
+
 - 1 seul programme sur 1 seule couche, met en oeuvre tous les appels systèmes
 - Difficile à étendre, adapter, débugger
 
@@ -197,6 +210,7 @@ Organisation originelle: *monolithe*:
 On va rajouter de la structure pour pallier aux soucis lié à [unix monolithique](#monolithe)
 
 Les couches:
+
 1. Matériel
 2. Drivers de périphériques
 3. Abstractions des plus en plus haut niveau, jusqu'aux appels systèmes
@@ -207,10 +221,12 @@ Les couches:
 Il y a des avantages et inconvénients !
 
 Avantages:
+
 - Isolations des fonctionnalités
 - Facilité de portage
 
 Inconvénients:
+
 - Surcoût à l'exécution des appels système
 - Difficile de décider d'une structure purement hiérarchique. 
   - Il y a une interdépendance entre les fonctions du SE
@@ -222,26 +238,31 @@ Inconvénients:
 Utilisé le plus souvent: Linux, Solaris, Windows
 
 On a un coeur qui est un monolithe ou qui a peu de couche.
+
 - Gestion bas niveau de la mémoire
 - Gestion des processus
 
 Le reste est sous forme de modules:
+
 - Chargés et décharges de l'espace mémoire du noyau *dynamiquement*
 - Seulement lorsque nécessaire
   - Ex: quand on met une clé usb. Va charger `exFAT` si clé venant de Windows
 
 Avantages:
+
 - Spécialisation d'une SE pour un environnement donné:
   - Versatilité de Linux
 - Interactions possibles entre les modules en conservant la séparation de code et de mémoire.
   - Analogie possible avec programmation orientée objet
 
 Inconvénients:
+
 - Surcoût (négligeable sur les systèmes modernes)
 - Intégration de modules écrits par des tiers dans l'espace mémoire du noyau
   - potentiels bugs et fautes
 
 Gestions des modules sous Linux (seulement si `root`):
+
 - `lsmod`: liste les modules présents
 - `modprobe`: ajoute/supprime un module
 - `modinfo`: information sur un module
@@ -252,6 +273,7 @@ Gestions des modules sous Linux (seulement si `root`):
 #### Macro-noyaux
 
 Tous les modes précédents placent l'intégralité des fonctions du SE dans le noyau.
+
 - Toutes s'exécutent en mode protégé
 - Accès complet à la mémoire et aux instructions sensibles
 - Crash du module = **crash du système**
@@ -261,6 +283,7 @@ Le kernel est en pérille, corruption des données, faille pour les hackers.
 #### Micro-noyaux
 
 Séparation entre un noyau minimaliste
+
 - Gestion basique de la mémoire
 - Gestion des processus légers (threads)
 - Gestion de la communication entre processus (IPC)
@@ -272,6 +295,7 @@ Réduit les bugs de modules et évitent les crash complets tout en gardant les p
 ![Alt text](image-21.png)
 
 Inconvénients:
+
 - En macro: appel de module dans un même espace mémoire donc très rapide. En micro: il faut faire des appels systèmes
   - Copie de l'argument de l'appelant vers le noyau
   - Copie dans l’espace mémoire de l’appelé
@@ -279,6 +303,7 @@ Inconvénients:
   - ... et rebelote dans l’autre sens pour la valeur de retour
 
 Donc on a longtemps abandonnés les micro-noyaux (abandon dans Windows NT) MAIS:
+
 - Progrès sensibles dans la mise en oeuvre des appels systèmes
 - Passage de message en mode zero-copy
 - Mac OS et iOS proche d'un micro-noyau

@@ -59,9 +59,17 @@ On ne remplit pas totalement tous les coeurs via un seul programme car
 il manque de parallélisme d'instruction (ILP).
 
 Les ressources du coeur sont partagées entre 2 fils d'instructions
-distincts: - \textbf{SMT}: \emph{Simultaneous Multi-Threading} - 32 fils
-par coeur sur certains CPU - 2 fils par coeur souvent
-(\emph{Hyperthreading})
+distincts:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{SMT}: \emph{Simultaneous Multi-Threading}
+\item
+  32 fils par coeur sur certains CPU
+\item
+  2 fils par coeur souvent (\emph{Hyperthreading})
+\end{itemize}
 
 Un peu inférieur: 16 threads \textless{} 16 coeurs
 
@@ -69,9 +77,18 @@ Un peu inférieur: 16 threads \textless{} 16 coeurs
 
 \subsubsection{Qu'est-ce qu'un thread ?}\label{quest-ce-quun-thread}
 
-Un threads est donc: 1. Instructions à exécuter (text) 2. Mémoires
-contenant les données manipulées (\emph{data, heap, stack}) 3. Registres
-du CPU (son état actuel)
+Un threads est donc:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Instructions à exécuter (text)
+\item
+  Mémoires contenant les données manipulées (\emph{data, heap, stack})
+\item
+  Registres du CPU (son état actuel)
+\end{enumerate}
 
 \subsubsection{Mise en oeuvre (POSIX)}\label{mise-en-oeuvre-posix}
 
@@ -152,10 +169,24 @@ On va utiliser des locks pour pouvoir accéder à des variables globales
 sans se marcher dessus.
 
 On doit d'abord s'assurer de gérer les interruptions pour les
-\textbf{changements de contexte}. On fait cela via: - Appel système
-bloquant - Réception d'une interruption: - Signal électronique reçu par
-le processeur pour signaler la disponibilité d'une E/S - Ou via un timer
-régulier.
+\textbf{changements de contexte}. On fait cela via:
+
+\begin{itemize}
+\tightlist
+\item
+  Appel système bloquant
+\item
+  Réception d'une interruption:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Signal électronique reçu par le processeur pour signaler la
+    disponibilité d'une E/S
+  \item
+    Ou via un timer régulier.
+  \end{itemize}
+\end{itemize}
 
 Appel bloquant comme \texttt{getchar} qui attend une entrée utilisateur.
 

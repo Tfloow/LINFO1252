@@ -7,12 +7,18 @@
 On se souvient de la structure de Neumann où on va stocker en mémoire
 \textbf{les instructions et les données}.
 
-Ceci est composé d'un CPU qui a lui même: - \textbf{Unité arithmétique
-et logique}: Opérateurs matériel pour les opérations
-\emph{arithmétiques} (\texttt{+,-,...}) et \emph{logiques}
-(\texttt{\&,\textbar{},\^{},...}). - \textbf{Unité de commande}: Met en
-oeuvre le cycle \emph{fetch/decode/execute} des instructions depuis la
-mémoire.
+Ceci est composé d'un CPU qui a lui même:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Unité arithmétique et logique}: Opérateurs matériel pour les
+  opérations \emph{arithmétiques} (\texttt{+,-,...}) et \emph{logiques}
+  (\texttt{\&,\textbar{},\^{},...}).
+\item
+  \textbf{Unité de commande}: Met en oeuvre le cycle
+  \emph{fetch/decode/execute} des instructions depuis la mémoire.
+\end{itemize}
 
 \subsection{Mémoire}\label{muxe9moire}
 
@@ -44,9 +50,9 @@ On a la \textbf{SRAM} (statique) et la \textbf{DRAM} (dynamique). La
 SRAM est plus couteuse mais plus rapide. On va les utiliser en tandem
 pour ne pas être ralenti par notre mémoire.
 
-En effet, les cycles de CPU sont devenus extrêment cours. Encore plus
-cours que ceux de la mémoire. C'est-à-dire on perdrait ce gain de
-vitesse si on utilisait pas de la DRAM car on devrait attendre pour
+En effet, les cycles de CPU sont devenus extrêment court. Encore plus
+court que ceux de la mémoire. C'est-à-dire on perdrait ce gain de
+vitesse si on utilisait que de la DRAM car on devrait attendre pour
 plusieurs cycles avant d'avoir l'information.
 
 Ces deux technologies sont dites \textbf{volatiles}. Quand plus de jus
@@ -57,7 +63,7 @@ c'est mort.
 \begin{figure}
 \centering
 \includegraphics{image-8.png}
-\caption{Alt text}
+\caption{SRAM}
 \end{figure}
 
 On a donc de multiples bascules (6 transistor par bit (ou 4 + des
@@ -71,7 +77,7 @@ On stocke l'information dans des condensateurs
 \begin{figure}
 \centering
 \includegraphics{image-9.png}
-\caption{Alt text}
+\caption{DRAM}
 \end{figure}
 
 La lecture des bits se fait sous forme de matrice donc si on veut lire
@@ -81,7 +87,7 @@ valeur et 64 est la même.
 \begin{figure}
 \centering
 \includegraphics{image-10.png}
-\caption{Alt text}
+\caption{Reality Check}
 \end{figure}
 
 On doit donc combiner un peu de SRAM coûteuse avec de la DRAM peu chère.
@@ -89,7 +95,7 @@ On utilise la SRAM comme cache.
 
 \subsubsection{Cache}\label{cache}
 
-Le cache interagit directement avec le Cache. On y conserve les données
+Le CPU interagit directement avec le Cache. On y conserve les données
 récemment accédées.
 
 \subsubsection{Localité}\label{localituxe9}
@@ -105,10 +111,12 @@ On va passer sur toutes les adresses car nos données sont juxtaposé.
 
 \subsubsection{Hiérarchie}\label{hiuxe9rarchie}
 
+(voir image)
+
 \begin{figure}
 \centering
 \includegraphics{image-11.png}
-\caption{Alt text}
+\caption{Hiérarchie}
 \end{figure}
 
 \subsubsection{Fonctionnement d'un
@@ -136,7 +144,7 @@ récupérer depuis la mémoire.
   \textbf{Write through}: écriture immédiate.
 \item
   \textbf{Write back}: on écrit au moment où la ligne de cache est
-  retiré du cache.
+  retirée du cache.
 \end{enumerate}
 
 \paragraph{Réalité}\label{ruxe9alituxe9}
@@ -149,11 +157,35 @@ Ce jeu d'instructions est 32 bits ! (donc max 4 Go de mémoire).
 
 \subsubsection{Registres}\label{registres}
 
-On a 8 registres génériques de \textbf{32 bits}: - \texttt{EAX} -
-\texttt{EBX} - \texttt{ECX} - \texttt{EDX} - \texttt{ESI} - \texttt{EDI}
-- \texttt{EBP}: gère la pile - \texttt{ESP}: gère la pile
+On a 8 registres génériques de \textbf{32 bits}:
 
-On a 1 registres qui stocke le compteur de programme: - \texttt{EIP}
+\begin{itemize}
+\tightlist
+\item
+  \texttt{EAX}
+\item
+  \texttt{EBX}
+\item
+  \texttt{ECX}
+\item
+  \texttt{EDX}
+\item
+  \texttt{ESI}
+\item
+  \texttt{EDI}
+\item
+  \texttt{EBP}: gère la pile
+\item
+  \texttt{ESP}: gère la pile
+\end{itemize}
+
+On a 1 registres qui stocke le compteur de programme:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{EIP}
+\end{itemize}
 
 On a également des registres pour traiter les floats et double.
 
@@ -241,7 +273,7 @@ contient une adresse.
 \end{Highlighting}
 \end{Shaded}
 
-On peut faire de l'\textbf{indirect avec base et déplacement}. On accede
+On peut faire de l'\textbf{indirect avec base et déplacement}. On accède
 à une adresse + ou - la valeur donnée. On fait \texttt{D(\%reg)} qui
 permet de bouger l'adresse de D.
 
@@ -280,14 +312,30 @@ On a un registre spécial \texttt{eflags} qui contient des bits
 \end{itemize}
 
 Ce registre se met à jour mais certaines opérations ne vont pas stocker
-le résultat: - \texttt{cmp}: équivalent de \texttt{sub} - \texttt{test}:
-équivalent de \texttt{and}
+le résultat:
 
-Pour récupérer la valeur des drapeaux on utilise \texttt{set}. -
-\texttt{sete}: \textbf{ZF} - \texttt{sets}: \textbf{SF} - \texttt{setg}:
-\texttt{\textasciitilde{}SF\ \&\ ZF} en gérant dépassement
-test\textgreater{} - \texttt{setl}: \textbf{SF} et gérant le dépassement
-test\textless=
+\begin{itemize}
+\tightlist
+\item
+  \texttt{cmp}: équivalent de \texttt{sub}
+\item
+  \texttt{test}: équivalent de \texttt{and}
+\end{itemize}
+
+Pour récupérer la valeur des drapeaux on utilise \texttt{set}:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{sete}: \textbf{ZF}
+\item
+  \texttt{sets}: \textbf{SF}
+\item
+  \texttt{setg}: \texttt{\textasciitilde{}SF\ \&\ ZF} en gérant
+  dépassement test\textgreater{}
+\item
+  \texttt{setl}: \textbf{SF} et gérant le dépassement test\textless=
+\end{itemize}
 
 \paragraph{Exemples}\label{exemples}
 

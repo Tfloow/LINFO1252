@@ -7,6 +7,7 @@
 ## Fondamentaux
 
 On a des composants:
+
 - RAM, CPU, IO devices, ...
 
 Le processeur exécute des *instructions*.
@@ -24,7 +25,7 @@ Il y a 2 grandes familles *X86_64* et *ARM A64* avec des jeux d'instructions dif
 
 On a typiquement:
 
-| taille  |   nome   |
+| taille  |   nom    |
 | :-----: | :------: |
 | 4 bits  |  nibble  |
 | 8 bits  |  octet   |
@@ -35,12 +36,12 @@ On a typiquement:
 
 Les opérations d'entrée/sortie se déroulent de manière *concurrente*. Chacun a un contrôleur qui a une mémoire spécifique. Le processeur doit transporter les infos de la mémoire classique à la zone des contrôleurs.
 
-Un processeur n'est pas de base parallélisé. À chaque frappe du clavier, une **interruption** est lancée pour intercepté ce stimulis.
+Un processeur n'est pas de base parallélisé. À chaque frappe du clavier, une **interruption** est lancée pour intercepter ce stimulis.
 
 
 ### Interruption
 
-Le processeur va s'arrêté dans son exécution et va *transférer* le contrôle du processeur à une routine de traitement.
+Le processeur va s'arrêter dans son exécution et va *transférer* le contrôle du processeur à une routine de traitement.
 
 La routine de traitement va déterminer la source de l'interruption
 
@@ -78,7 +79,7 @@ Le système d'exploitation assure cela en **virtualisant** les ressources matér
 - Processus
 - Le programmeur a l'impression d'avoir tout le processeur
 - Processus coexiste et s'entremêle
-- Partage du temps dt des ressources
+- Partage du temps et des ressources
 - Virtualisation de la mémoire
   - Plusieurs processus en mémoire.
   - On empêche que les autres processus lisent la mémoire des autres
@@ -130,9 +131,10 @@ Ici, on verra surtout GNU/Linux.
 - Linux: kernel
 - GNU: collection d'utilitaires et de librairies associés.
 
-![Alt text](image-3.png)
+![La grande famille UNIX](image-3.png)
 
 Il y a la philosophie *KISS*:
+
 - *Keep It Simple, Stupid*
 - Programme simple, petit, parfaitement adapté à une tâche ou fonction unique
 - Facilité de composition de commandes
@@ -143,7 +145,7 @@ Il y a la philosophie *KISS*:
 |    echo     |                            afficher une chaîne de caractère                            |
 | head / tail |                        affiche le début ou la fin d'un fichier                         |
 |     wc      |                             compte le nombre de caractères                             |
-|     wc      |                      trie un fichier. ex:`sort -n -r scores.txt`                       |
+|    sort     |                      trie un fichier. ex:`sort -n -r scores.txt`                       |
 |    uniq     | extrait les lignes uniques ou dupliquées d'un fichier trié. ex: `uniq -d students.dat` |
 
 ## La documentation
@@ -152,7 +154,7 @@ Chaque utilitaire possède une manpage.
 
 ```man nom_utilitaire```
 
-On a des sections de manuelles qui différencies et trie les utilitaires (librairie standard, appel système, ...)
+On a des sections de manuelles qui différencient et trient les utilitaires (librairie standard, appel système, ...)
 
 1. Utilitaires disponibles pour tous les utilisateurs
 2. Appels systèmes en C
@@ -167,7 +169,7 @@ Donc parfois on doit préciser `man 1 printf`.
 
 ## Flux standards
 
-![Alt text](image-4.png)
+![Flux](image-4.png)
 
 On a 1 entrées, 1 sorties par défaut dans le shell (STDOUT) et une sortie d'erreur (STDERR)
 
@@ -176,7 +178,7 @@ On a 1 entrées, 1 sorties par défaut dans le shell (STDOUT) et une sortie d'er
 | `< file`  |                redirige le contenu de `file` vers STDIN                |
 | `> file`  |                      redirige STDOUT vers `file`                       |
 | `>> file` | redirige STDOUT vers `file` et l'ajoute au bout d'un fichier si existe |
-|`2<&1`| redirige STDERR vers STDOUT|
+|  `2<&1`   |                      redirige STDERR vers STDOUT                       |
 
 On a aussi des Pipes qui redirige le résultat de commande de STDOUT vers le STDIN d'une autre commande.
 

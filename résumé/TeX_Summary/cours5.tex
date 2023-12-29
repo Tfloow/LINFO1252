@@ -35,13 +35,42 @@ On a un système pour le batch (traitement par lot).
 d'applications}\label{services-aux-concepteurs-dapplications}
 
 On facilite le déploiement d'applications sur d'autres systèmes que
-celui de la machine du dev via: - \textbf{Linker}: Assemble différents
-fichiers \emph{objets} en un \emph{exécutable unique} - \texttt{ld} sur
-Linux - \texttt{-static} avec \texttt{gcc} pour avoir l'ensemble des
-libraires - \textbf{Loader}: au démarrage d'un programme. -
-\texttt{ld.so} libraire et support du kernel Linux 1. Initialise
-l'espace mémoire 2. Pré-charge les segments text, data, environment 3.
-Localiser et charger les libraires dynamiques
+celui de la machine du dev via:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Linker}: Assemble différents fichiers \emph{objets} en un
+  \emph{exécutable unique}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{ld} sur Linux
+  \item
+    \texttt{-static} avec \texttt{gcc} pour avoir l'ensemble des
+    libraires
+  \end{itemize}
+\item
+  \textbf{Loader}: au démarrage d'un programme.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{ld.so} libraire et support du kernel Linux
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+    \tightlist
+    \item
+      Initialise l'espace mémoire
+    \item
+      Pré-charge les segments text, data, environment
+    \item
+      Localiser et charger les libraires dynamiques
+    \end{enumerate}
+  \end{itemize}
+\end{itemize}
 
 Il peut aussi gérer les erreurs. ex: \emph{memory dump} pour avoir
 l'état de la mémoire avant le crash. Ce \emph{memory dump} peut être
@@ -55,22 +84,55 @@ interruption logicielle !
 \subsubsection{Services aux
 applications}\label{services-aux-applications}
 
-Le SE gère les entrées sorties mais il y a quelques règles: - Une app
-\textbf{ne peut pas} envoyer d'instructions aux gestionnaires de
-périphériques - \textbf{Ne peut pas} traiter les interruptions -
-Hétérogénéité des périphériques eux-mêmes - SE fournit une abstraction
-unique pour une \emph{classe} de périphérique
+Le SE gère les entrées sorties mais il y a quelques règles:
+
+\begin{itemize}
+\tightlist
+\item
+  Une app \textbf{ne peut pas} envoyer d'instructions aux gestionnaires
+  de périphériques
+\item
+  \textbf{Ne peut pas} traiter les interruptions
+\item
+  Hétérogénéité des périphériques eux-mêmes
+\item
+  SE fournit une abstraction unique pour une \emph{classe} de
+  périphérique
+\end{itemize}
 
 Un des buts du SE est de faire \textbf{correspondre} des abstractions
 \emph{haut niveau} et des opérations \emph{bas niveau}. On a des drivers
 qui permettent de contrôler le matériel.
 
-Un SE va partager les ressources. Il va faire: - Maximisation de
-l'utilisation - Équité d'accès - Isolation
+Un SE va partager les ressources. Il va faire:
 
-Il fournit aussi d'autres services spécifiques: - Allocations des
-ressources: - Exclusive ou non (typique des ports) - Contrôle générique
-ou spécifique - Protection et contrôle d'accès
+\begin{itemize}
+\tightlist
+\item
+  Maximisation de l'utilisation
+\item
+  Équité d'accès
+\item
+  Isolation
+\end{itemize}
+
+Il fournit aussi d'autres services spécifiques:
+
+\begin{itemize}
+\tightlist
+\item
+  Allocations des ressources:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Exclusive ou non (typique des ports)
+  \item
+    Contrôle générique ou spécifique
+  \item
+    Protection et contrôle d'accès
+  \end{itemize}
+\end{itemize}
 
 \subsubsection{Accès aux services du
 SE}\label{accuxe8s-aux-services-du-se}
@@ -85,8 +147,15 @@ SE}\label{accuxe8s-aux-services-du-se}
   Librairie Standard
 \end{itemize}
 
-On a une API par le noyau pour les \emph{appels système}: - A un numéro
-précis - Point d'entrée unique pour accéder aux fonctions du noyau
+On a une API par le noyau pour les \emph{appels système}:
+
+\begin{itemize}
+\tightlist
+\item
+  A un numéro précis
+\item
+  Point d'entrée unique pour accéder aux fonctions du noyau
+\end{itemize}
 
 \paragraph{Fonctionnement}\label{fonctionnement}
 
@@ -121,17 +190,40 @@ On change de mode d'exécution. On change d'espace mémoire !
 \paragraph{Réalisation concrète}\label{ruxe9alisation-concruxe8te}
 
 Problème 1: placer des arguments qui seront accessibles par le noyau. On
-va le mettre soit dans: - Un espace mémoire fixe dédié (data) - Sur la
-pile - Registres (\texttt{\%ebx} pour premier argument puis
-\texttt{\%ecx})
+va le mettre soit dans:
 
-Problème 2: adresse de retour - Pointeur de programme sauvegardé sur la
-pile. - Restauré au retour
+\begin{itemize}
+\tightlist
+\item
+  Un espace mémoire fixe dédié (data)
+\item
+  Sur la pile
+\item
+  Registres (\texttt{\%ebx} pour premier argument puis \texttt{\%ecx})
+\end{itemize}
 
-Problème 3: appel effectif - Passer en mode protégé - Instructions
-spéciales (IA32 \texttt{int\ 0x80} crée une interruption) ou simplement
-\texttt{syscall}. - Point d'entrée du kernel est connu par le
-processeur.
+Problème 2: adresse de retour
+
+\begin{itemize}
+\tightlist
+\item
+  Pointeur de programme sauvegardé sur la pile.
+\item
+  Restauré au retour
+\end{itemize}
+
+Problème 3: appel effectif
+
+\begin{itemize}
+\tightlist
+\item
+  Passer en mode protégé
+\item
+  Instructions spéciales (IA32 \texttt{int\ 0x80} crée une interruption)
+  ou simplement \texttt{syscall}.
+\item
+  Point d'entrée du kernel est connu par le processeur.
+\end{itemize}
 
 \begin{figure}
 \centering
@@ -139,12 +231,33 @@ processeur.
 \caption{Alt text}
 \end{figure}
 
-Problème 4: récupération du code de retour 1. Opération autorisée et
-paramètre corrects: - Résultat mis dans le registre \texttt{\%eax} -
-Instruction de retour au mode utilisateur, dépile l'adresse de retour et
-positionne le compteur de programme 2. Erreur ou opération non autorisée
-- Positionne la variable d'environnement \texttt{errno} - Retourne aux
-processus parent (ex: shell)
+Problème 4: récupération du code de retour
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Opération autorisée et paramètre corrects:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Résultat mis dans le registre \texttt{\%eax}
+  \item
+    Instruction de retour au mode utilisateur, dépile l'adresse de
+    retour et positionne le compteur de programme
+  \end{itemize}
+\item
+  Erreur ou opération non autorisée
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Positionne la variable d'environnement \texttt{errno}
+  \item
+    Retourne aux processus parent (ex: shell)
+  \end{itemize}
+\end{enumerate}
 
 \paragraph{Appels systèmes}\label{appels-systuxe8mes}
 
@@ -238,10 +351,19 @@ SE}\label{objectifs-et-contraintes-de-mise-en-oeuvre-dun-se}
 
 SE des systèmes \emph{IBM-PC} pas basé sur UNIX, c'est Microsoft.
 
-Objectifs: - Mono-utilisateur et mono-application (Pas de temps partagé)
-- Visant des processeurs \textbf{ne supportant pas} les modes
-utilisateur/protégé (Pas d'isolation) - Contrainte forte sur
-l'utilisation de la mémoire (coutait extrêmement cher à l'époque)
+Objectifs:
+
+\begin{itemize}
+\tightlist
+\item
+  Mono-utilisateur et mono-application (Pas de temps partagé)
+\item
+  Visant des processeurs \textbf{ne supportant pas} les modes
+  utilisateur/protégé (Pas d'isolation)
+\item
+  Contrainte forte sur l'utilisation de la mémoire (coutait extrêmement
+  cher à l'époque)
+\end{itemize}
 
 Système avec une vision \textbf{monolithique} pour éviter de consommer
 trop de mémoire.
@@ -263,13 +385,28 @@ trop de mémoire.
 \paragraph{Monolithe}\label{monolithe}
 
 Plus vieux que \hyperref[ms-dos]{MS-DOS} mais pensé pour des ordinateurs
-à plus grande capacité. - Multi utilisateur et temps partagé -
-Processeur supportant les deux modes - Séparation claire entre
-\emph{noyau} et \emph{programmes utilisateurs}
+à plus grande capacité.
 
-Organisation originelle: \emph{monolithe}: - 1 seul programme sur 1
-seule couche, met en oeuvre tous les appels systèmes - Difficile à
-étendre, adapter, débugger
+\begin{itemize}
+\tightlist
+\item
+  Multi utilisateur et temps partagé
+\item
+  Processeur supportant les deux modes
+\item
+  Séparation claire entre \emph{noyau} et \emph{programmes utilisateurs}
+\end{itemize}
+
+Organisation originelle: \emph{monolithe}:
+
+\begin{itemize}
+\tightlist
+\item
+  1 seul programme sur 1 seule couche, met en oeuvre tous les appels
+  systèmes
+\item
+  Difficile à étendre, adapter, débugger
+\end{itemize}
 
 \begin{figure}
 \centering
@@ -282,9 +419,20 @@ seule couche, met en oeuvre tous les appels systèmes - Difficile à
 On va rajouter de la structure pour pallier aux soucis lié à
 \hyperref[monolithe]{unix monolithique}
 
-Les couches: 1. Matériel 2. Drivers de périphériques 3. Abstractions des
-plus en plus haut niveau, jusqu'aux appels systèmes 4. Interface
-utilisateur
+Les couches:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Matériel
+\item
+  Drivers de périphériques
+\item
+  Abstractions des plus en plus haut niveau, jusqu'aux appels systèmes
+\item
+  Interface utilisateur
+\end{enumerate}
 
 \begin{figure}
 \centering
@@ -294,11 +442,31 @@ utilisateur
 
 Il y a des avantages et inconvénients !
 
-Avantages: - Isolations des fonctionnalités - Facilité de portage
+Avantages:
 
-Inconvénients: - Surcoût à l'exécution des appels système - Difficile de
-décider d'une structure purement hiérarchique. - Il y a une
-interdépendance entre les fonctions du SE
+\begin{itemize}
+\tightlist
+\item
+  Isolations des fonctionnalités
+\item
+  Facilité de portage
+\end{itemize}
+
+Inconvénients:
+
+\begin{itemize}
+\tightlist
+\item
+  Surcoût à l'exécution des appels système
+\item
+  Difficile de décider d'une structure purement hiérarchique.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Il y a une interdépendance entre les fonctions du SE
+  \end{itemize}
+\end{itemize}
 
 \paragraph{Structure en Modules}\label{structure-en-modules}
 
@@ -310,44 +478,118 @@ interdépendance entre les fonctions du SE
 
 Utilisé le plus souvent: Linux, Solaris, Windows
 
-On a un coeur qui est un monolithe ou qui a peu de couche. - Gestion bas
-niveau de la mémoire - Gestion des processus
+On a un coeur qui est un monolithe ou qui a peu de couche.
 
-Le reste est sous forme de modules: - Chargés et décharges de l'espace
-mémoire du noyau \emph{dynamiquement} - Seulement lorsque nécessaire -
-Ex: quand on met une clé usb. Va charger \texttt{exFAT} si clé venant de
-Windows
+\begin{itemize}
+\tightlist
+\item
+  Gestion bas niveau de la mémoire
+\item
+  Gestion des processus
+\end{itemize}
 
-Avantages: - Spécialisation d'une SE pour un environnement donné: -
-Versatilité de Linux - Interactions possibles entre les modules en
-conservant la séparation de code et de mémoire. - Analogie possible avec
-programmation orientée objet
+Le reste est sous forme de modules:
 
-Inconvénients: - Surcoût (négligeable sur les systèmes modernes) -
-Intégration de modules écrits par des tiers dans l'espace mémoire du
-noyau - potentiels bugs et fautes
+\begin{itemize}
+\tightlist
+\item
+  Chargés et décharges de l'espace mémoire du noyau \emph{dynamiquement}
+\item
+  Seulement lorsque nécessaire
 
-Gestions des modules sous Linux (seulement si \texttt{root}): -
-\texttt{lsmod}: liste les modules présents - \texttt{modprobe}:
-ajoute/supprime un module - \texttt{modinfo}: information sur un module
+  \begin{itemize}
+  \tightlist
+  \item
+    Ex: quand on met une clé usb. Va charger \texttt{exFAT} si clé
+    venant de Windows
+  \end{itemize}
+\end{itemize}
+
+Avantages:
+
+\begin{itemize}
+\tightlist
+\item
+  Spécialisation d'une SE pour un environnement donné:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Versatilité de Linux
+  \end{itemize}
+\item
+  Interactions possibles entre les modules en conservant la séparation
+  de code et de mémoire.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Analogie possible avec programmation orientée objet
+  \end{itemize}
+\end{itemize}
+
+Inconvénients:
+
+\begin{itemize}
+\tightlist
+\item
+  Surcoût (négligeable sur les systèmes modernes)
+\item
+  Intégration de modules écrits par des tiers dans l'espace mémoire du
+  noyau
+
+  \begin{itemize}
+  \tightlist
+  \item
+    potentiels bugs et fautes
+  \end{itemize}
+\end{itemize}
+
+Gestions des modules sous Linux (seulement si \texttt{root}):
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{lsmod}: liste les modules présents
+\item
+  \texttt{modprobe}: ajoute/supprime un module
+\item
+  \texttt{modinfo}: information sur un module
+\end{itemize}
 
 \subsubsection{Macro- et Micro-noyaux}\label{macro--et-micro-noyaux}
 
 \paragraph{Macro-noyaux}\label{macro-noyaux}
 
 Tous les modes précédents placent l'intégralité des fonctions du SE dans
-le noyau. - Toutes s'exécutent en mode protégé - Accès complet à la
-mémoire et aux instructions sensibles - Crash du module = \textbf{crash
-du système}
+le noyau.
+
+\begin{itemize}
+\tightlist
+\item
+  Toutes s'exécutent en mode protégé
+\item
+  Accès complet à la mémoire et aux instructions sensibles
+\item
+  Crash du module = \textbf{crash du système}
+\end{itemize}
 
 Le kernel est en pérille, corruption des données, faille pour les
 hackers.
 
 \paragraph{Micro-noyaux}\label{micro-noyaux}
 
-Séparation entre un noyau minimaliste - Gestion basique de la mémoire -
-Gestion des processus légers (threads) - Gestion de la communication
-entre processus (IPC)
+Séparation entre un noyau minimaliste
+
+\begin{itemize}
+\tightlist
+\item
+  Gestion basique de la mémoire
+\item
+  Gestion des processus légers (threads)
+\item
+  Gestion de la communication entre processus (IPC)
+\end{itemize}
 
 Le reste est mis en oeuvre par des processus en mode utilisateur (même
 les drivers)
@@ -361,17 +603,40 @@ les propriétés d'isolation.
 \caption{Alt text}
 \end{figure}
 
-Inconvénients: - En macro: appel de module dans un même espace mémoire
-donc très rapide. En micro: il faut faire des appels systèmes - Copie de
-l'argument de l'appelant vers le noyau - Copie dans l'espace mémoire de
-l'appelé - Changement de contexte (sauvegarde du contexte et
-restauration\ldots) - \ldots{} et rebelote dans l'autre sens pour la
-valeur de retour
+Inconvénients:
+
+\begin{itemize}
+\tightlist
+\item
+  En macro: appel de module dans un même espace mémoire donc très
+  rapide. En micro: il faut faire des appels systèmes
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Copie de l'argument de l'appelant vers le noyau
+  \item
+    Copie dans l'espace mémoire de l'appelé
+  \item
+    Changement de contexte (sauvegarde du contexte et
+    restauration\ldots)
+  \item
+    \ldots{} et rebelote dans l'autre sens pour la valeur de retour
+  \end{itemize}
+\end{itemize}
 
 Donc on a longtemps abandonnés les micro-noyaux (abandon dans Windows
-NT) MAIS: - Progrès sensibles dans la mise en oeuvre des appels systèmes
-- Passage de message en mode zero-copy - Mac OS et iOS proche d'un
-micro-noyau
+NT) MAIS:
+
+\begin{itemize}
+\tightlist
+\item
+  Progrès sensibles dans la mise en oeuvre des appels systèmes
+\item
+  Passage de message en mode zero-copy
+\item
+  Mac OS et iOS proche d'un micro-noyau
+\end{itemize}
 
 \subsubsection{Fiabilité des SE}\label{fiabilituxe9-des-se}
 

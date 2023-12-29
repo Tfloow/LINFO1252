@@ -35,6 +35,7 @@ On peut ainsi avoir plusieurs **threads** qui s'exécutent en simultanée.
 On ne remplit pas totalement tous les coeurs via un seul programme car il manque de parallélisme d'instruction (ILP). 
 
 Les ressources du coeur sont partagées entre 2 fils d'instructions distincts:
+
 - **SMT**: *Simultaneous Multi-Threading*
 - 32 fils par coeur sur certains CPU
 - 2 fils par coeur souvent (*Hyperthreading*)
@@ -46,6 +47,7 @@ Un peu inférieur: 16 threads < 16 coeurs
 ### Qu'est-ce qu'un thread ?
 
 Un threads est donc:
+
 1. Instructions à exécuter (text)
 2. Mémoires contenant les données manipulées (*data, heap, stack*)
 3. Registres du CPU (son état actuel)
@@ -98,6 +100,7 @@ Dans un thread, il a un nouveau stack et contexte (%esp, %eip, registres). Cepen
 On va utiliser des locks pour pouvoir accéder à des variables globales sans se marcher dessus. 
 
 On doit d'abord s'assurer de gérer les interruptions pour les **changements de contexte**. On fait cela via:
+
 - Appel système bloquant
 - Réception d'une interruption:
   - Signal électronique reçu par le processeur pour signaler la disponibilité d'une E/S
