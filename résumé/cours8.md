@@ -4,25 +4,6 @@ ___
 
 # Cours 8
 
-- [Cours 8](#cours-8)
-  - [Rappel](#rappel)
-  - [Problème d'exclusion fondamentale](#problème-dexclusion-fondamentale)
-    - [Résultat Théorique](#résultat-théorique)
-    - [Essais et Erreurs](#essais-et-erreurs)
-  - [Algorithme de Peterson](#algorithme-de-peterson)
-  - [Algorithme du filtre](#algorithme-du-filtre)
-    - [Équité](#équité)
-  - [Bakery Algorithm](#bakery-algorithm)
-- [Utilisation des Opérations Atomiques](#utilisation-des-opérations-atomiques)
-  - [Instructions `xchg`](#instructions-xchg)
-    - [Exclusion Mutuelle](#exclusion-mutuelle)
-    - [Attente Active (spinlocks)](#attente-active-spinlocks)
-    - [Mutex POSIX](#mutex-posix)
-  - [Test-and-set `xchg`](#test-and-set-xchg)
-    - [Utilisation du Cache](#utilisation-du-cache)
-    - [Protocole de Cohérence de Cache MSI](#protocole-de-cohérence-de-cache-msi)
-    - [Instructions Atomiques \& Utilisation du Bus](#instructions-atomiques--utilisation-du-bus)
-  - [Conclusion](#conclusion)
 
 ## Rappel
 

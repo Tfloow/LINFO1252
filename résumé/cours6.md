@@ -3,16 +3,6 @@
 ___
 
 # Cours 6
-- [Cours 6](#cours-6)
-  - [Course à la performance](#course-à-la-performance)
-    - [Horloge](#horloge)
-    - [Augmentation des performances](#augmentation-des-performances)
-  - [Threads](#threads)
-    - [Qu'est-ce qu'un thread ?](#quest-ce-quun-thread-)
-    - [Mise en oeuvre (POSIX)](#mise-en-oeuvre-posix)
-    - [Communication entre thread](#communication-entre-thread)
-    - [États](#états)
-    - [MUTEX](#mutex)
 
 ## Course à la performance
 

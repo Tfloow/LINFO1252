@@ -5,19 +5,6 @@ ___
 
 # Scheduling
 
-- [Scheduling](#scheduling)
-  - [Rappel](#rappel)
-  - [Mécanisme \& Politique](#mécanisme--politique)
-    - [Exécution des Threads](#exécution-des-threads)
-    - [Évolution de l'État d'un Thread](#évolution-de-létat-dun-thread)
-  - [Scheduler](#scheduler)
-    - [Objectifs](#objectifs)
-    - [Scheduler FCFS](#scheduler-fcfs)
-    - [Scheduler SJF](#scheduler-sjf)
-    - [Scheduler Préemptif RR](#scheduler-préemptif-rr)
-    - [Scheduler à Priorité](#scheduler-à-priorité)
-  - [Conclusion](#conclusion)
-
 
 ## Rappel
 

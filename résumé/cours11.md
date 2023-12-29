@@ -2,17 +2,6 @@
 
 ___
 
-- [Gestion des utilisateurs](#gestion-des-utilisateurs)
-  - [Authentification](#authentification)
-    - [`/etc/passwd`](#etcpasswd)
-    - [Types d'user](#types-duser)
-- [Systèmes de fichiers](#systèmes-de-fichiers)
-  - [Hiérarchie et Montage](#hiérarchie-et-montage)
-  - [contenu d'un répertoire](#contenu-dun-répertoire)
-    - [Permissions](#permissions)
-    - [Navigation](#navigation)
-    - [Fonctions Utiles](#fonctions-utiles)
-    - [Parcours de répertoire](#parcours-de-répertoire)
 
 
 # Gestion des utilisateurs

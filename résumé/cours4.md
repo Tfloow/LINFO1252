@@ -3,27 +3,6 @@ ___
 
 # Cours 4
 
-- [Cours 4](#cours-4)
-  - [Rappel](#rappel)
-    - [Neumann](#neumann)
-  - [Mémoire](#mémoire)
-    - [Instructions et Registres](#instructions-et-registres)
-    - [Architecture](#architecture)
-    - [Technologies mémoires](#technologies-mémoires)
-    - [Cache](#cache)
-    - [Localité](#localité)
-    - [Hiérarchie](#hiérarchie)
-    - [Fonctionnement d'un cache](#fonctionnement-dun-cache)
-  - [Jeu d'instructions IA 32](#jeu-dinstructions-ia-32)
-    - [Registres](#registres)
-    - [Types de données](#types-de-données)
-    - [Instructions](#instructions)
-    - [Modes d'adressage](#modes-dadressage)
-    - [Registre de drapeaux `eflags`](#registre-de-drapeaux-eflags)
-    - [Saut](#saut)
-    - [Manipulation de la Pile](#manipulation-de-la-pile)
-    - [Fonctions](#fonctions)
-
 
 ## Rappel
 

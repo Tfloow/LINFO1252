@@ -4,19 +4,6 @@ ___
 
 # Rappels & compléments de C
 
-- [Rappels \& compléments de C](#rappels--compléments-de-c)
-  - [Les bases](#les-bases)
-    - [Hello world](#hello-world)
-    - [Préprocesseur](#préprocesseur)
-    - [Types de variables](#types-de-variables)
-    - [Tableaux](#tableaux)
-    - [Caractères ASCII](#caractères-ascii)
-    - [Les pointeurs](#les-pointeurs)
-    - [Structures](#structures)
-    - [Pointeur vers une fonction](#pointeur-vers-une-fonction)
-    - [Expressions de manipulation de bits](#expressions-de-manipulation-de-bits)
-    - [Constante](#constante)
-
 
 ## Les bases
 

@@ -4,24 +4,6 @@ ___
 
 # Cours 12
 
-- [Cours 12](#cours-12)
-  - [Rappels](#rappels)
-  - [Abstraction du Matériel](#abstraction-du-matériel)
-    - [Les partitions](#les-partitions)
-- [Structure d'un Système de Fichier](#structure-dun-système-de-fichier)
-  - [Stockage et Allocation des Blocs](#stockage-et-allocation-des-blocs)
-    - [Option 1](#option-1)
-    - [Option 2](#option-2)
-    - [FAT32](#fat32)
-    - [Stockage indexé](#stockage-indexé)
-    - [Système de Fichiers `ext4`](#système-de-fichiers-ext4)
-  - [Stockage des Répertoires](#stockage-des-répertoires)
-  - [Gestion de l'Espace Libre](#gestion-de-lespace-libre)
-    - [Effacer un Fichier](#effacer-un-fichier)
-    - [Performance et Cache](#performance-et-cache)
-  - [Optimisations](#optimisations)
-    - [Robustesse](#robustesse)
-
 ## Rappels
 
 Le *système de fichier* est une interface *unifiée* et unique des différents périphériques de stockage (car bcp de type différent). On a une hiérarchie en **point de montage** (`mnt`)

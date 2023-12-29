@@ -4,20 +4,6 @@ ___
 
 # Cours 5
 
-- [Cours 5](#cours-5)
-  - [Service](#service)
-    - [Interface](#interface)
-    - [Services aux concepteurs d'applications](#services-aux-concepteurs-dapplications)
-    - [Services aux applications](#services-aux-applications)
-    - [Accès aux services du SE](#accès-aux-services-du-se)
-  - [Architecture des systèmes d'exploitation](#architecture-des-systèmes-dexploitation)
-    - [Objectifs et contraintes de mise en oeuvre d'un SE](#objectifs-et-contraintes-de-mise-en-oeuvre-dun-se)
-    - [MS-DOS](#ms-dos)
-    - [UNIX](#unix)
-    - [Macro- et Micro-noyaux](#macro--et-micro-noyaux)
-    - [Fiabilité des SE](#fiabilité-des-se)
-    - [Démarrage du SE](#démarrage-du-se)
-
 ## Service 
 
 Un système d'exploitation fournit des services aux utilisateurs (aussi distant), aux développeurs et programmes qui s'exécutent.

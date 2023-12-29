@@ -4,30 +4,6 @@ ___
 
 # Cours 1
 
-- [Cours 1](#cours-1)
-  - [Fondamentaux](#fondamentaux)
-    - [Architecture de von Neumann](#architecture-de-von-neumann)
-  - [Représentation des données](#représentation-des-données)
-  - [Fonctionnement d'un système informatique](#fonctionnement-dun-système-informatique)
-    - [Interruption](#interruption)
-  - [Opérations d'entrée/sorite](#opérations-dentréesorite)
-  - [Accès direct à la mémoire](#accès-direct-à-la-mémoire)
-  - [Le rôle du système d'exploitation](#le-rôle-du-système-dexploitation)
-  - [Virtualisation](#virtualisation)
-    - [Exemple](#exemple)
-  - [Compromis abstraction/coût](#compromis-abstractioncoût)
-  - [Séparation entre mécanisme et politique](#séparation-entre-mécanisme-et-politique)
-  - [Modes d'exécution](#modes-dexécution)
-  - [Appel système == interruption](#appel-système--interruption)
-  - [En Résume](#en-résume)
-  - [UNIX](#unix)
-  - [La documentation](#la-documentation)
-  - [Flux standards](#flux-standards)
-  - [Script](#script)
-    - [Arguments en ligne de commande](#arguments-en-ligne-de-commande)
-    - [Retour](#retour)
-    - [Boucles ``for``](#boucles-for)
-
 
 ## Fondamentaux
 
@@ -92,6 +68,7 @@ Le système d'exploitation se met entre l'utilisateur et le matériel. Il a 3 r�
 1. Rendre plus simple le développement de programmes
 2. Utilisation plus efficaces des ressources
 3. Assurer l'intégrité des données et des programmes entre eux.
+
 
 ## Virtualisation
 
