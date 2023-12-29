@@ -1,11 +1,11 @@
 % NEED TO BE COMPILED WITH XeLaTeX because I wanna to flex and use emoji
 
 % Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
 ]{article}
+\usepackage{hyperref}
 \usepackage[a4paper, total={6.5in, 10in}]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{iftex}
@@ -110,9 +110,17 @@
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
+
 \hypersetup{
-  hidelinks,
-  pdfcreator={Résumé (propulsed by Pandoc)}}
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Résumé LINFO1252 (propulsed by Pandoc)},
+    pdfcreator={Thomas Debelle},
+    pdfpagemode=FullScreen,
+    }
+
 
 \author{Thomas Debelle}
 \date{}
