@@ -180,3 +180,211 @@ page}\label{fonctionnement-par-duxe9faut-dun-accuxe8s-uxe0-une-page}
 \includegraphics{image-58.png}
 \caption{Traitement d'un défaut de page}
 \end{figure}
+
+On va donc devoir rapatrier des pages du disque vers la mémoire si on
+constate un défaut de page (ou en créer une nouvelle).
+
+On va devoir aussi faire une politique de suppression des pages les plus
+anciennes et des moins utilisées. Cela va suivre des critères bien
+précis:
+
+\begin{itemize}
+\tightlist
+\item
+  Métadonnées qui ne rajoutent pas de la lourdeur (utilisée des bits des
+  pages non utilisés)
+\item
+  Ne pas supprimer des pages qui sont souvent utiliser ou va l'être.
+\end{itemize}
+
+On va \textbf{éviter} ces 2 politiques:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  FIFO: supprimer les pages les plus anciennes. Ne prend pas en compte
+  le fait qu'on utilise activement une page
+\item
+  Conserver des statistiques sur les accès: irréalistes et coûteux.
+\end{enumerate}
+
+On va utiliser le principe du \textbf{LRU} ou \textbf{Least Recently
+Used} pour enlever la page utilisée en dernier. On va faire cela sans
+compter le temps. On va tous les X cycles d'horloges checker 2 bits
+spécifiques:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Dirty bit: page modifiée ? \emph{page modifiée et à mettre à jour sur
+  le disque}
+\item
+  Reference bit: page utilisée ? \emph{page accédée récemment}
+\end{enumerate}
+
+\begin{figure}
+\centering
+\includegraphics{image-60.png}
+\caption{Format complet d'une entrée de la table des pages}
+\end{figure}
+
+Après chaque check, le SE va mettre ces 2 bits à 0. On va supprimer en
+premier les pages qui sont \texttt{00} et \texttt{01} car elles ne sont
+pas accédées.
+
+\subsubsection{Fichiers Mappés en
+Mémoire}\label{fichiers-mappuxe9s-en-muxe9moire}
+
+On peut mapper le contenu d'un fichier dans la mémoire pour avoir plus
+simple à le manipuler (👀 oui
+\href{https://media.discordapp.net/attachments/517720163223601155/1113851521029910569/GOODBOOOOOI.gif}{@Hokkaydo})
+via cet appel système qui nous renvoie un pointeur vers la zone mappée
+ou un \texttt{MAP\_FAILED}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/mman.h\textgreater{}}\PreprocessorTok{ }
+
+\DataTypeTok{void} \OperatorTok{*}\NormalTok{mmap}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{,} \DataTypeTok{size\_t}\NormalTok{ length}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ prot}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ flags}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ fd}\OperatorTok{,}\NormalTok{ off\_t offset}\OperatorTok{);}
+\CommentTok{/*}
+\CommentTok{* addr:     où on veut mapper, Généralement NULL}
+\CommentTok{* length:   longueur de la zone du fichier à mapper}
+\CommentTok{* prot:     permission (R/W/X)}
+\CommentTok{* flags:    mapping privé (MAP\_PRIVATE) ou partagé entre processus (MAP\_SHARED)}
+\CommentTok{* fs:       descripteur du fichier}
+\CommentTok{* offset:   où on veut démarrer à mapper}
+\CommentTok{*/}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+\centering
+\includegraphics{image-61.png}
+\caption{Mapping en Mémoire}
+\end{figure}
+
+\paragraph{Appels Systèmes
+Associés}\label{appels-systuxe8mes-associuxe9s}
+
+On peut forcer l'écriture sur le disque (même idée de buffer que pour
+\texttt{printf}):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/mman.h\textgreater{}}\PreprocessorTok{ }
+
+\DataTypeTok{int}\NormalTok{ msync}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{,} \DataTypeTok{size\_t}\NormalTok{ length}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ flags}\OperatorTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+Supprimer tout le mapping ou une partie
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/mman.h\textgreater{}}\PreprocessorTok{ }
+
+\DataTypeTok{int}\NormalTok{ munmap}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{,} \DataTypeTok{size\_t}\NormalTok{ length}\OperatorTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Mémoire partagée}\label{muxe9moire-partaguxe9e}
+
+Quand on a plusieurs threads, la table des pages est copiée pour tous
+les segments \textbf{sauf le Stack}.
+
+On peut faire de la communication entre processus via de la mémoire
+partagée. Il faut que les entrées de la table des pages des deux
+processus pointent vers les mêmes frames physiques.
+
+\paragraph{Gestion de la mémoire
+partagée}\label{gestion-de-la-muxe9moire-partaguxe9e}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2478}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4696}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2826}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+Fonction
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Paramètre
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{int\ shmget(key\_t,\ key,\ size\_t\ size,\ int\ shmflg)} &
+\texttt{key}: une clé. \texttt{size}: taille de page. \texttt{shmflg}:
+on le met à \texttt{IPC\_CREAT} pour créer sinon obtenir un accès. &
+crée ou obtient l'accès à un segment de mémoire partagée \\
+\texttt{void\ *shmat(int\ shmid,\ const\ void\ *shmaddr,\ int\ shmflg)}
+& \texttt{shmid}: id de la page qu'on a obtenu. \texttt{shmaddr}: mis à
+\texttt{NULL}. \texttt{shmflg}: mis à 0. & Pour attacher la page
+partagée dans l'espace mémoire du processus \\
+\texttt{int\ shmdt(const\ void\ *shmaddr)} & \texttt{shmaddr}: l'adresse
+retournée par \texttt{shmat}. & Pour détacher la page \\
+\end{longtable}
+
+Il faut faire attention à ce que la mémoire soit bien attachée pour les
+deux processus. On va soit:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  éviter d'utiliser des pointeurs (sinon il ne pointe pas vers les mêmes
+  choses dans le processus)
+\item
+  stocker les adresses relatives au début de la zone mémoire partagée
+\end{enumerate}
+
+\paragraph{Destruction des segments
+partagés}\label{destruction-des-segments-partaguxe9s}
+
+Les segments partagées vont continuer à exister même à la terminaison du
+processus créateur. On utilise \texttt{shmctl} pour supprimer un
+segment. La suppression se fera au dernier \texttt{shmdt}.
+
+\paragraph{Librairie partagée}\label{librairie-partaguxe9e}
+
+La zone mémoire liée aux librairies partagées se trouvent entre le stack
+et le heap et sera en \texttt{.so}.
+
+\begin{figure}
+\centering
+\includegraphics{image-62.png}
+\caption{Espace mémoire du processus}
+\end{figure}
+
+\subsubsection{\texorpdfstring{Fonctionnement de \texttt{fork} et
+\texttt{exec}}{Fonctionnement de fork et exec}}\label{fonctionnement-de-fork-et-exec}
+
+En faisant un \texttt{fork} on va faire une copie de la table des pages
+en mode read pour le segment text sinon en mode écriture, il faut
+réaliser une isolation le \textbf{Copy-on-Write}.
+
+\paragraph{Copy-on-Write}\label{copy-on-write}
+
+Les pages sont déclarées en \emph{read-only} donc essayer d'écrire va
+générer un trap. Le SE va vérifier si l'accès interdit est pour une page
+réellement en écriture. Si c'est le cas:
+
+\begin{itemize}
+\tightlist
+\item
+  La page est dupliquée vers une nouvelle page
+\item
+  Table des pages mise à jour pour pointer vers cette copie
+\item
+  On redémarre l'instruction qui a générée l'erreur
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics{image-63.png}
+\caption{Copy-on-Write: après}
+\end{figure}
