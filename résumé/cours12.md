@@ -142,7 +142,7 @@ Via `ext4`, stockage de petite liste de fichiers directement dans l'inode.
 
 ## Gestion de l'Espace Libre
 
-On a une liste qui indique les blocs libres sur le disque qui est conservé avec le temps.
+On a une liste qui indique les blocs libres sur le disque qui est conservée avec le temps.
 
 ### Effacer un Fichier
 

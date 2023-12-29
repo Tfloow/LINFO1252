@@ -5,7 +5,7 @@
 Accéder à la mémoire directement n'est pas une bonne solution car on
 doit connaitre son organisation à la compilation. Impossible car si on
 passe de 2 Go de RAM à 4 il faut tout recompiler !! On va virtualiser
-tout ça
+tout ça.
 
 \subsubsection{La Mémoire Virtuelle}\label{la-muxe9moire-virtuelle}
 
@@ -94,8 +94,8 @@ rétablissement de contexte).
 
 \paragraph{Exemple pour 2 processus}\label{exemple-pour-2-processus}
 
-Si on a un système 8 bits (RAM maximum de 256) ce qui nous donne 16
-cadres de pages de 16 octets chacun. On décide d'avoir des adresses
+Si on a un système 8 bits (RAM maximum de 256 octets) ce qui nous donne
+16 cadres de pages de 16 octets chacun. On décide d'avoir des adresses
 virtuelles sur 6 bits donc un maximum de 64 octets par processus (chaque
 processus va donc utiliser 4 pages --\textgreater{} 2 bits pour la page
 4 pour l'offset).
@@ -186,7 +186,7 @@ On va donc devoir rapatrier des pages du disque vers la mémoire si on
 constate un défaut de page (ou en créer une nouvelle).
 
 On va devoir aussi faire une politique de suppression des pages les plus
-anciennes et des moins utilisées. Cela va suivre des critères bien
+anciennes et les moins utilisées. Cela va suivre des critères bien
 précis:
 
 \begin{itemize}
@@ -254,7 +254,7 @@ ou un \texttt{MAP\_FAILED}:
 \CommentTok{* length:   longueur de la zone du fichier à mapper}
 \CommentTok{* prot:     permission (R/W/X)}
 \CommentTok{* flags:    mapping privé (MAP\_PRIVATE) ou partagé entre processus (MAP\_SHARED)}
-\CommentTok{* fs:       descripteur du fichier}
+\CommentTok{* fd:       descripteur du fichier}
 \CommentTok{* offset:   où on veut démarrer à mapper}
 \CommentTok{*/}
 \end{Highlighting}
@@ -329,6 +329,12 @@ partagée dans l'espace mémoire du processus \\
 \texttt{int\ shmdt(const\ void\ *shmaddr)} & \texttt{shmaddr}: l'adresse
 retournée par \texttt{shmat}. & Pour détacher la page \\
 \end{longtable}
+
+La clé \texttt{key\_t\ key}, est ce qui permet que dans 2 processus au
+moment du \texttt{shmget} on obtienne bien la même mémoire partagée. On
+passe dans \texttt{shmflg} en plus de \texttt{IPC\_CREAT} les droits
+pour la zone de mémoire \texttt{RWX} sous forme octale \texttt{0777}
+pour lire, écrire et exécuter.
 
 \texttt{shmget} va pousser le kernel à mettre toutes les valeurs à 0
 dans l'ensemble des adresses concernées pour des raisons de sécurité.

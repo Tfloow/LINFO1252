@@ -4,7 +4,7 @@
 
 ## La mémoire
 
-Accéder à la mémoire directement n'est pas une bonne solution car on doit connaitre son organisation à la compilation. Impossible car si on passe de 2 Go de RAM à 4 il faut tout recompiler !! On va virtualiser tout ça
+Accéder à la mémoire directement n'est pas une bonne solution car on doit connaitre son organisation à la compilation. Impossible car si on passe de 2 Go de RAM à 4 il faut tout recompiler !! On va virtualiser tout ça.
 
 ### La Mémoire Virtuelle
 
@@ -51,7 +51,7 @@ Chaque processus possède donc sa **propre table des pages** (pas pour le kernel
 
 #### Exemple pour 2 processus
 
-Si on a un système 8 bits (RAM maximum de 256) ce qui nous donne 16 cadres de pages de 16 octets chacun. On décide d'avoir des adresses virtuelles sur 6 bits donc un maximum de 64 octets par processus (chaque processus va donc utiliser 4 pages --> 2 bits pour la page 4 pour l'offset).
+Si on a un système 8 bits (RAM maximum de 256 octets) ce qui nous donne 16 cadres de pages de 16 octets chacun. On décide d'avoir des adresses virtuelles sur 6 bits donc un maximum de 64 octets par processus (chaque processus va donc utiliser 4 pages --> 2 bits pour la page 4 pour l'offset).
 
 Imaginons 2 processus `P1` et `P2` qui requiert 3 pages (2 pour leur text et 1 pour leur stack).
 
@@ -92,7 +92,7 @@ On a 2 façon de faire du swap (qui permet d'avoir plus de pages virtuelles):
 
 On va donc devoir rapatrier des pages du disque vers la mémoire si on constate un défaut de page (ou en créer une nouvelle).
 
-On va devoir aussi faire une politique de suppression des pages les plus anciennes et des moins utilisées. Cela va suivre des critères bien précis:
+On va devoir aussi faire une politique de suppression des pages les plus anciennes et les moins utilisées. Cela va suivre des critères bien précis:
 
 - Métadonnées qui ne rajoutent pas de la lourdeur (utilisée des bits des pages non utilisés)
 - Ne pas supprimer des pages qui sont souvent utiliser ou va l'être.
@@ -124,7 +124,7 @@ void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
 * length:   longueur de la zone du fichier à mapper
 * prot:     permission (R/W/X)
 * flags:    mapping privé (MAP_PRIVATE) ou partagé entre processus (MAP_SHARED)
-* fs:       descripteur du fichier
+* fd:       descripteur du fichier
 * offset:   où on veut démarrer à mapper
 */
 ```
@@ -162,6 +162,8 @@ On peut faire de la communication entre processus via de la mémoire partagée. 
 |     `int shmget(key_t, key, size_t size, int shmflg)`     | `key`: une clé. `size`: taille de page. `shmflg`: on le met à `IPC_CREAT` pour créer sinon obtenir un accès. |     crée ou obtient l'accès à un segment de mémoire partagée      |
 | `void *shmat(int shmid, const void *shmaddr, int shmflg)` |              `shmid`: id de la page qu'on a obtenu. `shmaddr`: mis à `NULL`. `shmflg`: mis à 0.              | Pour attacher la page partagée dans l'espace mémoire du processus |
 |             `int shmdt(const void *shmaddr)`              |                                 `shmaddr`: l'adresse retournée par `shmat`.                                  |                       Pour détacher la page                       |
+
+La clé `key_t key`, est ce qui permet que dans 2 processus au moment du `shmget` on obtienne bien la même mémoire partagée. On passe dans `shmflg` en plus de `IPC_CREAT` les droits pour la zone de mémoire `RWX` sous forme octale `0777` pour lire, écrire et exécuter.
 
 `shmget` va pousser le kernel à mettre toutes les valeurs à 0 dans l'ensemble des adresses concernées pour des raisons de sécurité.
 
