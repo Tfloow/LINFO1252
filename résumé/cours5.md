@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 # Cours 5
 
@@ -300,6 +298,3 @@ Démarrage et reset de la machine: interruption de mise à zéro du processeur. 
 1. Programme de démarrage (bootstrap) stocké dans une ROM. Charge ainsi le bootloader
 2. Bootloader lit les systèmes de fichiers pour charger l'image du noyau en mémoire (`/boot/vmlinuz-3.12.0-32-generic`) en gros le GRUB.
 
-___
-
-[<--](../README.md)

@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 # Cours 3
 
@@ -36,7 +34,8 @@ On voit que `sbrk` réalise un élargissement de la zone de heap.
 #include <unistd.h> 
 
 int brk(void *addr);            // Positionne le programme break a une adresse
-void *sbrk(intptr_t increment); // Décale le programme break et retourne le nouveau program break. (sbrk(0) retourne la valeur actuelle donc)
+void *sbrk(intptr_t increment); // Décale le programme break et retourne le nouveau program break. 
+                                //(sbrk(0) retourne la valeur actuelle donc)
 ```
 
 Attention à ne pas trop incrémenter sous peine de cause une erreur. --> `ENOMEM` et le processus sera arrêté par le SE. La limite se trouve via `ulimit -a`.
@@ -126,6 +125,3 @@ On peut aussi voir une approche différente où on a plusieurs listes en fonctio
 Tout est une question de compromis comme toujours.
 
 
-___
-
-[<--](../README.md)

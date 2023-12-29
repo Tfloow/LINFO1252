@@ -1,9 +1,322 @@
-\href{../README.md}{\textless--}
+\section{Cours 7}\label{cours-7}
 
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+\subsection{Sémaphores et Compléments sur les
+Threads}\label{suxe9maphores-et-compluxe9ments-sur-les-threads}
 
-\section{TODO}\label{todo}
+\subsubsection{Sémaphore}\label{suxe9maphore}
 
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+Une sémaphore est donc une structure qui contient: - Entier non-signé:
+positif ou nul - File vers les pointeurs de threads en attente
+(\emph{Blocked})
 
-\href{../README.md}{\textless--}
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}semaphore.h\textgreater{}}\PreprocessorTok{ }
+\DataTypeTok{int}\NormalTok{ sem\_init}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ pshared}\OperatorTok{,} \DataTypeTok{unsigned} \DataTypeTok{int}\NormalTok{ value}\OperatorTok{);} \CommentTok{// initialise avec value le nombre de place}
+\CommentTok{//pshared = 0}
+\DataTypeTok{int}\NormalTok{ sem\_destroy}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// destruction du semaphore }
+\DataTypeTok{int}\NormalTok{ sem\_wait}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Attente place}
+\DataTypeTok{int}\NormalTok{ sem\_post}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Liberation place}
+\end{Highlighting}
+\end{Shaded}
+
+Utile pour les problèmes de rendez-vous, producteurs-consommateurs,
+lecteurs-écrivains, \ldots{}
+
+Donc une sémaphore avec \texttt{value\ =\ 1} est une sorte de mutex.
+Attention, un autre thread peut libérer notre sémaphore ce qui est
+différent d'un mutex où c'est généralement le même thread appelle
+\texttt{lock()} et \texttt{unlock()}.
+
+\paragraph{Problème du Rendez-Vous}\label{probluxe8me-du-rendez-vous}
+
+2 phases: 1. N threads s'exécutent indépendamment 2. Commence quand tous
+les threads ont finit la phase 1. (on peut utiliser la structure
+\texttt{pthread\_barrier\_init})
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sem\_t rendezvous}\OperatorTok{;} \CommentTok{// Bloque les threads en attente de RDV }
+\NormalTok{pthread\_mutex\_t mutex}\OperatorTok{;} \CommentTok{// Protège accès à count}
+\DataTypeTok{int}\NormalTok{ count}\OperatorTok{=}\DecValTok{0}\OperatorTok{;} \CommentTok{// Nombre de threads ayant atteint le point de RDV}
+
+\NormalTok{sem\_init}\OperatorTok{(\&}\NormalTok{rendezvous}\OperatorTok{,}\DecValTok{0}\OperatorTok{,}\DecValTok{0}\OperatorTok{)}
+
+\NormalTok{premiere\_phase}\OperatorTok{();} 
+
+\CommentTok{// section critique }
+\NormalTok{pthread\_mutex\_lock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);}\NormalTok{ count}\OperatorTok{++;} 
+\ControlFlowTok{if}\OperatorTok{(}\NormalTok{count}\OperatorTok{==}\NormalTok{N}\OperatorTok{)} \OperatorTok{\{}
+    \CommentTok{// tous les threads sont arrivés }
+\NormalTok{    sem\_post}\OperatorTok{(\&}\NormalTok{rendezvous}\OperatorTok{);}
+\OperatorTok{\}}
+\NormalTok{pthread\_mutex\_unlock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+\CommentTok{// attente à la barrière }
+\NormalTok{sem\_wait}\OperatorTok{(\&}\NormalTok{rendezvous}\OperatorTok{);}
+\CommentTok{// libération d\textquotesingle{}un autre thread en attente }
+\NormalTok{sem\_post}\OperatorTok{(\&}\NormalTok{rendezvous}\OperatorTok{);}
+
+\NormalTok{seconde\_phase}\OperatorTok{();}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Producteurs-Consommateurs}\label{producteurs-consommateurs}
+
+On a un ensemble de threads qui produisent quelque chosent et d'autres
+qui vont le consommer. Les producteurs vont donc placer leurs données
+dans une zone partagée et les consommateurs vont pouvoir se servir.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{// Initialisation }
+\PreprocessorTok{\#define N }\DecValTok{10}\PreprocessorTok{ }
+\CommentTok{// places dans le buffer }
+\NormalTok{pthread\_mutex\_t mutex}\OperatorTok{;} 
+\NormalTok{sem\_t empty}\OperatorTok{;} 
+\NormalTok{sem\_t full}\OperatorTok{;}
+
+\NormalTok{pthread\_mutex\_init}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{,}\NormalTok{ NULL}\OperatorTok{);} 
+\NormalTok{sem\_init}\OperatorTok{(\&}\NormalTok{empty}\OperatorTok{,} \DecValTok{0} \OperatorTok{,}\NormalTok{ N}\OperatorTok{);} \CommentTok{// buffer vide}
+\NormalTok{sem\_init}\OperatorTok{(\&}\NormalTok{full}\OperatorTok{,} \DecValTok{0} \OperatorTok{,} \DecValTok{0}\OperatorTok{);} \CommentTok{// buffer vide}
+
+\CommentTok{// Producteur}
+\DataTypeTok{void}\NormalTok{ producer}\OperatorTok{(}\DataTypeTok{void}\OperatorTok{)} \OperatorTok{\{}
+    \DataTypeTok{int}\NormalTok{ item}\OperatorTok{;} 
+    \ControlFlowTok{while}\OperatorTok{(}\KeywordTok{true}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{        item}\OperatorTok{=}\NormalTok{produce}\OperatorTok{(}\NormalTok{item}\OperatorTok{);} 
+\NormalTok{        sem\_wait}\OperatorTok{(\&}\NormalTok{empty}\OperatorTok{);} \CommentTok{// attente d\textquotesingle{}une place libre }
+\NormalTok{        pthread\_mutex\_lock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+        \CommentTok{// section critique }
+\NormalTok{        insert\_item}\OperatorTok{();}
+\NormalTok{        pthread\_mutex\_unlock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);}
+\NormalTok{        sem\_post}\OperatorTok{(\&}\NormalTok{full}\OperatorTok{);} \CommentTok{// une place remplie}
+    \OperatorTok{\}}
+\OperatorTok{\}}
+
+\CommentTok{// Consommateur}
+\DataTypeTok{void}\NormalTok{ consumer}\OperatorTok{(}\DataTypeTok{void}\OperatorTok{)} \OperatorTok{\{}
+    \DataTypeTok{int}\NormalTok{ item}\OperatorTok{;} 
+    \ControlFlowTok{while}\OperatorTok{(}\KeywordTok{true}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{        sem\_wait}\OperatorTok{(\&}\NormalTok{full}\OperatorTok{);} \CommentTok{// attente d\textquotesingle{}une place remplie }
+\NormalTok{        pthread\_mutex\_lock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+        \CommentTok{// section critique }
+\NormalTok{        item }\OperatorTok{=}\NormalTok{ remove}\OperatorTok{(}\NormalTok{item}\OperatorTok{);}
+\NormalTok{        pthread\_mutex\_unlock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);}
+\NormalTok{        sem\_post}\OperatorTok{(\&}\NormalTok{empty}\OperatorTok{);} \CommentTok{// une place libre}
+    \OperatorTok{\}}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Reader-writers}\label{reader-writers}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pthread\_mutex\_t mutex}\OperatorTok{;} 
+\NormalTok{sem\_t db}\OperatorTok{;} \CommentTok{// accès à la db }
+\DataTypeTok{int}\NormalTok{ readcount}\OperatorTok{=}\DecValTok{0}\OperatorTok{;} \CommentTok{// nombre de readers}
+
+\NormalTok{sem\_init}\OperatorTok{(\&}\NormalTok{db}\OperatorTok{,}\NormalTok{ NULL}\OperatorTok{,} \DecValTok{1}\OperatorTok{)}
+
+\DataTypeTok{void}\NormalTok{ writer}\OperatorTok{(}\DataTypeTok{void}\OperatorTok{)} \OperatorTok{\{}
+    \ControlFlowTok{while}\OperatorTok{(}\KeywordTok{true}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{        prepare\_data}\OperatorTok{();}
+\NormalTok{        sem\_wait}\OperatorTok{(\&}\NormalTok{db}\OperatorTok{);}
+        \CommentTok{// section critique, un seul writer à la fois }
+\NormalTok{        write\_database}\OperatorTok{();} 
+\NormalTok{        sem\_post}\OperatorTok{(\&}\NormalTok{db}\OperatorTok{);} 
+    \OperatorTok{\}}
+\OperatorTok{\}}
+
+\DataTypeTok{void}\NormalTok{ reader}\OperatorTok{(}\DataTypeTok{void}\OperatorTok{)} \OperatorTok{\{}
+    \ControlFlowTok{while}\OperatorTok{(}\KeywordTok{true}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{        pthread\_mutex\_lock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+        \CommentTok{// section critique }
+\NormalTok{        readcount}\OperatorTok{++;} 
+        \ControlFlowTok{if} \OperatorTok{(}\NormalTok{readcount}\OperatorTok{==}\DecValTok{1}\OperatorTok{)} \OperatorTok{\{} 
+            \CommentTok{// arrivée du premier reader }
+\NormalTok{            sem\_wait}\OperatorTok{(\&}\NormalTok{db}\OperatorTok{);}
+        \OperatorTok{\}}
+\NormalTok{        pthread\_mutex\_unlock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+\NormalTok{        read\_database}\OperatorTok{();}
+\NormalTok{        pthread\_mutex\_lock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+        \CommentTok{// section critique }
+\NormalTok{        readcount}\OperatorTok{{-}{-};} 
+        \ControlFlowTok{if}\OperatorTok{(}\NormalTok{readcount}\OperatorTok{==}\DecValTok{0}\OperatorTok{)} \OperatorTok{\{} 
+            \CommentTok{// départ du dernier reader }
+\NormalTok{            sem\_post}\OperatorTok{(\&}\NormalTok{db}\OperatorTok{);}
+        \OperatorTok{\}}
+\NormalTok{        pthread\_mutex\_unlock}\OperatorTok{(\&}\NormalTok{mutex}\OperatorTok{);} 
+\NormalTok{        process\_data}\OperatorTok{();}
+    \OperatorTok{\}}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+On assure bien que l'écrivain ne peut être en section critique en même
+temps qu'un lecteur. On a un accès parallèle pour les écrivains. On
+risque juste d'avoir un writer qui attend indéfiniment que tous les
+écrivains se libèrent, problème de \textbf{famine}.
+
+\subsubsection{\texorpdfstring{Variable
+\texttt{volatile}}{Variable volatile}}\label{variable-volatile}
+
+Quand on accède à une variable en C, C va mémoriser la valeur. On peut
+s'assurer qu'il relise la valeur à chaque fois en ajoutant le mot-clé
+\texttt{volatile}. \textbf{Ce n'est pas une solution pour se protéger
+des écritures et accès concurrent !}
+
+\subsubsection{Threads-safe}\label{threads-safe}
+
+Une fonction est dite thread-safe si des threads en concurrences peuvent
+utiliser correctement une même fonction. Si elle utilise des variables
+globales ou statiques ❌.
+
+\subsection{Les processus}\label{les-processus}
+
+\emph{Définition}: Instructions à exécuter par les processeurs. Cela
+peut avoir plusieurs contextes d'exécutions. Chaque processus à son
+\textbf{espace mémoire spécifique}. Un segment \emph{stack} par contexte
+d'exécution. Il a également des méta-données permettant au SE de le
+contrôler.
+
+\subsubsection{Librairies}\label{librairies}
+
+On utilise souvent des librairies en C sous la forme de header
+\texttt{math.h}. Un processus ne contient généralement pas le code des
+librairies. On utilise donc les librairies partagées du SE (un peu comme
+les fichiers midi).
+
+\subsubsection{Création d'un processus}\label{cruxe9ation-dun-processus}
+
+Les étapes: 1. Le shell doit localiser le fichier exécutable dans le
+\texttt{PATH} 2. Demande au kernel de créer un nouveau processus 3. Le
+processus demande au kernel le chargement et l'exécution du code du
+fichier programme 4. On peut bloqué le shell et attendre de récupérer la
+valeur de retour
+
+On peut créer de nouveau processus via un \texttt{fork}. Cela fait des
+\textbf{copies} distinctes qui ne partagent rien entre elles.
+L'identifiant du processus va être différent. Le retour du père est 0 et
+des fils \textgreater{} 0.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdio.h\textgreater{}}\PreprocessorTok{ }
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdlib.h\textgreater{}}\PreprocessorTok{ }
+\PreprocessorTok{\#include }\ImportTok{\textless{}unistd.h\textgreater{}}
+
+\DataTypeTok{int}\NormalTok{ g}\OperatorTok{=}\DecValTok{0}\OperatorTok{;} \CommentTok{// segment données}
+
+\DataTypeTok{int}\NormalTok{ main }\OperatorTok{(}\DataTypeTok{int}\NormalTok{ argc}\OperatorTok{,} \DataTypeTok{char} \OperatorTok{*}\NormalTok{argv}\OperatorTok{[])} \OperatorTok{\{} 
+    \DataTypeTok{int}\NormalTok{ l}\OperatorTok{=}\DecValTok{1252}\OperatorTok{;} \CommentTok{// sur la pile }
+    \DataTypeTok{int} \OperatorTok{*}\NormalTok{m}\OperatorTok{;}     \CommentTok{// sur le heap}
+\NormalTok{    m}\OperatorTok{=(}\DataTypeTok{int} \OperatorTok{*)}\NormalTok{ malloc}\OperatorTok{(}\KeywordTok{sizeof}\OperatorTok{(}\DataTypeTok{int}\OperatorTok{));} 
+    \OperatorTok{*}\NormalTok{m}\OperatorTok{={-}}\DecValTok{1}\OperatorTok{;}
+
+\NormalTok{    pid\_t pid}\OperatorTok{;} 
+\NormalTok{    pid}\OperatorTok{=}\NormalTok{fork}\OperatorTok{();}
+    
+    \ControlFlowTok{if} \OperatorTok{(}\NormalTok{pid}\OperatorTok{=={-}}\DecValTok{1}\OperatorTok{)} \OperatorTok{\{}
+    \CommentTok{// erreur à l\textquotesingle{}exécution de fork }
+\NormalTok{    perror}\OperatorTok{(}\StringTok{"fork"}\OperatorTok{);} 
+\NormalTok{    exit}\OperatorTok{(}\NormalTok{EXIT\_FAILURE}\OperatorTok{);}
+    \OperatorTok{\}}
+    \CommentTok{// pas d\textquotesingle{}erreur }
+    \ControlFlowTok{if} \OperatorTok{(}\NormalTok{pid}\OperatorTok{==}\DecValTok{0}\OperatorTok{)} \OperatorTok{\{}
+        \CommentTok{// processus fils }
+\NormalTok{        l}\OperatorTok{++;}\NormalTok{ g}\OperatorTok{++;} \OperatorTok{*}\NormalTok{m}\OperatorTok{=}\DecValTok{17}\OperatorTok{;} 
+\NormalTok{        printf}\OperatorTok{(}\StringTok{"Dans le processus fils g=}\SpecialCharTok{\%d}\StringTok{, l=}\SpecialCharTok{\%d}\StringTok{ et *m=}\SpecialCharTok{\%d\textbackslash{}n}\StringTok{"}\OperatorTok{,}\NormalTok{ g}\OperatorTok{,}\NormalTok{l}\OperatorTok{,*}\NormalTok{m}\OperatorTok{);} 
+\NormalTok{        free}\OperatorTok{(}\NormalTok{m}\OperatorTok{);} 
+        \ControlFlowTok{return}\OperatorTok{(}\NormalTok{EXIT\_SUCCESS}\OperatorTok{);} 
+    \OperatorTok{\}} \ControlFlowTok{else} \OperatorTok{\{}
+        \CommentTok{// processus père }
+\NormalTok{        sleep}\OperatorTok{(}\DecValTok{2}\OperatorTok{);} 
+\NormalTok{        printf}\OperatorTok{(}\StringTok{"Dans le processus père g=}\SpecialCharTok{\%d}\StringTok{, l=}\SpecialCharTok{\%d}\StringTok{ et *m=}\SpecialCharTok{\%d\textbackslash{}n}\StringTok{"}\OperatorTok{,}\NormalTok{g}\OperatorTok{,}\NormalTok{l}\OperatorTok{,*}\NormalTok{m}\OperatorTok{);}
+\NormalTok{        free}\OperatorTok{(}\NormalTok{m}\OperatorTok{);} 
+        \CommentTok{// ... }
+        \ControlFlowTok{return}\OperatorTok{(}\NormalTok{EXIT\_SUCCESS}\OperatorTok{);}
+    \OperatorTok{\}}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Output:
+
+\begin{verbatim}
+Dans le processus fils g=1, l=1253 et *m=17 
+Dans le processus père g=0, l=1252 et *m=-1
+\end{verbatim}
+
+On a aussi les \emph{PID} qui sont les identificateurs des processus. Le
+PID 1 est le processus \emph{init} donc au démarrage du système.
+
+\subsubsection{Flux Standards et de
+Partage}\label{flux-standards-et-de-partage}
+
+On a un partage entre processus père et fils de \emph{STDOUT} et
+\emph{STDERR}. \emph{STDIN} est soit conservé ou délégué par le
+processus père. Ils écrivent donc dans la même sortie.
+
+\texttt{printf} ne fait pas d'appel bloquant mais il fait du
+\textbf{buffering} donc n'imprime pas tout de suite. Ainsi il ne fait
+qu'un seul appel à \texttt{write} par ligne !
+
+\subsubsection{Fin d'un Processus}\label{fin-dun-processus}
+
+Pour mettre fin à un processus, on utilise \texttt{exit()} ou un
+\texttt{retur(0)} (implicite par le compilateur). On a toujours la
+valeur du processus père et on peut spécifier des actions à faire à la
+terminaison \texttt{atexit()} (on spécifie une fonction qu'on veut
+réaliser). \texttt{exit()} fait un appel système \texttt{exit}.
+
+Pour récupérer une valeur de retour, on utilise:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/types.h\textgreater{}}\PreprocessorTok{ }
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/wait.h\textgreater{}}
+
+\NormalTok{pid\_t waitpid}\OperatorTok{(}\NormalTok{pid\_t pid}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{status}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ options}\OperatorTok{);}
+\CommentTok{// pid:     identifiant fils}
+\CommentTok{// status:  entier qui contiendra la valeur}
+\CommentTok{// options: des options}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Processus Orphelin et
+Zombie}\label{processus-orphelin-et-zombie}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Orphelin}: Si un processus père n'attend pas un processus fils,
+  il sera rattaché au PID 1.
+\item
+  \emph{Zombie} : Si un processus à terminer mais que sa valeur de
+  retour n'a jamais été récupérée, le kernel doit la stocker.
+\end{itemize}
+
+\subsubsection{Exécution d'un
+programme}\label{exuxe9cution-dun-programme}
+
+Pour éviter d'être limité à des exécutions Père-Fils où le fils à le
+même code que celui du père et une copie de ses données, on peut
+remplacer la mémoire de ce processus via celle dans un fichier
+exécutable comme ceci:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}unistd.h\textgreater{}}\PreprocessorTok{ }
+
+\DataTypeTok{int}\NormalTok{ execve}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{char} \OperatorTok{*}\NormalTok{path}\OperatorTok{,} \DataTypeTok{char} \OperatorTok{*}\DataTypeTok{const}\NormalTok{ argv}\OperatorTok{[],} \DataTypeTok{char} \OperatorTok{*}\DataTypeTok{const}\NormalTok{ envp}\OperatorTok{[]);}
+\CommentTok{// path: l\textquotesingle{}espace mémoire à utiliser}
+\CommentTok{// argv: les arguments à passer}
+\CommentTok{// envp: les informations vis{-}à{-}vis de l\textquotesingle{}environnement}
+\end{Highlighting}
+\end{Shaded}
+
+Pour consulter tous les processus en cours, on utilise \texttt{ps},
+\texttt{top} (gestionnaire de tâche), \texttt{pstree} (voir les
+relations père-fils). Tout cela va provenir de \texttt{/proc} (pseudo
+système de fichier).

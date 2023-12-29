@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 # Cours 12
 
@@ -191,6 +189,3 @@ On va donc avoir de la redondance et des vérificateurs de fichiers. On peut vé
 
 TODO
 
-___
-
-[<--](../README.md)

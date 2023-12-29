@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 
 # Scheduling
@@ -179,6 +177,4 @@ Dans Linux, les priorités sont dynamiques et prise en compte des threads *inter
 - Chaque scheduler peut être paramétré
 - Critique pour la bonne performance et l’efficacité énergétique
 
-___
 
-[<--](../README.md)

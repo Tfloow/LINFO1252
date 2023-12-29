@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 
 
@@ -159,6 +157,4 @@ Il faut d'abord avoir ouvert un répertoire via `opendir`. `readdir` pour accéd
 TODO le reste
 
 
-___
 
-[<--](../README.md)

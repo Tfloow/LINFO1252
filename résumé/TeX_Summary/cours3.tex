@@ -1,7 +1,3 @@
-\href{../README.md}{\textless--}
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
 \section{Cours 3}\label{cours-3}
 
 \subsection{Déclaration de la
@@ -73,7 +69,8 @@ On voit que \texttt{sbrk} réalise un élargissement de la zone de heap.
 \PreprocessorTok{\#include }\ImportTok{\textless{}unistd.h\textgreater{}}\PreprocessorTok{ }
 
 \DataTypeTok{int}\NormalTok{ brk}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{);}            \CommentTok{// Positionne le programme break a une adresse}
-\DataTypeTok{void} \OperatorTok{*}\NormalTok{sbrk}\OperatorTok{(}\DataTypeTok{intptr\_t}\NormalTok{ increment}\OperatorTok{);} \CommentTok{// Décale le programme break et retourne le nouveau program break. (sbrk(0) retourne la valeur actuelle donc)}
+\DataTypeTok{void} \OperatorTok{*}\NormalTok{sbrk}\OperatorTok{(}\DataTypeTok{intptr\_t}\NormalTok{ increment}\OperatorTok{);} \CommentTok{// Décale le programme break et retourne le nouveau program break. }
+                                \CommentTok{//(sbrk(0) retourne la valeur actuelle donc)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -201,7 +198,3 @@ fonction de la taille de bloc disponible mais ça devient très couteux et
 de plus en plus cher.
 
 Tout est une question de compromis comme toujours.
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\href{../README.md}{\textless--}

@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 # Cours 8
 
@@ -389,6 +387,4 @@ On va souvent utiliser du **exponentiel-backoff**. Si on arrive pas du premier c
 performance !
 
 
-___
 
-[<--](../README.md)

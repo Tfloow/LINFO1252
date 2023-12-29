@@ -17,10 +17,10 @@ If you want to update a specific part (i.e. a lesson), go click on the correspon
 - [x] [cours 4](résumé/cours4.md)
 - [x] [cours 5](résumé/cours5.md)
 - [x] [cours 6](résumé/cours6.md)
-- [ ] [cours 7](résumé/cours7.md) en cours
+- [x] [cours 7](résumé/cours7.md) 
 - [x] [cours 8](résumé/cours8.md)
 - [x] [cours 9](résumé/cours9.md)
-- [ ] [cours 10](résumé/cours10.md)
+- [ ] [cours 10](résumé/cours10.md) en cours
 - [x] [cours 11](résumé/cours11.md)
 - [ ] [cours 12](résumé/cours12.md) en cours
 

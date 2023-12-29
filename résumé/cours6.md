@@ -1,6 +1,4 @@
-[<--](../README.md)
 
-___
 
 # Cours 6
 
@@ -127,6 +125,4 @@ Si un thread appelle `lock()` et que le mutex est déjà bloqué, alors le threa
 
 cela se passe quand tout se bloque à cause de mutex (cfr: 3 philosophes 3 baguettes). On peut forcer que les appels bloquants se fassent par ordre croissant d'adresse pour éviter ce problème.
 
-___
 
-[<--](../README.md)
