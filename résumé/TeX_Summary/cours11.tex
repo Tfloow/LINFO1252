@@ -91,7 +91,8 @@ les fichiers sont regroupés sous forme d'une arborescence unique.
 \end{figure}
 
 En utilisant \texttt{mnt} on peut attacher ou détacher des systèmes de
-fichiers dans la hiérarchie commune.
+fichiers dans la hiérarchie commune. Tout est un fichier en Linux (même
+le \texttt{/proc}).
 
 \subsection{contenu d'un répertoire}\label{contenu-dun-ruxe9pertoire}
 
@@ -199,8 +200,8 @@ suivant:
 \subsubsection{Fonctions Utiles}\label{fonctions-utiles}
 
 \begin{longtable}[]{@{}
-  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3070}}
-  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6930}}@{}}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2966}}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7034}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\centering
 Fonction
@@ -240,4 +241,285 @@ contenu des répertoires \\
 Il faut d'abord avoir ouvert un répertoire via \texttt{opendir}.
 \texttt{readdir} pour accéder aux entrées du système.
 
-TODO le reste
+La fonction \texttt{readdir} \textbf{n'est pas thread-safe}. On ne peut
+donc pas appeler la fonction dans un autre thread quand cette dernière
+est déjà en cours d'exécution quelque part (on utilise de la mémoire
+statique). Il existe \texttt{readdir\_r} qui utilise un pointeur vers
+une zone mémoire allouée qui est thread-safe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DataTypeTok{int}\NormalTok{ readdir\_r}\OperatorTok{(}\NormalTok{DIR }\OperatorTok{*}\DataTypeTok{restrict}\NormalTok{ dirp}\OperatorTok{,} \KeywordTok{struct}\NormalTok{ dirent }\OperatorTok{*}\DataTypeTok{restrict}\NormalTok{ entry}\OperatorTok{,} \KeywordTok{struct}\NormalTok{ dirent }\OperatorTok{**}\DataTypeTok{restrict}\NormalTok{ result}\OperatorTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Inodes et Liens}\label{inodes-et-liens}
+
+On va représenter \textbf{chaque répertoire et fichier} via cette
+structure de donnée appelée une \emph{inode}. L'inode stocke des
+méta-données mais \textbf{pas le nom du fichier}. On peut donc avoir
+plusieurs fois le même nom. L'inode contient un compteur vers le nombre
+de fois qu'elle référence le fichier \texttt{nlinks}.
+
+On peut rajouter ou supprimer des liens entre un fichier et une inode
+via l'appel système \texttt{link} et \texttt{unlink}. L'inode est le
+nombre tout à gauche quand on fait \texttt{ls\ -li\ a}.
+
+\subsubsection{Liens}\label{liens}
+
+On a 2 types de liens:
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0410}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.8358}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1231}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+Nom
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Description
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Creation
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Durs & Lien dur et \textbf{doit} être dans le même système de fichier &
+\texttt{ln\ original.txt\ hardlink.txt} \\
+Symboliques & lien entre un nom dans un répertoire et avec un autre nom
+dans un autre. On doit donc suivre l'indirection. Le lien est cassé si
+le fichier avec qui il est lié est renommé ou supprimé. Donc tout est
+géré sur un seul fichier. &
+\texttt{ln\ -s\ original.txt\ softlink.txt} \\
+\end{longtable}
+
+\subsection{Utilisation des Fichiers}\label{utilisation-des-fichiers}
+
+On peut faire un accès explicite en C via \texttt{open}, \texttt{read},
+\texttt{write} et \texttt{close} (la librairie standard
+\texttt{stdio.h}, il faut rajouter un \texttt{f} devant le nom des
+fonctions).
+
+\subsubsection{Open}\label{open}
+
+On peut soit ouvrir de manière classique soit spécifier un argument en
+plus qui permet de créer un fichier si il est inexistant.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/types.h\textgreater{}}\PreprocessorTok{ \#include }\ImportTok{\textless{}sys/stat.h\textgreater{}}\PreprocessorTok{ }
+\PreprocessorTok{\#include }\ImportTok{\textless{}fcntl.h\textgreater{}}
+
+\DataTypeTok{int}\NormalTok{ open}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{char} \OperatorTok{*}\NormalTok{pathname}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ flags}\OperatorTok{);}
+\DataTypeTok{int}\NormalTok{ open}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{char}\OperatorTok{*}\NormalTok{ pathname}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ flags}\OperatorTok{,}\NormalTok{ mode\_t mode}\OperatorTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+Drapeaux, combinaison via \texttt{\textbar{}} :
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{O\_RDONLY}: lecture seule
+\item
+  \texttt{O\_WRONLY}: écriture seule
+\item
+  \texttt{O\_RDWR}: lecture et écriture
+\item
+  \texttt{O\_CREAT}: créer un fichier si inexistant (permission dans
+  l'umask)
+\item
+  \texttt{O\_APPEND}: écriture à la fin du fichier
+\item
+  \texttt{O\_TRUNC}: suppression du contenu si déjà présent
+\item
+  \texttt{O\_SYNC}: pas de buffer
+\end{itemize}
+
+\paragraph{Descripteur de fichiers}\label{descripteur-de-fichiers}
+
+Il est limité et commun à tous les processus, ce \texttt{fd}
+\textbf{doit être fermé} via \texttt{close}. Seulement \texttt{open}
+check les conditions d'accès et garde les permissions tant qu'il est
+ouvert (même si changement de permission au cours de l'exécution).
+
+\paragraph{Accès au fichier après
+ouverture}\label{accuxe8s-au-fichier-apruxe8s-ouverture}
+
+On a une tête de lecture qui se balade pendant l'écriture et lecture. On
+utilise \texttt{lseek} pour le déplacer.
+
+\subsubsection{Représentation des
+Données}\label{repruxe9sentation-des-donnuxe9es}
+
+On a deux façons de représenter les binaires:
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Big-endian}: les premiers bits sont ceux de poids forts.
+\item
+  \emph{Little-endian}: les premiers bits sont ceux de poids faibles.
+\end{itemize}
+
+\paragraph{Fichier temporaire}\label{fichier-temporaire}
+
+Via \texttt{mkstemp} on peut avoir un file descriptor temporaire. C'est
+plus efficace que d'attendre que les pages correspondantes soient
+sélectionnées pour remplir l'espace de swap.
+
+\subsection{Signaux}\label{signaux}
+
+\subsubsection{Communication entre
+Processus}\label{communication-entre-processus}
+
+On peut utiliser des pipe \texttt{\textbar{}} pour passer le STDOUT au
+STDIN d'un autre programme. On peut avoir des files FIFO, des fichiers
+partagées, sémaphores nommées ou même les \textbf{signaux} via la
+commande \texttt{kill}.
+
+Un signal c'est: une forme \emph{d'interruption logicielle}. Une
+interruption matérielle permet au kernel de reprendre la main en
+fonction d'évènement externe ou d'appel système. Un signal interrompt un
+processus pour demander une réaction spécifique (eg: tuer le processus).
+
+On distingue 2 types de signaux:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \emph{Synchrones}: créé par l'exécution du processus (\texttt{SIGFPE}
+  quand on fait une division par 0)
+\item
+  \emph{Asynchrones}: créé par un autre processus ou le shell
+\end{enumerate}
+
+\subsubsection{Traitement des Signaux}\label{traitement-des-signaux}
+
+Le SE définit une collection de signaux et leur traitement adéquat. On
+peut spécifier une nouvelle routine de traitement en utilisant l'appel
+système \texttt{signal}.
+
+\begin{figure}
+\centering
+\includegraphics{image-64.png}
+\caption{Tableau résumé des signaux communs}
+\end{figure}
+
+À noter que \texttt{SIGTERM}, \texttt{SIGKILL} et \texttt{SIGINT} sont
+des signaux asynchrones et permettent de terminer un processus
+proprement. De plus, \texttt{SIGUSR1} et \texttt{SIGUSR2} est laissé au
+choix du processus.
+
+\texttt{SINGINT} est réservé au shell. \texttt{SIGTERM} est mieux que
+\texttt{SIGKILL} car on peut programmer un traitement spécifique.
+\texttt{SIGKILL} c'est comme un bazooka.
+
+\paragraph{Envoi de signaux}\label{envoi-de-signaux}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}sys/types.h\textgreater{}}\PreprocessorTok{ }
+\PreprocessorTok{\#include }\ImportTok{\textless{}signal.h\textgreater{}}
+
+\DataTypeTok{int}\NormalTok{ kill}\OperatorTok{(}\NormalTok{pid\_t pid}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ sig}\OperatorTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+\texttt{kill} est un nom historique et ne sert pas qu'à tuer un
+processus. Comportement spécifique en fonction de \texttt{pid}:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{pid\ \textgreater{}\ 0}: envoi au processus spécifié par PID.
+\item
+  \texttt{pid\ ==\ 0}: envoi à tous les processus du même groupe. (tous
+  les processus d'un pipe == même groupe).
+\item
+  \texttt{pid\ ==\ -1}: envoi à tous les processus pour lesquels le
+  processus appelant à le droit d'envoyer un tel signal.
+\item
+  \texttt{pid\ \textless{}\ -1}: envoi à tous les processus d'un groupe
+  spécifique (groupe étant égal à \texttt{\textbar{}pid\textbar{}})
+\end{itemize}
+
+\paragraph{Traiter}\label{traiter}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}signal.h\textgreater{}}\PreprocessorTok{ }
+\KeywordTok{typedef} \DataTypeTok{void} \OperatorTok{(*}\NormalTok{sighandler\_t}\OperatorTok{)(}\DataTypeTok{int}\OperatorTok{);}
+
+\NormalTok{sighandler\_t signal}\OperatorTok{(}\DataTypeTok{int}\NormalTok{ signum}\OperatorTok{,}\NormalTok{ sighandler\_t handler}\OperatorTok{);}
+\CommentTok{/*}
+\CommentTok{* signum:  numéro du signal à traiter}
+\CommentTok{* handler: c\textquotesingle{}est une fonction de gestion qui prend un int}
+\CommentTok{*/}
+\end{Highlighting}
+\end{Shaded}
+
+exemple:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DataTypeTok{volatile} \DataTypeTok{sig\_atomic\_t}\NormalTok{ n\_sigusr1}\OperatorTok{=}\DecValTok{0}\OperatorTok{;} 
+\DataTypeTok{volatile} \DataTypeTok{sig\_atomic\_t}\NormalTok{ n\_sigusr2}\OperatorTok{=}\DecValTok{0}\OperatorTok{;}
+
+\DataTypeTok{static} \DataTypeTok{void}\NormalTok{ sig\_handler}\OperatorTok{(}\DataTypeTok{int}\OperatorTok{);} 
+
+\DataTypeTok{int}\NormalTok{ main }\OperatorTok{(}\DataTypeTok{int}\NormalTok{ argc}\OperatorTok{,} \DataTypeTok{char} \OperatorTok{*}\NormalTok{argv}\OperatorTok{[])} \OperatorTok{\{}
+  \ControlFlowTok{if}\OperatorTok{(}\NormalTok{signal}\OperatorTok{(}\NormalTok{SIGUSR1}\OperatorTok{,}\NormalTok{sig\_handler}\OperatorTok{)==}\NormalTok{SIG\_ERR}\OperatorTok{)} \OperatorTok{\{} \OperatorTok{(...)} \OperatorTok{\}} 
+  \ControlFlowTok{if}\OperatorTok{(}\NormalTok{signal}\OperatorTok{(}\NormalTok{SIGUSR2}\OperatorTok{,}\NormalTok{sig\_handler}\OperatorTok{)==}\NormalTok{SIG\_ERR}\OperatorTok{)} \OperatorTok{\{} \OperatorTok{(...)} \OperatorTok{\}}
+
+  \ControlFlowTok{while}\OperatorTok{(} \OperatorTok{(}\NormalTok{n\_sigusr1}\OperatorTok{+}\NormalTok{n\_sigusr2}\OperatorTok{)} \OperatorTok{\textless{}}\DecValTok{5}\OperatorTok{)} \OperatorTok{\{} 
+    \CommentTok{// vide}
+  \OperatorTok{\}}
+
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"Fin du processus}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);} 
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"Reçu }\SpecialCharTok{\%d}\StringTok{ SIGUSR1 et }\SpecialCharTok{\%d}\StringTok{ SIGUSR2}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{,}\NormalTok{n\_sigusr1}\OperatorTok{,}\NormalTok{n\_sigusr2}\OperatorTok{);} 
+  \ControlFlowTok{return}\OperatorTok{(}\NormalTok{EXIT\_SUCCESS}\OperatorTok{);}
+\OperatorTok{\}} 
+
+\DataTypeTok{static} \DataTypeTok{void}\NormalTok{ sig\_handler}\OperatorTok{(}\DataTypeTok{int}\NormalTok{ signum}\OperatorTok{)} \OperatorTok{\{}
+  \ControlFlowTok{if}\OperatorTok{(}\NormalTok{signum}\OperatorTok{==}\NormalTok{SIGUSR1}\OperatorTok{)} \OperatorTok{\{} 
+\NormalTok{    n\_sigusr1}\OperatorTok{++;}
+  \OperatorTok{\}} \ControlFlowTok{else} \OperatorTok{\{}
+    \ControlFlowTok{if}\OperatorTok{(}\NormalTok{signum}\OperatorTok{==}\NormalTok{SIGUSR2}\OperatorTok{)} \OperatorTok{\{} 
+\NormalTok{      n\_sigusr2}\OperatorTok{++;}
+    \OperatorTok{\}} \ControlFlowTok{else} \OperatorTok{\{} 
+      \DataTypeTok{char} \OperatorTok{*}\NormalTok{msg}\OperatorTok{=}\StringTok{"Reçu signal inattendu}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{;} 
+\NormalTok{      write}\OperatorTok{(}\NormalTok{STDERR\_FILENO}\OperatorTok{,}\NormalTok{msg}\OperatorTok{,}\NormalTok{strlen}\OperatorTok{(}\NormalTok{msg}\OperatorTok{));} 
+\NormalTok{      \_exit}\OperatorTok{(}\NormalTok{EXIT\_FAILURE}\OperatorTok{);}
+    \OperatorTok{\}}
+  \OperatorTok{\}}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Cette procédure de traitement peut intervenir à tout moment. Cette
+routine d'exécution se fait \textbf{d'une traite}. On ne peut
+qu'utiliser des variables globales et \texttt{volatile} empêche la
+sauvegarde dans un registre. Pour éviter tout chargement avant le
+traitement du signal on utilise \texttt{sig\_atomic\_t}. On ne peut que
+faire des appels systèmes et de la librairie ré-entrant.
+
+\subsubsection{Mise en Oeuvre des Signaux dans le
+Kernel}\label{mise-en-oeuvre-des-signaux-dans-le-kernel}
+
+2 options:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Conserver un fichier par processus pour stocker les signaux qui lui
+  sont destinés: pas de perte de signal mais le fichier doit être
+  \textbf{vérifié à chaque restauration de contexte}.
+\item
+  Mot binaire (sous Linux) pour chaque processus avec un bit par signal
+  possible. Moins de mémoire utilisée mais pas de garantie sur la
+  délivrance des signaux reçus en plusieurs exemplaires.
+\end{enumerate}

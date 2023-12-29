@@ -51,7 +51,7 @@ Il y a énormément de diversité en terme de support de stockage de données. I
 
 ![Alt text](image-34.png)
 
-En utilisant `mnt` on peut attacher ou détacher des systèmes de fichiers dans la hiérarchie commune.
+En utilisant `mnt` on peut attacher ou détacher des systèmes de fichiers dans la hiérarchie commune. Tout est un fichier en Linux (même le `/proc`).
 
 ## contenu d'un répertoire
 
@@ -131,14 +131,14 @@ int chdir(const char *path);
 
 ### Fonctions Utiles
 
-|              Fonction               |                                   description                                   |
-| :---------------------------------: | :-----------------------------------------------------------------------------: |
-|              ``stat``               |         récupère les méta-données associées à un fichier ou répertoire          |
-|         ``chmod``/``chown``         |               modifier les permissions ou le propriétaire/groupe                |
+|              Fonction               |                                     description                                     |
+| :---------------------------------: | :---------------------------------------------------------------------------------: |
+|              ``stat``               |           récupère les méta-données associées à un fichier ou répertoire            |
+|         ``chmod``/``chown``         |                 modifier les permissions ou le propriétaire/groupe                  |
 |              ``utime``              | modifier les dates de création/modifications d’un fichier (e.g. commande ``touch``) |
-|             ``rename``              |                          changer de nom, d’emplacement                          |
-|         ``mkdir``/``rmdir``         |                          créer/détruire un répertoire                           |
-| ``opendir``/``closedir``/``readir`` |                      consulter le contenu des répertoires                       |
+|             ``rename``              |                            changer de nom, d’emplacement                            |
+|         ``mkdir``/``rmdir``         |                            créer/détruire un répertoire                             |
+| ``opendir``/``closedir``/``readir`` |                        consulter le contenu des répertoires                         |
 
 ### Parcours de répertoire
 
@@ -154,7 +154,165 @@ struct dirent {
 
 Il faut d'abord avoir ouvert un répertoire via `opendir`. `readdir` pour accéder aux entrées du système.
 
-TODO le reste
+La fonction `readdir` **n'est pas thread-safe**. On ne peut donc pas appeler la fonction dans un autre thread quand cette dernière est déjà en cours d'exécution quelque part (on utilise de la mémoire statique). Il existe `readdir_r` qui utilise un pointeur vers une zone mémoire allouée qui est thread-safe.
 
+```c
+int readdir_r(DIR *restrict dirp, struct dirent *restrict entry, struct dirent **restrict result);
+```
 
+## Inodes et Liens
 
+On va représenter **chaque répertoire et fichier** via cette structure de donnée appelée une *inode*. L'inode stocke des méta-données mais **pas le nom du fichier**. On peut donc avoir plusieurs fois le même nom. L'inode contient un compteur vers le nombre de fois qu'elle référence le fichier `nlinks`.
+
+On peut rajouter ou supprimer des liens entre un fichier et une inode via l'appel système `link` et `unlink`. L'inode est le nombre tout à gauche quand on fait `ls -li a`.
+
+### Liens
+
+On a 2 types de liens:
+
+|     Nom     |                                                                                                           Description                                                                                                            |             Creation              |
+| :---------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------: |
+|    Durs     |                                                                                    Lien dur et **doit** être dans le même système de fichier                                                                                     |  `ln original.txt hardlink.txt`   |
+| Symboliques | lien entre un nom dans un répertoire et avec un autre nom dans un autre. On doit donc suivre l'indirection. Le lien est cassé si le fichier avec qui il est lié est renommé ou supprimé. Donc tout est géré sur un seul fichier. | `ln -s original.txt softlink.txt` |
+
+## Utilisation des Fichiers
+
+On peut faire un accès explicite en C via `open`, `read`, `write` et `close` (la librairie standard `stdio.h`, il faut rajouter un `f` devant le nom des fonctions).
+
+### Open
+
+On peut soit ouvrir de manière classique soit spécifier un argument en plus qui permet de créer un fichier si il est inexistant.
+
+```c
+#include <sys/types.h> #include <sys/stat.h> 
+#include <fcntl.h>
+
+int open(const char *pathname, int flags);
+int open(const char* pathname, int flags, mode_t mode);
+```
+
+Drapeaux, combinaison via `|` :
+
+- `O_RDONLY`: lecture seule
+- `O_WRONLY`: écriture seule
+- `O_RDWR`: lecture et écriture
+- `O_CREAT`: créer un fichier si inexistant (permission dans l'umask)
+- `O_APPEND`: écriture à la fin du fichier
+- `O_TRUNC`: suppression du contenu si déjà présent
+- `O_SYNC`: pas de buffer
+
+#### Descripteur de fichiers
+
+Il est limité et commun à tous les processus, ce `fd` **doit être fermé** via `close`. Seulement `open` check les conditions d'accès et garde les permissions tant qu'il est ouvert (même si changement de permission au cours de l'exécution).
+
+#### Accès au fichier après ouverture
+
+On a une tête de lecture qui se balade pendant l'écriture et lecture. On utilise `lseek` pour le déplacer.
+
+### Représentation des Données
+
+On a deux façons de représenter les binaires: 
+
+- *Big-endian*: les premiers bits sont ceux de poids forts.
+- *Little-endian*: les premiers bits sont ceux de poids faibles.
+
+#### Fichier temporaire
+
+Via `mkstemp` on peut avoir un file descriptor temporaire. C'est plus efficace que d'attendre que les pages correspondantes soient sélectionnées pour remplir l'espace de swap.
+
+## Signaux
+
+### Communication entre Processus
+
+On peut utiliser des pipe `|` pour passer le STDOUT au STDIN d'un autre programme. On peut avoir des files FIFO, des fichiers partagées, sémaphores nommées ou même les **signaux** via la commande `kill`.
+
+Un signal c'est: une forme *d'interruption logicielle*. Une interruption matérielle permet au kernel de reprendre la main en fonction d'évènement externe ou d'appel système. Un signal interrompt un processus pour demander une réaction spécifique (eg: tuer le processus).
+
+On distingue 2 types de signaux:
+
+1. *Synchrones*: créé par l'exécution du processus (`SIGFPE` quand on fait une division par 0)
+2. *Asynchrones*: créé par un autre processus ou le shell
+
+### Traitement des Signaux
+
+Le SE définit une collection de signaux et leur traitement adéquat. On peut spécifier une nouvelle routine de traitement en utilisant l'appel système `signal`.
+
+![Tableau résumé des signaux communs](image-64.png)
+
+À noter que `SIGTERM`, `SIGKILL` et `SIGINT` sont des signaux asynchrones et permettent de terminer un processus proprement. De plus, `SIGUSR1` et `SIGUSR2` est laissé au choix du processus.
+
+`SINGINT` est réservé au shell. `SIGTERM` est mieux que `SIGKILL` car on peut programmer un traitement spécifique. `SIGKILL` c'est comme un bazooka.
+
+#### Envoi de signaux
+
+```c
+#include <sys/types.h> 
+#include <signal.h>
+
+int kill(pid_t pid, int sig);
+```
+
+`kill` est un nom historique et ne sert pas qu'à tuer un processus. Comportement spécifique en fonction de `pid`:
+
+- `pid > 0`: envoi au processus spécifié par PID.
+- `pid == 0`: envoi à tous les processus du même groupe. (tous les processus d'un pipe == même groupe).
+- `pid == -1`: envoi à tous les processus pour lesquels le processus appelant à le droit d'envoyer un tel signal.
+- `pid < -1`: envoi à tous les processus d'un groupe spécifique (groupe étant égal à `|pid|`)
+
+#### Traiter
+
+```c
+#include <signal.h> 
+typedef void (*sighandler_t)(int);
+
+sighandler_t signal(int signum, sighandler_t handler);
+/*
+* signum:  numéro du signal à traiter
+* handler: c'est une fonction de gestion qui prend un int
+*/
+```
+
+exemple:
+
+```c
+volatile sig_atomic_t n_sigusr1=0; 
+volatile sig_atomic_t n_sigusr2=0;
+
+static void sig_handler(int); 
+
+int main (int argc, char *argv[]) {
+  if(signal(SIGUSR1,sig_handler)==SIG_ERR) { (...) } 
+  if(signal(SIGUSR2,sig_handler)==SIG_ERR) { (...) }
+
+  while( (n_sigusr1+n_sigusr2) <5) { 
+    // vide
+  }
+
+  printf("Fin du processus\n"); 
+  printf("Reçu %d SIGUSR1 et %d SIGUSR2\n",n_sigusr1,n_sigusr2); 
+  return(EXIT_SUCCESS);
+} 
+
+static void sig_handler(int signum) {
+  if(signum==SIGUSR1) { 
+    n_sigusr1++;
+  } else {
+    if(signum==SIGUSR2) { 
+      n_sigusr2++;
+    } else { 
+      char *msg="Reçu signal inattendu\n"; 
+      write(STDERR_FILENO,msg,strlen(msg)); 
+      _exit(EXIT_FAILURE);
+    }
+  }
+}
+```
+
+Cette procédure de traitement peut intervenir à tout moment. Cette routine d'exécution se fait **d'une traite**. On ne peut qu'utiliser des variables globales et `volatile` empêche la sauvegarde dans un registre. Pour éviter tout chargement avant le traitement du signal on utilise `sig_atomic_t`. On ne peut que faire des appels systèmes et de la librairie ré-entrant.
+
+### Mise en Oeuvre des Signaux dans le Kernel
+
+2 options:
+
+1. Conserver un fichier par processus pour stocker les signaux qui lui sont destinés: pas de perte de signal mais le fichier doit être **vérifié à chaque restauration de contexte**.
+2. Mot binaire (sous Linux) pour chaque processus avec un bit par signal possible. Moins de mémoire utilisée mais pas de garantie sur la délivrance des signaux reçus en plusieurs exemplaires.

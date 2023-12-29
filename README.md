@@ -21,7 +21,7 @@ If you want to update a specific part (i.e. a lesson), go click on the correspon
 - [x] [cours 8](résumé/cours8.md)
 - [x] [cours 9](résumé/cours9.md)
 - [x] [cours 10](résumé/cours10.md) 
-- [x] [cours 11](résumé/cours11.md) (missing end)
+- [x] [cours 11](résumé/cours11.md)
 - [x] [cours 12](résumé/cours12.md)
 
 ## Pré-requis
