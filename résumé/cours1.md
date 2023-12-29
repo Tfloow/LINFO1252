@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -60,7 +60,7 @@ On a typiquement:
 
 Les opérations d'entrée/sortie se déroulent de manière *concurrente*. Chacun a un contrôleur qui a une mémoire spécifique. Le processeur doit transporter les infos de la mémoire classique à la zone des contrôleurs.
 
-Un processeur n'est pas de base parallélisé. À chaque frappe du clavier, une interruption est lancée pour intercepté ce stimulis.
+Un processeur n'est pas de base parallélisé. À chaque frappe du clavier, une **interruption** est lancée pour intercepté ce stimulis.
 
 
 ### Interruption
@@ -252,4 +252,4 @@ done
        
 ___
 
-[↰](../README.md)
+[<--](../README.md)

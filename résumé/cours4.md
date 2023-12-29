@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 ___
 
 # Cours 4
@@ -294,4 +294,4 @@ On stocke les valeurs de retour dans le registre `%eax` par convention.
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

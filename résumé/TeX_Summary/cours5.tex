@@ -1,0 +1,456 @@
+\href{../README.md}{\textless--}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Cours 5}\label{cours-5}
+
+\begin{itemize}
+\tightlist
+\item
+  \hyperref[cours-5]{Cours 5}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \hyperref[service]{Service}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \hyperref[interface]{Interface}
+    \item
+      \hyperref[services-aux-concepteurs-dapplications]{Services aux
+      concepteurs d'applications}
+    \item
+      \hyperref[services-aux-applications]{Services aux applications}
+    \item
+      \hyperref[accuxe8s-aux-services-du-se]{Accès aux services du SE}
+    \end{itemize}
+  \item
+    \hyperref[architecture-des-systuxe8mes-dexploitation]{Architecture
+    des systèmes d'exploitation}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \hyperref[objectifs-et-contraintes-de-mise-en-oeuvre-dun-se]{Objectifs
+      et contraintes de mise en oeuvre d'un SE}
+    \item
+      \hyperref[ms-dos]{MS-DOS}
+    \item
+      \hyperref[unix]{UNIX}
+    \item
+      \hyperref[macro--et-micro-noyaux]{Macro- et Micro-noyaux}
+    \item
+      \hyperref[fiabilituxe9-des-se]{Fiabilité des SE}
+    \item
+      \hyperref[duxe9marrage-du-se]{Démarrage du SE}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\subsection{Service}\label{service}
+
+Un système d'exploitation fournit des services aux utilisateurs (aussi
+distant), aux développeurs et programmes qui s'exécutent.
+
+\subsubsection{Interface}\label{interface}
+
+\begin{itemize}
+\tightlist
+\item
+  Interface utilisateur: GUI ou terminal
+\item
+  Interface de traitement par lot: comme Inginious, on a un ensemble de
+  tâches qui s'exécutent groupe par groupe. (punch card)
+\end{itemize}
+
+On retrouve la dernière interface sur les HPC et autres types de super
+computer.
+
+\paragraph{Sous linux}\label{sous-linux}
+
+On a un système pour le batch (traitement par lot).
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{at}: lance une commande à un moment spécifique.
+\item
+  \texttt{crontab}: gérer des tâches récurrentes.
+\end{itemize}
+
+\subsubsection{Services aux concepteurs
+d'applications}\label{services-aux-concepteurs-dapplications}
+
+On facilite le déploiement d'applications sur d'autres systèmes que
+celui de la machine du dev via: - \textbf{Linker}: Assemble différents
+fichiers \emph{objets} en un \emph{exécutable unique} - \texttt{ld} sur
+Linux - \texttt{-static} avec \texttt{gcc} pour avoir l'ensemble des
+libraires - \textbf{Loader}: au démarrage d'un programme. -
+\texttt{ld.so} libraire et support du kernel Linux 1. Initialise
+l'espace mémoire 2. Pré-charge les segments text, data, environment 3.
+Localiser et charger les libraires dynamiques
+
+Il peut aussi gérer les erreurs. ex: \emph{memory dump} pour avoir
+l'état de la mémoire avant le crash. Ce \emph{memory dump} peut être
+déclenché si on fait une division par 0 ou accès non autorisé à certains
+segments de la mémoire.
+
+On peut aussi facilement débugger via \texttt{gdb} et ses breakpoints.
+Les breakpoints sont en réalité des \emph{trap} qui fait une
+interruption logicielle !
+
+\subsubsection{Services aux
+applications}\label{services-aux-applications}
+
+Le SE gère les entrées sorties mais il y a quelques règles: - Une app
+\textbf{ne peut pas} envoyer d'instructions aux gestionnaires de
+périphériques - \textbf{Ne peut pas} traiter les interruptions -
+Hétérogénéité des périphériques eux-mêmes - SE fournit une abstraction
+unique pour une \emph{classe} de périphérique
+
+Un des buts du SE est de faire \textbf{correspondre} des abstractions
+\emph{haut niveau} et des opérations \emph{bas niveau}. On a des drivers
+qui permettent de contrôler le matériel.
+
+Un SE va partager les ressources. Il va faire: - Maximisation de
+l'utilisation - Équité d'accès - Isolation
+
+Il fournit aussi d'autres services spécifiques: - Allocations des
+ressources: - Exclusive ou non (typique des ports) - Contrôle générique
+ou spécifique - Protection et contrôle d'accès
+
+\subsubsection{Accès aux services du
+SE}\label{accuxe8s-aux-services-du-se}
+
+\begin{itemize}
+\tightlist
+\item
+  Utilisation d'utilitaire systèmes
+\item
+  Appel direct des fonctions du noyau
+\item
+  Librairie Standard
+\end{itemize}
+
+On a une API par le noyau pour les \emph{appels système}: - A un numéro
+précis - Point d'entrée unique pour accéder aux fonctions du noyau
+
+\paragraph{Fonctionnement}\label{fonctionnement}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Placer les arguments dans la pile
+\item
+  Sauvegarde l'adresse de retour sur la pile
+\item
+  Modifier \texttt{\%eip} pour que la prochaine instruction à exécuter
+  soit notre fonction
+\item
+  Fonction prend ses arguments
+\item
+  Sauvegarde son résultat à un endroit (\texttt{\%eax} par convention en
+  IA32)
+\item
+  Fonction récupère l'adresse de retour sur la pile et modifie
+  \texttt{\%eip} pour retourner à la fonction appelante.
+\end{enumerate}
+
+\begin{figure}
+\centering
+\includegraphics{image-12.png}
+\caption{Alt text}
+\end{figure}
+
+On change de mode d'exécution. On change d'espace mémoire !
+
+\paragraph{Réalisation concrète}\label{ruxe9alisation-concruxe8te}
+
+Problème 1: placer des arguments qui seront accessibles par le noyau. On
+va le mettre soit dans: - Un espace mémoire fixe dédié (data) - Sur la
+pile - Registres (\texttt{\%ebx} pour premier argument puis
+\texttt{\%ecx})
+
+Problème 2: adresse de retour - Pointeur de programme sauvegardé sur la
+pile. - Restauré au retour
+
+Problème 3: appel effectif - Passer en mode protégé - Instructions
+spéciales (IA32 \texttt{int\ 0x80} crée une interruption) ou simplement
+\texttt{syscall}. - Point d'entrée du kernel est connu par le
+processeur.
+
+\begin{figure}
+\centering
+\includegraphics{image-13.png}
+\caption{Alt text}
+\end{figure}
+
+Problème 4: récupération du code de retour 1. Opération autorisée et
+paramètre corrects: - Résultat mis dans le registre \texttt{\%eax} -
+Instruction de retour au mode utilisateur, dépile l'adresse de retour et
+positionne le compteur de programme 2. Erreur ou opération non autorisée
+- Positionne la variable d'environnement \texttt{errno} - Retourne aux
+processus parent (ex: shell)
+
+\paragraph{Appels systèmes}\label{appels-systuxe8mes}
+
+\begin{itemize}
+\tightlist
+\item
+  Librairie standard: s'exécute dans le même espace mémoire que le
+  programme utilisateur. \texttt{printf(3)} va forcément utiliser
+  \texttt{write(2)} ou autres opérations bas niveau.
+\item
+  \texttt{strace(1)} permet de tracer les appels systèmes utilisés par
+  un processus
+\end{itemize}
+
+.
+
+\begin{figure}
+\centering
+\includegraphics{image-14.png}
+\caption{Alt text}
+\end{figure}
+
+\paragraph{Hello world}\label{hello-world}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdio.h\textgreater{}}
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdlib.h\textgreater{}}
+
+\DataTypeTok{int}\NormalTok{ main}\OperatorTok{(}\DataTypeTok{int}\NormalTok{ argc}\OperatorTok{,} \DataTypeTok{char} \OperatorTok{*}\NormalTok{argv}\OperatorTok{[])\{}
+\NormalTok{   printf}\OperatorTok{(}\StringTok{"Hello, world! }\SpecialCharTok{\%d\textbackslash{}n}\StringTok{"}\OperatorTok{,}\KeywordTok{sizeof}\OperatorTok{(}\DataTypeTok{int}\OperatorTok{));}
+   \ControlFlowTok{return}\NormalTok{ EXIT\_SUCCESS}\OperatorTok{;}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Traduction:
+
+\begin{verbatim}
+$ strace ./helloworld_s
+execve("./helloworld_s", ["./helloworld_s"], [/* 21 vars */]) = 0
+uname({sys="Linux", node="precise32", ...}) = 0
+brk(0)                                  = 0x9e8b000
+brk(0x9e8bd40)                          = 0x9e8bd40
+set_thread_area({entry_number:-1 -> 6, base_addr:0x9e8b840, limit:1048575, seg_32bit:1, 
+contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
+brk(0x9eacd40)                          = 0x9eacd40
+brk(0x9ead000)                          = 0x9ead000
+fstat64(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb778a000
+write(1, "Hello, world! 4\n", 16Hello, world! 4
+)       = 16
+exit_group(0)                           = ?
+\end{verbatim}
+
+\subsection{Architecture des systèmes
+d'exploitation}\label{architecture-des-systuxe8mes-dexploitation}
+
+\begin{figure}
+\centering
+\includegraphics{image-15.png}
+\caption{Alt text}
+\end{figure}
+
+\subsubsection{Objectifs et contraintes de mise en oeuvre d'un
+SE}\label{objectifs-et-contraintes-de-mise-en-oeuvre-dun-se}
+
+\begin{itemize}
+\tightlist
+\item
+  Pas de modèle unique et parfait
+\item
+  Contraintes et objectifs:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Contraintes du matériel
+  \item
+    Performance et coût d'implémentation
+  \item
+    Consommation de ressources
+  \item
+    Facilité d'évolution et d'adaptation
+  \item
+    Facilité de maintenance et d'atteinte de fiabilité
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{MS-DOS}\label{ms-dos}
+
+SE des systèmes \emph{IBM-PC} pas basé sur UNIX, c'est Microsoft.
+
+Objectifs: - Mono-utilisateur et mono-application (Pas de temps partagé)
+- Visant des processeurs \textbf{ne supportant pas} les modes
+utilisateur/protégé (Pas d'isolation) - Contrainte forte sur
+l'utilisation de la mémoire (coutait extrêmement cher à l'époque)
+
+Système avec une vision \textbf{monolithique} pour éviter de consommer
+trop de mémoire.
+
+\begin{figure}
+\centering
+\includegraphics{image-16.png}
+\caption{Alt text}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{image-17.png}
+\caption{Alt text}
+\end{figure}
+
+\subsubsection{UNIX}\label{unix}
+
+\paragraph{Monolithe}\label{monolithe}
+
+Plus vieux que \hyperref[ms-dos]{MS-DOS} mais pensé pour des ordinateurs
+à plus grande capacité. - Multi utilisateur et temps partagé -
+Processeur supportant les deux modes - Séparation claire entre
+\emph{noyau} et \emph{programmes utilisateurs}
+
+Organisation originelle: \emph{monolithe}: - 1 seul programme sur 1
+seule couche, met en oeuvre tous les appels systèmes - Difficile à
+étendre, adapter, débugger
+
+\begin{figure}
+\centering
+\includegraphics{image-18.png}
+\caption{Alt text}
+\end{figure}
+
+\paragraph{Couches}\label{couches}
+
+On va rajouter de la structure pour pallier aux soucis lié à
+\hyperref[monolithe]{unix monolithique}
+
+Les couches: 1. Matériel 2. Drivers de périphériques 3. Abstractions des
+plus en plus haut niveau, jusqu'aux appels systèmes 4. Interface
+utilisateur
+
+\begin{figure}
+\centering
+\includegraphics{image-19.png}
+\caption{Alt text}
+\end{figure}
+
+Il y a des avantages et inconvénients !
+
+Avantages: - Isolations des fonctionnalités - Facilité de portage
+
+Inconvénients: - Surcoût à l'exécution des appels système - Difficile de
+décider d'une structure purement hiérarchique. - Il y a une
+interdépendance entre les fonctions du SE
+
+\paragraph{Structure en Modules}\label{structure-en-modules}
+
+\begin{figure}
+\centering
+\includegraphics{image-20.png}
+\caption{Alt text}
+\end{figure}
+
+Utilisé le plus souvent: Linux, Solaris, Windows
+
+On a un coeur qui est un monolithe ou qui a peu de couche. - Gestion bas
+niveau de la mémoire - Gestion des processus
+
+Le reste est sous forme de modules: - Chargés et décharges de l'espace
+mémoire du noyau \emph{dynamiquement} - Seulement lorsque nécessaire -
+Ex: quand on met une clé usb. Va charger \texttt{exFAT} si clé venant de
+Windows
+
+Avantages: - Spécialisation d'une SE pour un environnement donné: -
+Versatilité de Linux - Interactions possibles entre les modules en
+conservant la séparation de code et de mémoire. - Analogie possible avec
+programmation orientée objet
+
+Inconvénients: - Surcoût (négligeable sur les systèmes modernes) -
+Intégration de modules écrits par des tiers dans l'espace mémoire du
+noyau - potentiels bugs et fautes
+
+Gestions des modules sous Linux (seulement si \texttt{root}): -
+\texttt{lsmod}: liste les modules présents - \texttt{modprobe}:
+ajoute/supprime un module - \texttt{modinfo}: information sur un module
+
+\subsubsection{Macro- et Micro-noyaux}\label{macro--et-micro-noyaux}
+
+\paragraph{Macro-noyaux}\label{macro-noyaux}
+
+Tous les modes précédents placent l'intégralité des fonctions du SE dans
+le noyau. - Toutes s'exécutent en mode protégé - Accès complet à la
+mémoire et aux instructions sensibles - Crash du module = \textbf{crash
+du système}
+
+Le kernel est en pérille, corruption des données, faille pour les
+hackers.
+
+\paragraph{Micro-noyaux}\label{micro-noyaux}
+
+Séparation entre un noyau minimaliste - Gestion basique de la mémoire -
+Gestion des processus légers (threads) - Gestion de la communication
+entre processus (IPC)
+
+Le reste est mis en oeuvre par des processus en mode utilisateur (même
+les drivers)
+
+Réduit les bugs de modules et évitent les crash complets tout en gardant
+les propriétés d'isolation.
+
+\begin{figure}
+\centering
+\includegraphics{image-21.png}
+\caption{Alt text}
+\end{figure}
+
+Inconvénients: - En macro: appel de module dans un même espace mémoire
+donc très rapide. En micro: il faut faire des appels systèmes - Copie de
+l'argument de l'appelant vers le noyau - Copie dans l'espace mémoire de
+l'appelé - Changement de contexte (sauvegarde du contexte et
+restauration\ldots) - \ldots{} et rebelote dans l'autre sens pour la
+valeur de retour
+
+Donc on a longtemps abandonnés les micro-noyaux (abandon dans Windows
+NT) MAIS: - Progrès sensibles dans la mise en oeuvre des appels systèmes
+- Passage de message en mode zero-copy - Mac OS et iOS proche d'un
+micro-noyau
+
+\subsubsection{Fiabilité des SE}\label{fiabilituxe9-des-se}
+
+Souvent beaucoup de temps nécessaires pour corriger des fautes.
+Énormément de fautes dans les drivers et compliqués à débugger et
+trouver parfois.
+
+\paragraph{Certification formelle}\label{certification-formelle}
+
+Pour les systèmes embarqués critiques on réalise des
+\textbf{spécification formelle}. On modélise \emph{mathématiquement}
+qu'un système est fiable. C'est le cas pour seL4. Mais seulement
+possible si le code est petit.
+
+\subsubsection{Démarrage du SE}\label{duxe9marrage-du-se}
+
+Démarrage et reset de la machine: interruption de mise à zéro du
+processeur. 2 phases:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Programme de démarrage (bootstrap) stocké dans une ROM. Charge ainsi
+  le bootloader
+\item
+  Bootloader lit les systèmes de fichiers pour charger l'image du noyau
+  en mémoire (\texttt{/boot/vmlinuz-3.12.0-32-generic}) en gros le GRUB.
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\href{../README.md}{\textless--}

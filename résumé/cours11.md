@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -172,4 +172,4 @@ TODO le reste
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

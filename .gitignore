@@ -3,6 +3,11 @@
 project
 !/Inginious/P1/perf/plot/pdf/*.pdf
 !/Inginious/P1/LEPL1252_Projet_1.pdf
+!/résumé/master.pdf
+
+sysinfo_questions
+sysinfo_questions/
+/sysinfo_questions
 
 # Created by https://www.toptal.com/developers/gitignore/api/latex,c
 # Edit at https://www.toptal.com/developers/gitignore?templates=latex,c

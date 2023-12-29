@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -316,4 +316,4 @@ Démarrage et reset de la machine: interruption de mise à zéro du processeur. 
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

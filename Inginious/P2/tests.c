@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
     }
     printf("____\n");
 
-    return 0;
 
     printf("____READ FILE TEST____\n");
     size_t len = 100;

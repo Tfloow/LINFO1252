@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -410,4 +410,4 @@ performance !
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

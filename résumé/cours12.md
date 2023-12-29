@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -15,6 +15,12 @@ ___
     - [FAT32](#fat32)
     - [Stockage indexé](#stockage-indexé)
     - [Système de Fichiers `ext4`](#système-de-fichiers-ext4)
+  - [Stockage des Répertoires](#stockage-des-répertoires)
+  - [Gestion de l'Espace Libre](#gestion-de-lespace-libre)
+    - [Effacer un Fichier](#effacer-un-fichier)
+    - [Performance et Cache](#performance-et-cache)
+  - [Optimisations](#optimisations)
+    - [Robustesse](#robustesse)
 
 ## Rappels
 
@@ -22,8 +28,11 @@ Le *système de fichier* est une interface *unifiée* et unique des différents 
 
 On a une grande diversité des supports:
 1. Les Disques Durs avec des têtes de lectures basé sur les champs électro-magnétique
+
 ![Alt text](image-35.png)
+
 2. SSD: plus compliqué avec du flash, de la RAM buffer, ...
+
 ![Alt text](image-36.png)
 
 ## Abstraction du Matériel
@@ -132,6 +141,67 @@ La taille du fichier est limité par la taille du bloc d'index. --> si on a `4 K
 
 ### Système de Fichiers `ext4`
 
+C'est le système de fichier standard et très généraliste et opti.
+
+Mélange entre table d'allocation et blocs d'index. On a des *inodes* qui contient des métadonées et liens vers les blocs de contenu. 
+
+Les inodes peuvent être inférieures à `4 Ko`. Cela favorise la localité des informations.
+
+![Alt text](image-44.png)
+
+L'idée c'est de faire des arbres d'inodes, donc on peut avoir des arbres triples, doubles, simples , ...
+
+![Alt text](image-45.png)
+
+## Stockage des Répertoires
+
+Un répertoire est stocké comme un fichier. On va juste indiquer qu'il s'agit d'un répertoire via des métadonnées via un bit `d`. On y liste aussi les blocs de données (peut utiliser plusieurs blocs de données).
+
+Via `ext4`, stockage de petite liste de fichiers directement dans l'inode.
+
+## Gestion de l'Espace Libre
+
+On a une liste qui indique les blocs libres sur le disque qui est conservé avec le temps.
+
+### Effacer un Fichier
+
+`rm` va juste supprimer l'entrée dans le répertoire et mettre dans celle des blocs libres si plus aucun lien ne pointe vers ce fichier.
+
+L'inode et le bloc **ne sont pas effacés**. (donc on peut récupérer des données même si elles ont été "*effacées*")
+
+### Performance et Cache
+
+Un SSD est 1000 fois plus lent que de la RAM et un HDD est 1000000 de fois plus lent. On va donc utiliser du cache.
+
+![Alt text](image-46.png)
+
+Le cache se situe au niveau du **contrôleur de périphérique et/ou du disque**.
+
+On peut utiliser la mémoire comme cache pour les accès disque. On peut faire cela via la mémoire virtuelle et `mmap`.
+
+
+## Optimisations
+
+#### Disque Dur
+
+On va éviter de faire trop bouger la tête de lecture, donc on écrit sur la partie la plus extérieure du disque.
+
+On a un accès souvent séquentiel aux fichiers donc pas de retour en arrière, on lit tout d'une traite:
+- *read-ahead*: on charge les blocs suivants
+- *read-behind*: on libère les pages du cache au fur et à mesure.
+
+![Alt text](Drawboard-PDF-Annotation-Copy.png)
+
+On va éviter les approches FIFO et privilégier soit une approche SSTF où on se déplace du moins possible ou changer de direction le moins possible via un algorithme de l'ascenseur.
+
+### Robustesse
+
+Il faut que les données du disque restent cohérente malgré les mauvais démontage, ...
+
+On va donc avoir de la redondance et des vérificateurs de fichiers. On peut vérifier que la liste des blocs vides ne pointent pas vers un bloc listé par une inode.
+
+#### Journalisation
+
 
 
 
@@ -141,4 +211,4 @@ TODO
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

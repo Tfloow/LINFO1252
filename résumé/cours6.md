@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -139,4 +139,4 @@ cela se passe quand tout se bloque à cause de mutex (cfr: 3 philosophes 3 bague
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

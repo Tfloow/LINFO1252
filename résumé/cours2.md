@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -195,4 +195,4 @@ Une variable `static`, on peut y accéder en dehors d'un bloc de fonction car on
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)

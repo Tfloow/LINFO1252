@@ -1,4 +1,4 @@
-[↰](../README.md)
+[<--](../README.md)
 
 ___
 
@@ -194,4 +194,4 @@ Dans Linux, les priorités sont dynamiques et prise en compte des threads *inter
 
 ___
 
-[↰](../README.md)
+[<--](../README.md)
