@@ -8,6 +8,8 @@
 
 **[RESUMÉ](résumé/master.pdf)**
 
+If you want to update a specific part (i.e. a lesson), go click on the corresponding lesson. Make your change then run the [MarkdownToTex.py](résumé/MarkdownToTeX.py) to compile everything in tex and compile the pdf.
+
 - [cours 1](résumé/cours1.md)
 - [cours 2](résumé/cours2.md)
 - [cours 3](résumé/cours3.md)
