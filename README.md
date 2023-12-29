@@ -2,6 +2,7 @@
 
 - [LINFO1252](#linfo1252)
   - [Résumé](#résumé)
+  - [Pré-requis](#pré-requis)
   - [Projet](#projet)
 
 ## Résumé
@@ -10,19 +11,27 @@
 
 If you want to update a specific part (i.e. a lesson), go click on the corresponding lesson. Make your change then run the [MarkdownToTex.py](résumé/MarkdownToTeX.py) to compile everything in tex and compile the pdf.
 
-- [cours 1](résumé/cours1.md)
-- [cours 2](résumé/cours2.md)
-- [cours 3](résumé/cours3.md)
-- [cours 4](résumé/cours4.md)
-- [cours 5](résumé/cours5.md)
-- [cours 6](résumé/cours6.md)
-- [cours 7](résumé/cours7.md)
-- [cours 8](résumé/cours8.md)
-- [cours 9](résumé/cours9.md)
-- [cours 10](résumé/cours10.md)
-- [cours 11](résumé/cours11.md)
-- [cours 12](résumé/cours12.md)
+- [x] [cours 1](résumé/cours1.md)
+- [x] [cours 2](résumé/cours2.md)
+- [ ] [cours 3](résumé/cours3.md) en cours
+- [x] [cours 4](résumé/cours4.md)
+- [x] [cours 5](résumé/cours5.md)
+- [x] [cours 6](résumé/cours6.md)
+- [ ] [cours 7](résumé/cours7.md)
+- [x] [cours 8](résumé/cours8.md)
+- [x] [cours 9](résumé/cours9.md)
+- [ ] [cours 10](résumé/cours10.md)
+- [x] [cours 11](résumé/cours11.md)
+- [ ] [cours 12](résumé/cours12.md) en cours
 
+## Pré-requis
+
+Pour compiler, il vous faut:
+- python
+- pandoc installé et mis en variable d'environnement
+- XeLaTeX et les différents packages demandés par le .tex
+
+Le petit script python a été fait pour une machine windows, n'hésitez pas à faire une PR pour supporter un usage dynamique de windows, linux et mac.
 
 ## Projet
 

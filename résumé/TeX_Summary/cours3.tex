@@ -7,6 +7,103 @@
 \subsection{Déclaration de la
 mémoire}\label{duxe9claration-de-la-muxe9moire}
 
+Exécuter un programme sous Unix c'est créé un \emph{nouveau processus} +
+\emph{nouvel espace mémoire spécifique} au processus.
+
+\begin{figure}
+\centering
+\includegraphics{image-47.png}
+\caption{Organisation de la mémoire}
+\end{figure}
+
+On a donc 6 segments distincts.
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1590}}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8410}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+Zone
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+OS & Réservé à l'OS \\
+Segment text & partie la plus basse, en read only. Contient les
+instructions à exécuter. Écrire dessus va déclencher un \emph{trap} et
+le SE prend le contrôle \\
+\emph{Statique}: initialisée & (statique correspond à des données
+connues avant l'exécution). Explicitement initialisée ou statique \\
+\emph{Statique}: non-initialisée & mise à 0 par le compilateur. \\
+Heap & juste après les non-init. Un programme peut y réserver de la
+mémoire dessus. On reçoit un pointeur vers le début de la zone.
+(\texttt{malloc}) \\
+Stack & Démarre vers le haut de l'espace mémoire. Cela stocke les
+variables \textbf{locales} et permet l'appel de fonction. (paramètre
+d'appel, valeur de retour) et c'est LIFO. \\
+Arguments et varaibles d'environnement & Tout d'au-dessus, on a les
+données fournies par le SE en lecture seule. Typiquement les données
+qu'on passe quand on lance un programme + variable d'environnement
+(\texttt{getenv}, \texttt{unsetenv}, \texttt{setenv}, \ldots). \\
+\end{longtable}
+
+Il faut savoir que les variables locales non initialisées \textbf{ne
+sont pas mises à 0}. Donc attention au garbage data !
+
+\subsection{Gestion de la mémoire
+dynamique}\label{gestion-de-la-muxe9moire-dynamique}
+
+L'allocation de mémoire dynamique est une partie de la librairie
+standard. On peut parfois faire des appels systèmes pour étendre la zone
+mémoire liée au heap.
+
+\begin{figure}
+\centering
+\includegraphics{image-48.png}
+\caption{Gestion du heap}
+\end{figure}
+
+On voit que \texttt{sbrk} réalise un élargissement de la zone de heap.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}unistd.h\textgreater{}}\PreprocessorTok{ }
+
+\DataTypeTok{int}\NormalTok{ brk}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{);}            \CommentTok{// Positionne le programme break a une adresse}
+\DataTypeTok{void} \OperatorTok{*}\NormalTok{sbrk}\OperatorTok{(}\DataTypeTok{intptr\_t}\NormalTok{ increment}\OperatorTok{);} \CommentTok{// Décale le programme break et retourne le nouveau program break. (sbrk(0) retourne la valeur actuelle donc)}
+\end{Highlighting}
+\end{Shaded}
+
+Attention à ne pas trop incrémenter sous peine de cause une erreur.
+--\textgreater{} \texttt{ENOMEM} et le processus sera arrêté par le SE.
+La limite se trouve via \texttt{ulimit\ -a}.
+
+\subsubsection{Allouer de la mémoire}\label{allouer-de-la-muxe9moire}
+
+On a différentes contraintes: - Conserver l'information sur les blocs
+libres et allouées (via méta-données) - méta-données dans le heap -
+Trouver le bon endroit pour les mettre
+
+\paragraph{Alignement}\label{alignement}
+
+Les données dans la mémoire sont toutes \textbf{alignées}. Souvent sous
+un nombre d'octets entiers --\textgreater{} multiple de 2. Sous linux
+c'est 16 octets (128bits).
+
+Donc allouer 17 octets va en réalité nous couter 32 octets.
+
+L'utilité principale (comme vu dans le projet) est que les bits de poids
+faibles seront toujours à 0. (effectivement \texttt{0b00000000}
+--\textgreater{} \texttt{0b00010000} --\textgreater{}
+\texttt{0b00100000} --\textgreater{} \ldots). Ainsi, on peut prendre
+avatange de ces 4 bits toujours mis à 0 en les utilisant comme des
+méta-données.
+
+\paragraph{Objectifs}\label{objectifs}
+
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \href{../README.md}{\textless--}
