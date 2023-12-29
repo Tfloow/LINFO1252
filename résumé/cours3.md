@@ -54,9 +54,77 @@ Les données dans la mémoire sont toutes **alignées**. Souvent sous un nombre 
 
 Donc allouer 17 octets va en réalité nous couter 32 octets. 
 
-L'utilité principale (comme vu dans le projet) est que les bits de poids faibles seront toujours à 0. (effectivement `0b00000000` --> `0b00010000` --> `0b00100000` --> ...). Ainsi, on peut prendre avatange de ces 4 bits toujours mis à 0 en les utilisant comme des méta-données.
+L'utilité principale (comme vu dans le projet) est que les bits de poids faibles seront toujours à 0. (effectivement `0x00000000` --> `0x00010000` --> `0x00100000` --> ...). Ainsi, on peut prendre avatange de ces 4 bits toujours mis à 0 en les utilisant comme des méta-données.
 
 #### Objectifs
+
+3 critères pour un bon algorithme de mémoire dynamique:
+1. Temps d'exécution faible, stable
+2. Peu de fragmentation (avoir des trous vides)
+3. Bonne localité (garder les données proches l'une des autres)
+
+Fragmentation: interne si espace perdu à cause du padding, externe si manque de place et blocs vides.
+
+### Principe de cache
+
+![Le cache](image-49.png)
+
+Pas d'accès à la mémoire cache car trop lente. Au plus elle est rapide au plus elle coute chère. On a une granularité du cache qui est de 64 octets, cela veut dire qu'on lit à chaque fois 64 octets.
+
+#### Localité
+
+Le cache joue sur la localité:
+
+- *Localité Spatiale*: accès à une donné suivie d'accès contiguës.
+- *Localité Temporelle*: une donnée récemment lue est souvent dans le cache
+
+### Implémentation de Notre Malloc
+
+On stocke dans 1 bloc de métadonnées la taille de bloc qui est libre + 1 (pour le bloc de métadonnées) et dans le bit de poids faible le drapeau si c'est alloué ou pas.
+
+C'est pour ça qu'on alloue de minimum 2 comme ça le dernier bit peut être comme un flag. On peut l'isoler en utilisant des masques `c & 0x1`.
+
+On peut facilement scinder des blocs en deux etc.
+
+#### Free
+
+Rien de plus simple, on change le drapeau du bit de poids faible à 0. On évite de checker si l'utilisateur nous renvoie un bon pointeur car coûte $O(n)$.
+
+Mais faire cela va fragmenter notre mémoire, on va généralement fusionner le nouveau bloc libre avec les blocs libres immédiatement à gauche et à droite. Mais on a besoin d'une approche **double linkedlist** pour ça.
+
+![Double LinkedList](image-50.png)
+
+#### Politique
+
+First fit:
+- [x] Rapide car trouve le premier bloc libre
+- [ ] Fragmentation
+- [ ] Localité faible et devient de pire en pire
+
+Next fit (un first fit qui commence au dernier bloc alloué):
+- [x] Rapide
+- [ ] Fragmentation de fou furieux
+- [x] Bonne localité
+
+Best fit (parcours la liste pour trouver le bloc le plus petit possible pour notre nouvelle donnée):
+- [ ] Lenttttt
+- [x] Fragmentation minime
+- [ ] Localité pas ouf
+
+### Approche par List Explicite
+
+On lit les blocs vides entre eux ! Le premier bloc vide sera la taille de l'ensemble et son second indiquera le prochain bloc vide. On peut combiner cela à une approche doublement chaînée.
+
+![Double LinkedList Explicite](image-51.png)
+
+On doit donc gérer les insertions et suppressions de blocs. 2 solutions:
+1. Insérer en fonction de l'adresse: nous coûte cher car on doit tout parcourir mais simple à fusionner
+2. LIFO: on supprime au bout (facile) mais fusion plus compliquée.
+
+On peut aussi voir une approche différente où on a plusieurs listes en fonction de la taille de bloc disponible mais ça devient très couteux et de plus en plus cher.
+
+Tout est une question de compromis comme toujours.
+
 
 ___
 

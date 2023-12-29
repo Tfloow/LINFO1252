@@ -13,11 +13,11 @@ If you want to update a specific part (i.e. a lesson), go click on the correspon
 
 - [x] [cours 1](résumé/cours1.md)
 - [x] [cours 2](résumé/cours2.md)
-- [ ] [cours 3](résumé/cours3.md) en cours
+- [x] [cours 3](résumé/cours3.md)
 - [x] [cours 4](résumé/cours4.md)
 - [x] [cours 5](résumé/cours5.md)
 - [x] [cours 6](résumé/cours6.md)
-- [ ] [cours 7](résumé/cours7.md)
+- [ ] [cours 7](résumé/cours7.md) en cours
 - [x] [cours 8](résumé/cours8.md)
 - [x] [cours 9](résumé/cours9.md)
 - [ ] [cours 10](résumé/cours10.md)

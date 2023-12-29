@@ -2,11 +2,6 @@
 
 ___
 
-**DISCLAIMER:** toutes les illustrations proviennent du cours dispensé par E. Riviere et ne sont en aucun cas ma propriété. 
-
-La synthèse est incomplète, a des erreurs ou autres choses ? Faites une Pull Request sur le dépôt [Github](https://github.com/Tfloow/LINFO1252). 
-
-Si la synthèse vous a aidé, n'hésitez pas à rajouter une étoile au dépôt, ça fait toujours plaisir 🫶.
 
 # Cours 1
 
