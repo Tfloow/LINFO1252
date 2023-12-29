@@ -30,6 +30,7 @@ Pour compiler, il vous faut:
 - python
 - pandoc installé et mis en variable d'environnement
 - XeLaTeX et les différents packages demandés par le .tex
+- [Noto Emoji](https://fonts.google.com/noto/specimen/Noto+Emoji) installé pour compiler les émojis.
 
 Le petit script python a été fait pour une machine windows, n'hésitez pas à faire une PR pour supporter un usage dynamique de windows, linux et mac.
 

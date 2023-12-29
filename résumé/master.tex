@@ -117,7 +117,19 @@
 \author{Thomas Debelle}
 \date{}
 
-\setmainfont{Arial} % Choose a font that supports the desired Unicode characters
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+
+% Set primary font for text
+\setmainfont{Times New Roman}
+
+% Set secondary font for emoji
+\newfontfamily\emojifont{Noto Emoji}
+
+% Define a command for each emoji and switch font accordingly
+\newunicodechar{✅}{{\emojifont ✅}}
+\newunicodechar{❌}{{\emojifont ❌}}
+\newunicodechar{🫶}{{\emojifont 🫶}}
 
 \begin{document}
 
