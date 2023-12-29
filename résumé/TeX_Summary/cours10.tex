@@ -124,7 +124,8 @@ Lookaside Buffer} ce qui nous donne un fonctionnement de la sorte.
 
 On peut encoder les droits d'une page sur 3 bits: \texttt{R}, \texttt{W}
 et \texttt{X}. Si on essaye de faire une action invalide, on génère
-ainsi un trap qui passe la main au SE.
+ainsi un trap qui passe la main au SE. Sous Linux, on a une page par
+processeur.
 
 On peut retirer des droits à une page via:
 
@@ -328,6 +329,9 @@ partagée dans l'espace mémoire du processus \\
 \texttt{int\ shmdt(const\ void\ *shmaddr)} & \texttt{shmaddr}: l'adresse
 retournée par \texttt{shmat}. & Pour détacher la page \\
 \end{longtable}
+
+\texttt{shmget} va pousser le kernel à mettre toutes les valeurs à 0
+dans l'ensemble des adresses concernées pour des raisons de sécurité.
 
 Il faut faire attention à ce que la mémoire soit bien attachée pour les
 deux processus. On va soit:

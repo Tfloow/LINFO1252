@@ -203,7 +203,7 @@ On a ainsi \textbf{N-1 niveaux} et chaque niveau est une salle d'attente
 \begin{figure}
 \centering
 \includegraphics{image-25.png}
-\caption{Alt text}
+\caption{Filtre}
 \end{figure}
 
 Si des threads veulent passer il faut que:
@@ -244,20 +244,20 @@ On a 2 tableaux partagés:
 \NormalTok{    level}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ L}\OperatorTok{;}
     \CommentTok{// Le thread se désigne comme la victime pour ce niveau}
 \NormalTok{    victim}\OperatorTok{[}\NormalTok{L}\OperatorTok{]} \OperatorTok{=}\NormalTok{ i}\OperatorTok{;}
-    \CommentTok{// Attendre tant qu\textquotesingle{}il existe au moins un thread au même niveau ou à un}
-\NormalTok{    niveau supérieur}\OperatorTok{,}
+    \CommentTok{// Attendre tant qu\textquotesingle{}il existe au moins un thread au même niveau ou à un niveau supérieur,}
     \CommentTok{// et que le thread i est la victime du niveau où il se trouve}
     \DataTypeTok{int}\NormalTok{ t\_niv\_sup\_egal }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}
     \ControlFlowTok{do} \OperatorTok{\{}
-    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j}\OperatorTok{=}\DecValTok{0}\OperatorTok{;}\NormalTok{ j}\OperatorTok{\textless{}}\NormalTok{ N}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
-        \CommentTok{// parcours du tableau des niveaux pour déterminer si un thread}
-        \CommentTok{// est au même niveau ou à un niveau supérieur}
-        \ControlFlowTok{if} \OperatorTok{((}\NormalTok{j}\OperatorTok{!=}\NormalTok{i}\OperatorTok{)} \OperatorTok{\&\&}\NormalTok{ level}\OperatorTok{[}\NormalTok{j}\OperatorTok{]} \OperatorTok{\textgreater{}=}\NormalTok{L}\OperatorTok{)} \OperatorTok{\{}
-\NormalTok{            t\_niv\_sup\_egal }\OperatorTok{=} \DecValTok{1}\OperatorTok{;}
+        \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j}\OperatorTok{=}\DecValTok{0}\OperatorTok{;}\NormalTok{ j}\OperatorTok{\textless{}}\NormalTok{ N}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
+            \CommentTok{// parcours du tableau des niveaux pour déterminer si un thread}
+            \CommentTok{// est au même niveau ou à un niveau supérieur}
+            \ControlFlowTok{if} \OperatorTok{((}\NormalTok{j}\OperatorTok{!=}\NormalTok{i}\OperatorTok{)} \OperatorTok{\&\&}\NormalTok{ level}\OperatorTok{[}\NormalTok{j}\OperatorTok{]} \OperatorTok{\textgreater{}=}\NormalTok{L}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{                t\_niv\_sup\_egal }\OperatorTok{=} \DecValTok{1}\OperatorTok{;}
+            \OperatorTok{\}}
         \OperatorTok{\}}
-    \OperatorTok{\}}
     \OperatorTok{\}} \ControlFlowTok{while} \OperatorTok{(}\NormalTok{t\_niv\_sup\_egal }\OperatorTok{\&\&}\NormalTok{ victim}\OperatorTok{[}\NormalTok{L}\OperatorTok{]==}\NormalTok{i}\OperatorTok{);}
 \OperatorTok{\}}
+
 \NormalTok{section\_critique}\OperatorTok{();}
 \CommentTok{// Libération de threads bloqués en attente dans les niveaux inférieurs}
 \NormalTok{level}\OperatorTok{[}\NormalTok{i}\OperatorTok{]=}\DecValTok{0}\OperatorTok{;}
@@ -286,8 +286,8 @@ thread peut accéder au niveau N-1.
 \subsubsection{Équité}\label{uxe9quituxe9}
 
 On n'a pas la garantie qu'un thread arrivé en premier tout au-dessus des
-niveaux va s'exécuter que ceux arriver ! Cela dépend du temps alloué par
-le processeur et ce cas de figure ci peut se passer:
+niveaux va s'exécuter en premier ! Cela dépend du temps alloué par le
+processeur et ce cas de figure-ci peut se passer:
 
 \begin{figure}
 \centering
@@ -372,7 +372,7 @@ plus petit numéro.
     \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j}\OperatorTok{=}\DecValTok{0}\OperatorTok{;}\NormalTok{ j}\OperatorTok{\textless{}}\NormalTok{N}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
         \ControlFlowTok{if} \OperatorTok{(}\NormalTok{drapeau}\OperatorTok{[}\NormalTok{j}\OperatorTok{])} \OperatorTok{\{}
             \ControlFlowTok{if} \OperatorTok{((}\NormalTok{ticket}\OperatorTok{[}\NormalTok{j}\OperatorTok{]} \OperatorTok{\textgreater{}}\NormalTok{ ticket}\OperatorTok{[}\NormalTok{i}\OperatorTok{])} \OperatorTok{||} \OperatorTok{((}\NormalTok{ticket}\OperatorTok{[}\NormalTok{j}\OperatorTok{]==}\NormalTok{ticket}\OperatorTok{[}\NormalTok{i}\OperatorTok{])} \OperatorTok{\&\&}\NormalTok{ j}\OperatorTok{\textgreater{}}\NormalTok{i}\OperatorTok{))} \OperatorTok{\{}
-            \CommentTok{// Il y a un autre thread actif devant dans la file ...}
+                \CommentTok{// Il y a un autre thread actif devant dans la file ...}
 \NormalTok{                mon\_tour }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}
             \OperatorTok{\}}
         \OperatorTok{\}}
@@ -399,7 +399,8 @@ Utiliser le mot-clé \texttt{volatile} pour forcer le programme à relire
 tout le temps la valeur ne va pas non plus résoudre le problème à cause
 des ordres d'exécution ``\emph{aléatoires}''. (Il existe des barrières
 pour forcer des contraintes d'accès à la mémoire \texttt{MFENCE},
-\texttt{LFENCE} et \texttt{SFENCE})
+\texttt{LFENCE} et \texttt{SFENCE}). \texttt{volatile} va faire en sorte
+que les variables ne soient pas dans un registre.
 
 On va préférer utiliser des opérations atomiques
 
@@ -431,7 +432,7 @@ mémoire. Les opérations sont donc exécutées de manière
 \end{Shaded}
 
 On a une exclusion mutuelle en utilisant simplement un unique mot
-mémoire partagée (ils vont donc tenter d'écrire dans une variable lock 1
+mémoire partagé (ils vont donc tenter d'écrire dans une variable lock 1
 qui était libre 0).
 
 \subsubsection{Exclusion Mutuelle}\label{exclusion-mutuelle}
@@ -584,7 +585,10 @@ depuis le cache et si on lit 0 alors il tente d'appeler \texttt{xchg}.
 \begin{Highlighting}[]
 \ControlFlowTok{while} \OperatorTok{(}\NormalTok{test\_and\_set}\OperatorTok{(}\NormalTok{verrou}\OperatorTok{,} \DecValTok{1}\OperatorTok{))} \OperatorTok{\{} 
     \CommentTok{// on a pas obtenu le verrou car on a lu 1 }
-    \CommentTok{// donc on attend de lire 0 pour tenter à nouveau while (verrou) \{\}}
+    \CommentTok{// donc on attend de lire 0 pour tenter à nouveau }
+    \ControlFlowTok{while} \OperatorTok{(}\NormalTok{verrou}\OperatorTok{)} \OperatorTok{\{}
+
+    \OperatorTok{\}}
 \OperatorTok{\}}
 \end{Highlighting}
 \end{Shaded}
@@ -592,7 +596,7 @@ depuis le cache et si on lit 0 alors il tente d'appeler \texttt{xchg}.
 \begin{figure}
 \centering
 \includegraphics{image-30-1.png}
-\caption{Alt text}
+\caption{TATAS}
 \end{figure}
 
 Cela va réduire sensiblement le traffic et l'immobilisation du bus quand
@@ -600,8 +604,8 @@ la contention est élevée. Mais cela impact toujours de manière non
 négligeable.
 
 Dès que \texttt{lock} est libéré tous les autres threads se jettent pour
-appeler \texttt{xchg}. Des essais infructueux a de lourds impacts sur le
-système. Cela augmente la contention.
+appeler \texttt{xchg}. Des essais infructueux ont de lourds impacts sur
+le système. Cela augmente la contention.
 
 \paragraph{backoff-test-and-test-and-test}\label{backoff-test-and-test-and-test}
 

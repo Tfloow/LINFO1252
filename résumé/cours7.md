@@ -13,8 +13,8 @@ Une sémaphore est donc une structure qui contient:
 
 ```c
 #include <semaphore.h> 
-int sem_init(sem_t *sem, int pshared, unsigned int value); // initialise avec value le nombre de place
-//pshared = 0
+int sem_init(sem_t *sem, int pshared, unsigned int value); // initialise avec value le nombre 
+//de place      pshared = 0
 int sem_destroy(sem_t *sem); // destruction du semaphore 
 int sem_wait(sem_t *sem); // Attente place
 int sem_post(sem_t *sem); // Liberation place
@@ -227,7 +227,7 @@ On a un partage entre processus père et fils de *STDOUT* et *STDERR*. *STDIN* e
 
 ### Fin d'un Processus
 
-Pour mettre fin à un processus, on utilise `exit()` ou un `retur(0)` (implicite par le compilateur). On a toujours la valeur du processus père et on peut spécifier des actions à faire à la terminaison `atexit()` (on spécifie une fonction qu'on veut réaliser). `exit()` fait un appel système `exit`.
+Pour mettre fin à un processus, on utilise `exit()` ou un `return(0)` (implicite par le compilateur). On a toujours la valeur du processus père et on peut spécifier des actions à faire à la terminaison `atexit()` (on spécifie une fonction qu'on veut réaliser). `exit()` fait un appel système `exit`.
 
 Pour récupérer une valeur de retour, on utilise:
 
@@ -259,6 +259,6 @@ int execve(const char *path, char *const argv[], char *const envp[]);
 // envp: les informations vis-à-vis de l'environnement
 ```
 
-Pour consulter tous les processus en cours, on utilise `ps`, `top` (gestionnaire de tâche), `pstree` (voir les relations père-fils). Tout cela va provenir de `/proc` (pseudo système de fichier).
+Pour consulter tous les processus en cours, on utilise `ps`, `top` (gestionnaire de tâches), `pstree` (voir les relations père-fils). Tout cela va provenir de `/proc` (pseudo système de fichier).
 
 

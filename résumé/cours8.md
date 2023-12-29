@@ -142,7 +142,7 @@ Peterson ne fonctionne que pour 2 threads, donc il faut trouver un moyen d'éten
 
 On a ainsi **N-1 niveaux** et chaque niveau est une salle d'attente
 
-![Alt text](image-25.png)
+![Filtre](image-25.png)
 
 Si des threads veulent passer il faut que:
 
@@ -166,20 +166,20 @@ for (int L = 1; L < N; L++) {
     level[i] = L;
     // Le thread se désigne comme la victime pour ce niveau
     victim[L] = i;
-    // Attendre tant qu'il existe au moins un thread au même niveau ou à un
-    niveau supérieur,
+    // Attendre tant qu'il existe au moins un thread au même niveau ou à un niveau supérieur,
     // et que le thread i est la victime du niveau où il se trouve
     int t_niv_sup_egal = 0;
     do {
-    for (int j=0; j< N; j++) {
-        // parcours du tableau des niveaux pour déterminer si un thread
-        // est au même niveau ou à un niveau supérieur
-        if ((j!=i) && level[j] >=L) {
-            t_niv_sup_egal = 1;
+        for (int j=0; j< N; j++) {
+            // parcours du tableau des niveaux pour déterminer si un thread
+            // est au même niveau ou à un niveau supérieur
+            if ((j!=i) && level[j] >=L) {
+                t_niv_sup_egal = 1;
+            }
         }
-    }
     } while (t_niv_sup_egal && victim[L]==i);
 }
+
 section_critique();
 // Libération de threads bloqués en attente dans les niveaux inférieurs
 level[i]=0;
@@ -196,7 +196,7 @@ Au plus N-L threads peuvent dépasser le niveau L. Donc au plus 1 seul thread pe
 
 ### Équité
 
-On n'a pas la garantie qu'un thread arrivé en premier tout au-dessus des niveaux va s'exécuter que ceux arriver ! Cela dépend du temps alloué par le processeur et ce cas de figure ci peut se passer:
+On n'a pas la garantie qu'un thread arrivé en premier tout au-dessus des niveaux va s'exécuter en premier ! Cela dépend du temps alloué par le processeur et ce cas de figure-ci peut se passer:
 
 ![Alt text](image-27.png)
 
@@ -246,7 +246,7 @@ do {
     for (int j=0; j<N; j++) {
         if (drapeau[j]) {
             if ((ticket[j] > ticket[i]) || ((ticket[j]==ticket[i]) && j>i)) {
-            // Il y a un autre thread actif devant dans la file ...
+                // Il y a un autre thread actif devant dans la file ...
                 mon_tour = 0;
             }
         }
@@ -262,7 +262,7 @@ Ici, on utilise que des lecteurs écrivains pour mettre en place les threads. On
 
 On pourrait faire des opérations sur le processeur pour palier à ça mais ça ne va pas fonctionner ! En effet, l'ordinateur va ré-arranger les instructions et les optimiser donc l'ordre d'exécution n'est pas garanti.
 
-Utiliser le mot-clé `volatile` pour forcer le programme à relire tout le temps la valeur ne va pas non plus résoudre le problème à cause des ordres d'exécution "*aléatoires*". (Il existe des barrières pour forcer des contraintes d'accès à la mémoire `MFENCE`, `LFENCE` et `SFENCE`)
+Utiliser le mot-clé `volatile` pour forcer le programme à relire tout le temps la valeur ne va pas non plus résoudre le problème à cause des ordres d'exécution "*aléatoires*". (Il existe des barrières pour forcer des contraintes d'accès à la mémoire `MFENCE`, `LFENCE` et `SFENCE`). `volatile` va faire en sorte que les variables ne soient pas dans un registre.
 
 On va préférer utiliser des opérations atomiques
 
@@ -285,7 +285,7 @@ movl %eax, (var)
 movl %ebx, %eax
 ```
 
-On a une exclusion mutuelle en utilisant simplement un unique mot mémoire partagée (ils vont donc tenter d'écrire dans une variable lock 1 qui était libre 0).
+On a une exclusion mutuelle en utilisant simplement un unique mot mémoire partagé (ils vont donc tenter d'écrire dans une variable lock 1 qui était libre 0).
 
 ### Exclusion Mutuelle
 
@@ -368,15 +368,18 @@ On tire profit que tant que la variable `lock` est à 1, le thread $T_A$ exécut
 ```c
 while (test_and_set(verrou, 1)) { 
     // on a pas obtenu le verrou car on a lu 1 
-    // donc on attend de lire 0 pour tenter à nouveau while (verrou) {}
+    // donc on attend de lire 0 pour tenter à nouveau 
+    while (verrou) {
+
+    }
 }
 ```
 
-![Alt text](image-30-1.png)
+![TATAS](image-30-1.png)
 
 Cela va réduire sensiblement le traffic et l'immobilisation du bus quand la contention est élevée. Mais cela impact toujours de manière non négligeable.
 
-Dès que `lock` est libéré tous les autres threads se jettent pour appeler `xchg`. Des essais infructueux a de lourds impacts sur le système. Cela augmente la contention.
+Dès que `lock` est libéré tous les autres threads se jettent pour appeler `xchg`. Des essais infructueux ont de lourds impacts sur le système. Cela augmente la contention.
 
 #### backoff-test-and-test-and-test
 

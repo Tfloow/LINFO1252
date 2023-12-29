@@ -28,7 +28,7 @@ mécanisme.
 \begin{figure}
 \centering
 \includegraphics{image-28.png}
-\caption{Alt text}
+\caption{Burst CPU}
 \end{figure}
 
 On a une alternance entre:
@@ -39,17 +39,11 @@ On a une alternance entre:
 \item
   \textbf{Burst CPU}
 \item
-  \textbf{Opération bloquante}
+  \textbf{Opération bloquante} (attente)
 \end{enumerate}
 
 Sur le schéma ci-dessus, on voit la durée de différent burst CPU et les
 moments d'attente.
-
-\begin{figure}
-\centering
-\includegraphics{image-29.png}
-\caption{une image vaut mieux que mille mots}
-\end{figure}
 
 \subsubsection{Évolution de l'État d'un
 Thread}\label{uxe9volution-de-luxe9tat-dun-thread}
@@ -80,7 +74,7 @@ rôle d'une \emph{salle d'attente}.
 \begin{figure}
 \centering
 \includegraphics{image-30.png}
-\caption{Alt text}
+\caption{La préemption}
 \end{figure}
 
 On a aucune garantie sur l'ordre de réveil de thread
@@ -88,7 +82,7 @@ On a aucune garantie sur l'ordre de réveil de thread
 \paragraph{\texorpdfstring{Passage de \emph{Running} à
 \emph{Ready}}{Passage de Running à Ready}}\label{passage-de-running-uxe0-ready}
 
-On va sé prémunir des programmes qui sont \emph{infiniment} en mode
+On va se prémunir des programmes qui sont \emph{infiniment} en mode
 \emph{ready}.
 
 Le SE va faire des interruptions périodiques générées par une horloge.
@@ -225,10 +219,10 @@ CPU
 \item
   2000: 1 kHz
 \item
-  2010+: fréquence adaptive (base clock et boost clock). Pas de réveil
-  d'un processeur en veille si pas de thread \emph{Ready}. Pas
-  d'interruption si un seul thread \emph{Running} et pas de
-  \emph{Ready}.
+  2010+: \textasciitilde{} 5 GHz fréquence adaptive (base clock et boost
+  clock). Pas de réveil d'un processeur en veille si pas de thread
+  \emph{Ready}. Pas d'interruption si un seul thread \emph{Running} et
+  pas de \emph{Ready}.
 \end{itemize}
 
 \subsubsection{Scheduler à Priorité}\label{scheduler-uxe0-priorituxe9}
@@ -295,7 +289,7 @@ critique plutôt que de la préempter.
     au max des priorités des threads accédant au mutex.
   \item
     Évite la préemption par le thread de priorité plus élevée. Risque
-    d'interférence avec les autres threads haute priorité dy système car
+    d'interférence avec les autres threads haute priorité du système car
     fait systématiquement.
   \end{itemize}
 \item

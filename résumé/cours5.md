@@ -120,8 +120,6 @@ Problème 4: récupération du code de retour
 - Librairie standard: s'exécute dans le même espace mémoire que le programme utilisateur. `printf(3)` va forcément utiliser `write(2)` ou autres opérations bas niveau.
 - `strace(1)` permet de tracer les appels systèmes utilisés par un processus
 
-.
-
 ![Alt text](image-14.png)
 
 #### Hello world
@@ -244,7 +242,7 @@ On a un coeur qui est un monolithe ou qui a peu de couche.
 
 Le reste est sous forme de modules:
 
-- Chargés et décharges de l'espace mémoire du noyau *dynamiquement*
+- Charges et décharges de l'espace mémoire du noyau *dynamiquement*
 - Seulement lorsque nécessaire
   - Ex: quand on met une clé usb. Va charger `exFAT` si clé venant de Windows
 

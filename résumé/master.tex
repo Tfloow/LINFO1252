@@ -1,4 +1,4 @@
-% NEED TO BE COMPILED WITH XeLaTeX because I wanna to flex and use emoji
+% NEED TO BE COMPILED WITH XeLaTeX because I want to flex and use emoji
 
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
@@ -43,7 +43,13 @@
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+	commandchars=\\\{\},
+	frame=single,
+	framesep=2mm,
+    rulecolor=\color{black}, % Frame color
+    fillcolor=\color{gray!10} % Background color
+}
 % Add ',fontsize=\small' for more characters per line
 \newenvironment{Shaded}{}{}
 \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}

@@ -17,16 +17,15 @@ Donc on peut avoir plusieurs politiques possibles sur la base du même mécanism
 
 ### Exécution des Threads
 
-![Alt text](image-28.png)
+![Burst CPU](image-28.png)
 
 On a une alternance entre:
 
 1. **Burst CPU**
-2. **Opération bloquante**
+2. **Opération bloquante** (attente)
 
 Sur le schéma ci-dessus, on voit la durée de différent burst CPU et les moments d'attente.
 
-![une image vaut mieux que mille mots](image-29.png)
 
 ### Évolution de l'État d'un Thread
 
@@ -39,13 +38,13 @@ Les threads en état Blocked associés à une structure de donnée jouant le rô
 * *Thread Unique*: attente de la fin d'une entrée/sortie demandée par ce thread
 * *Plusieurs Threads*: attente sur une ressource partagée (type *sémaphore* / *mutex*)
 
-![Alt text](image-30.png)
+![La préemption](image-30.png)
 
 On a aucune garantie sur l'ordre de réveil de thread
 
 #### Passage de *Running* à *Ready*
 
-On va sé prémunir des programmes qui sont *infiniment* en mode *ready*.
+On va se prémunir des programmes qui sont *infiniment* en mode *ready*.
 
 Le SE va faire des interruptions périodiques générées par une horloge. Ensuite, le SE peut décider de **ne pas restaurer** le thread Running. On appelle cela la **préemption**.
 
@@ -118,7 +117,7 @@ Au + la fréquence est haute, au - temps d'attente des threads **mais** + de con
 
 - 1990: 100 Hz
 - 2000: 1 kHz
-- 2010+: fréquence adaptive (base clock et boost clock). Pas de réveil d'un processeur en veille si pas de thread *Ready*. Pas d'interruption si un seul thread *Running* et pas de *Ready*.
+- 2010+: ~ 5 GHz fréquence adaptive (base clock et boost clock). Pas de réveil d'un processeur en veille si pas de thread *Ready*. Pas d'interruption si un seul thread *Running* et pas de *Ready*.
 
 ### Scheduler à Priorité
 
@@ -152,7 +151,7 @@ Il vaut mieux laisser un thread de priorité basse finir sa section critique plu
 
 - ***Priority ceiling:*** `pthread_mutexattr_setprioceiling()`
   - Associe un mutex de priorité donné au thread le temps de sa SC. Fixé au max des priorités des threads accédant au mutex.
-  - Évite la préemption par le thread de priorité plus élevée. Risque d'interférence avec les autres threads haute priorité dy système car fait systématiquement.
+  - Évite la préemption par le thread de priorité plus élevée. Risque d'interférence avec les autres threads haute priorité du système car fait systématiquement.
 - ***Priority inheritance:*** 
   - La priorité du thread avec un mutex est fixée au max de celle des threads en attente sur ce mutex.
   - N'évite pas la première préemption mais booste la priorité d'un thread de priorité faible dans le cas général.

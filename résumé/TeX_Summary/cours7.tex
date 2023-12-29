@@ -18,8 +18,8 @@ Une sémaphore est donc une structure qui contient:
 \begin{Shaded}
 \begin{Highlighting}[]
 \PreprocessorTok{\#include }\ImportTok{\textless{}semaphore.h\textgreater{}}\PreprocessorTok{ }
-\DataTypeTok{int}\NormalTok{ sem\_init}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ pshared}\OperatorTok{,} \DataTypeTok{unsigned} \DataTypeTok{int}\NormalTok{ value}\OperatorTok{);} \CommentTok{// initialise avec value le nombre de place}
-\CommentTok{//pshared = 0}
+\DataTypeTok{int}\NormalTok{ sem\_init}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ pshared}\OperatorTok{,} \DataTypeTok{unsigned} \DataTypeTok{int}\NormalTok{ value}\OperatorTok{);} \CommentTok{// initialise avec value le nombre }
+\CommentTok{//de place      pshared = 0}
 \DataTypeTok{int}\NormalTok{ sem\_destroy}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// destruction du semaphore }
 \DataTypeTok{int}\NormalTok{ sem\_wait}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Attente place}
 \DataTypeTok{int}\NormalTok{ sem\_post}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Liberation place}
@@ -289,7 +289,7 @@ qu'un seul appel à \texttt{write} par ligne !
 \subsubsection{Fin d'un Processus}\label{fin-dun-processus}
 
 Pour mettre fin à un processus, on utilise \texttt{exit()} ou un
-\texttt{retur(0)} (implicite par le compilateur). On a toujours la
+\texttt{return(0)} (implicite par le compilateur). On a toujours la
 valeur du processus père et on peut spécifier des actions à faire à la
 terminaison \texttt{atexit()} (on spécifie une fonction qu'on veut
 réaliser). \texttt{exit()} fait un appel système \texttt{exit}.
@@ -341,6 +341,6 @@ exécutable comme ceci:
 \end{Shaded}
 
 Pour consulter tous les processus en cours, on utilise \texttt{ps},
-\texttt{top} (gestionnaire de tâche), \texttt{pstree} (voir les
+\texttt{top} (gestionnaire de tâches), \texttt{pstree} (voir les
 relations père-fils). Tout cela va provenir de \texttt{/proc} (pseudo
 système de fichier).

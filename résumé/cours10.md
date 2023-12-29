@@ -63,7 +63,7 @@ On remarque que faire la traduction entre adresse physique et virtuelle requiert
 
 ### Protection des Pages
 
-On peut encoder les droits d'une page sur 3 bits: `R`, `W` et `X`. Si on essaye de faire une action invalide, on génère ainsi un trap qui passe la main au SE.
+On peut encoder les droits d'une page sur 3 bits: `R`, `W` et `X`. Si on essaye de faire une action invalide, on génère ainsi un trap qui passe la main au SE. Sous Linux, on a une page par processeur.
 
 On peut retirer des droits à une page via:
 
@@ -162,6 +162,8 @@ On peut faire de la communication entre processus via de la mémoire partagée. 
 |     `int shmget(key_t, key, size_t size, int shmflg)`     | `key`: une clé. `size`: taille de page. `shmflg`: on le met à `IPC_CREAT` pour créer sinon obtenir un accès. |     crée ou obtient l'accès à un segment de mémoire partagée      |
 | `void *shmat(int shmid, const void *shmaddr, int shmflg)` |              `shmid`: id de la page qu'on a obtenu. `shmaddr`: mis à `NULL`. `shmflg`: mis à 0.              | Pour attacher la page partagée dans l'espace mémoire du processus |
 |             `int shmdt(const void *shmaddr)`              |                                 `shmaddr`: l'adresse retournée par `shmat`.                                  |                       Pour détacher la page                       |
+
+`shmget` va pousser le kernel à mettre toutes les valeurs à 0 dans l'ensemble des adresses concernées pour des raisons de sécurité.
 
 Il faut faire attention à ce que la mémoire soit bien attachée pour les deux processus. On va soit:
 
