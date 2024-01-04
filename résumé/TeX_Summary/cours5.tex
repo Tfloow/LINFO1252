@@ -294,22 +294,24 @@ Problème 4: récupération du code de retour
 
 Traduction:
 
-\begin{verbatim}
-$ strace ./helloworld_s
-execve("./helloworld_s", ["./helloworld_s"], [/* 21 vars */]) = 0
-uname({sys="Linux", node="precise32", ...}) = 0
-brk(0)                                  = 0x9e8b000
-brk(0x9e8bd40)                          = 0x9e8bd40
-set_thread_area({entry_number:-1 -> 6, base_addr:0x9e8b840, limit:1048575, seg_32bit:1, 
-contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
-brk(0x9eacd40)                          = 0x9eacd40
-brk(0x9ead000)                          = 0x9ead000
-fstat64(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
-mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb778a000
-write(1, "Hello, world! 4\n", 16Hello, world! 4
-)       = 16
-exit_group(0)                           = ?
-\end{verbatim}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{$ strace ./helloworld\_s}
+\NormalTok{execve("./helloworld\_s", ["./helloworld\_s"], [/* 21 vars */]) = 0}
+\NormalTok{uname(\{sys="Linux", node="precise32", ...\}) = 0}
+\NormalTok{brk(0)                                  = 0x9e8b000}
+\NormalTok{brk(0x9e8bd40)                          = 0x9e8bd40}
+\NormalTok{set\_thread\_area(\{entry\_number:{-}1 {-}\textgreater{} 6, base\_addr:0x9e8b840, limit:1048575, seg\_32bit:1, }
+\NormalTok{contents:0, read\_exec\_only:0, limit\_in\_pages:1, seg\_not\_present:0, useable:1\}) = 0}
+\NormalTok{brk(0x9eacd40)                          = 0x9eacd40}
+\NormalTok{brk(0x9ead000)                          = 0x9ead000}
+\NormalTok{fstat64(1, \{st\_mode=S\_IFCHR|0620, st\_rdev=makedev(136, 0), ...\}) = 0}
+\NormalTok{mmap2(NULL, 4096, PROT\_READ|PROT\_WRITE, MAP\_PRIVATE|MAP\_ANONYMOUS, {-}1, 0) = 0xb778a000}
+\NormalTok{write(1, "Hello, world! 4\textbackslash{}n", 16Hello, world! 4}
+\NormalTok{)       = 16}
+\NormalTok{exit\_group(0)                           = ?}
+\end{Highlighting}
+\end{Shaded}
 
 \subsection{Architecture des systèmes
 d'exploitation}\label{architecture-des-systuxe8mes-dexploitation}

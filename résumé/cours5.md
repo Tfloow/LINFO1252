@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
 
 Traduction:
 
-```
+```shell
 $ strace ./helloworld_s
 execve("./helloworld_s", ["./helloworld_s"], [/* 21 vars */]) = 0
 uname({sys="Linux", node="precise32", ...}) = 0

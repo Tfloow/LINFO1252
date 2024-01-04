@@ -321,8 +321,8 @@ On a 1 entrées, 1 sorties par défaut dans le shell (STDOUT) et une
 sortie d'erreur (STDERR)
 
 \begin{longtable}[]{@{}
-  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1139}}
-  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8861}}@{}}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.0849}}
+  >{\centering\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.9151}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\centering
 commande
@@ -333,8 +333,8 @@ action
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{\textless{}\ file} & redirige le contenu de \texttt{file} vers
-STDIN \\
+\texttt{file\ \textless{}} & redirige le contenu de \texttt{file} vers
+STDIN. On peut forcer le fait de prendre un fichier en entrée \\
 \texttt{\textgreater{}\ file} & redirige STDOUT vers \texttt{file} \\
 \texttt{\textgreater{}\textgreater{}\ file} & redirige STDOUT vers
 \texttt{file} et l'ajoute au bout d'un fichier si existe \\
@@ -406,4 +406,48 @@ On peut lire du contenu aléatoire dans \texttt{/dev/random}.
 \item
   s prend successivement les valeurs présentes dans la liste d'entrée
   \texttt{\$students}
+\end{itemize}
+
+\subsubsection{Condition}\label{condition}
+
+On peut utiliser le \texttt{if\ {[}\ \$1\ -gt\ 10\ {]}} pour bash et des
+connecteurs logiques en voici quelques uns pour les conditions.
+
+\begin{longtable}[]{@{}cc@{}}
+\toprule\noalign{}
+Symbole & Logique \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{!} & NOT \\
+\texttt{a} & AND \\
+\texttt{o} & OR \\
+\end{longtable}
+
+Et on peut faire des conditions sur des fichiers:
+
+\begin{longtable}[]{@{}cc@{}}
+\toprule\noalign{}
+Symbole & Logique \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{-f} & fichier existe \\
+\texttt{-s} & fichier contient quelque chose \\
+\texttt{-d} & est un répertoire \\
+\texttt{-r} & peut être lu \\
+\texttt{-w} & peut être écrit \\
+\texttt{-x} & peut être exécuté \\
+\end{longtable}
+
+Pour les chaines de caractères il existe 2 caractères spéciaux:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{?}: un caractère unique (pas espace vide)
+\item
+  \texttt{*}: n'importe quel caractère
 \end{itemize}

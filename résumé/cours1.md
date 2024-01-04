@@ -173,12 +173,12 @@ Donc parfois on doit préciser `man 1 printf`.
 
 On a 1 entrées, 1 sorties par défaut dans le shell (STDOUT) et une sortie d'erreur (STDERR)
 
-| commande  |                                 action                                 |
-| :-------: | :--------------------------------------------------------------------: |
-| `< file`  |                redirige le contenu de `file` vers STDIN                |
-| `> file`  |                      redirige STDOUT vers `file`                       |
-| `>> file` | redirige STDOUT vers `file` et l'ajoute au bout d'un fichier si existe |
-|  `2<&1`   |                      redirige STDERR vers STDOUT                       |
+| commande  |                                              action                                               |
+| :-------: | :-----------------------------------------------------------------------------------------------: |
+| `file <`  | redirige le contenu de `file` vers STDIN. On peut forcer le fait  de prendre un fichier en entrée |
+| `> file`  |                                    redirige STDOUT vers `file`                                    |
+| `>> file` |              redirige STDOUT vers `file` et l'ajoute au bout d'un fichier si existe               |
+|  `2<&1`   |                                    redirige STDERR vers STDOUT                                    |
 
 On a aussi des Pipes qui redirige le résultat de commande de STDOUT vers le STDIN d'une autre commande.
 
@@ -228,4 +228,28 @@ done
 
 - s prend successivement les valeurs présentes dans la liste d'entrée `$students`
        
+### Condition
 
+On peut utiliser le `if [ $1 -gt 10 ]` pour bash et des connecteurs logiques en voici quelques uns pour les conditions.
+
+| Symbole | Logique |
+| :-----: | :-----: |
+|   `!`   |   NOT   |
+|   `a`   |   AND   |
+|   `o`   |   OR    |
+
+Et on peut faire des conditions sur des fichiers:
+
+| Symbole |            Logique             |
+| :-----: | :----------------------------: |
+|  `-f`   |         fichier existe         |
+|  `-s`   | fichier contient quelque chose |
+|  `-d`   |       est un répertoire        |
+|  `-r`   |          peut être lu          |
+|  `-w`   |        peut être écrit         |
+|  `-x`   |       peut être exécuté        |
+
+Pour les chaines de caractères il existe 2 caractères spéciaux:
+
+- `?`: un caractère unique (pas espace vide)
+- `*`: n'importe quel caractère

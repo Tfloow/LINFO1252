@@ -174,9 +174,9 @@ On a 8 registres génériques de \textbf{32 bits}:
 \item
   \texttt{EDI}
 \item
-  \texttt{EBP}: gère la pile
+  \texttt{EBP}: gère le bas de la pile
 \item
-  \texttt{ESP}: gère la pile
+  \texttt{ESP}: gère le sommet de la pile
 \end{itemize}
 
 On a 1 registres qui stocke le compteur de programme:
@@ -332,9 +332,9 @@ Pour récupérer la valeur des drapeaux on utilise \texttt{set}:
   \texttt{sets}: \textbf{SF}
 \item
   \texttt{setg}: \texttt{\textasciitilde{}SF\ \&\ ZF} en gérant
-  dépassement test\textgreater{}
+  dépassement test \(>\)
 \item
-  \texttt{setl}: \textbf{SF} et gérant le dépassement test\textless=
+  \texttt{setl}: \textbf{SF} et gérant le dépassement test \(\leqslant\)
 \end{itemize}
 
 \paragraph{Exemples}\label{exemples}
@@ -453,7 +453,7 @@ Pour modifier les registres \texttt{\%eax}, \texttt{\%ecx} et
 \texttt{\%edx}, il faut faire une copie de sauvegarde.
 
 Pour modifier les registres \texttt{\%ebx}, \texttt{\%edi} et
-\texttt{\%esi}, il faut copier puis restaurer. (qu'un convention)
+\texttt{\%esi}, il faut copier puis restaurer. (qu'une convention)
 
 \paragraph{Valeur de Retour}\label{valeur-de-retour}
 

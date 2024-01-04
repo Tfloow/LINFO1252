@@ -195,8 +195,9 @@ aura pas de \emph{livelock} car \texttt{turn\ =\ A} ou
 \subsection{Algorithme du filtre}\label{algorithme-du-filtre}
 
 Peterson ne fonctionne que pour 2 threads, donc il faut trouver un moyen
-d'étendre cette idée. On va utiliser l'algorithme de filtre sur N
-threads (N étant connu à l'avance) à l'avance.
+d'étendre cette idée. On va utiliser l'algorithme de filtre (qui est
+Peterson généralisé) sur N threads (N étant connu à l'avance) à
+l'avance.
 
 On a ainsi \textbf{N-1 niveaux} et chaque niveau est une salle d'attente
 
@@ -231,7 +232,7 @@ On a 2 tableaux partagés:
   \texttt{level{[}N{]}}: indexé par le \textbf{numéro de Thread} et
   indique son niveau
 \item
-  \texttt{victim{[}N{]}}: indexé par le \textbf{niveau} et dit quel
+  \texttt{victim{[}N-1{]}}: indexé par le \textbf{niveau} et dit quel
   thread est en attente.
 \end{enumerate}
 
@@ -244,8 +245,8 @@ On a 2 tableaux partagés:
 \NormalTok{    level}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ L}\OperatorTok{;}
     \CommentTok{// Le thread se désigne comme la victime pour ce niveau}
 \NormalTok{    victim}\OperatorTok{[}\NormalTok{L}\OperatorTok{]} \OperatorTok{=}\NormalTok{ i}\OperatorTok{;}
-    \CommentTok{// Attendre tant qu\textquotesingle{}il existe au moins un thread au même niveau ou à un niveau supérieur,}
-    \CommentTok{// et que le thread i est la victime du niveau où il se trouve}
+    \CommentTok{// Attendre tant qu\textquotesingle{}il existe au moins un thread au même niveau ou à un niveau }
+    \CommentTok{// supérieur et que le thread i est la victime du niveau où il se trouve}
     \DataTypeTok{int}\NormalTok{ t\_niv\_sup\_egal }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}
     \ControlFlowTok{do} \OperatorTok{\{}
         \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j}\OperatorTok{=}\DecValTok{0}\OperatorTok{;}\NormalTok{ j}\OperatorTok{\textless{}}\NormalTok{ N}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
@@ -600,7 +601,7 @@ depuis le cache et si on lit 0 alors il tente d'appeler \texttt{xchg}.
 \end{figure}
 
 Cela va réduire sensiblement le traffic et l'immobilisation du bus quand
-la contention est élevée. Mais cela impact toujours de manière non
+la contention est élevée. Mais cela impacte toujours de manière non
 négligeable.
 
 Dès que \texttt{lock} est libéré tous les autres threads se jettent pour

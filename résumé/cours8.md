@@ -138,7 +138,7 @@ L'idée ici est d'avoir un système qui montre quel thread a l'intention de s'ex
 
 ## Algorithme du filtre
 
-Peterson ne fonctionne que pour 2 threads, donc il faut trouver un moyen d'étendre cette idée. On va utiliser l'algorithme de filtre sur N threads (N étant connu à l'avance) à l'avance.
+Peterson ne fonctionne que pour 2 threads, donc il faut trouver un moyen d'étendre cette idée. On va utiliser l'algorithme de filtre (qui est Peterson généralisé) sur N threads (N étant connu à l'avance) à l'avance.
 
 On a ainsi **N-1 niveaux** et chaque niveau est une salle d'attente
 
@@ -156,7 +156,7 @@ Pour mettre cela en oeuvre, un thread qui annonce qu'il rentre dans un nouveau n
 On a 2 tableaux partagés:
 
 1. `level[N]`: indexé par le **numéro de Thread** et indique son niveau
-2. `victim[N]`: indexé par le **niveau** et dit quel thread est en attente.
+2. `victim[N-1]`: indexé par le **niveau** et dit quel thread est en attente.
 
 ```c
 // Thread i
@@ -166,8 +166,8 @@ for (int L = 1; L < N; L++) {
     level[i] = L;
     // Le thread se désigne comme la victime pour ce niveau
     victim[L] = i;
-    // Attendre tant qu'il existe au moins un thread au même niveau ou à un niveau supérieur,
-    // et que le thread i est la victime du niveau où il se trouve
+    // Attendre tant qu'il existe au moins un thread au même niveau ou à un niveau 
+    // supérieur et que le thread i est la victime du niveau où il se trouve
     int t_niv_sup_egal = 0;
     do {
         for (int j=0; j< N; j++) {
@@ -377,7 +377,7 @@ while (test_and_set(verrou, 1)) {
 
 ![TATAS](image-30-1.png)
 
-Cela va réduire sensiblement le traffic et l'immobilisation du bus quand la contention est élevée. Mais cela impact toujours de manière non négligeable.
+Cela va réduire sensiblement le traffic et l'immobilisation du bus quand la contention est élevée. Mais cela impacte toujours de manière non négligeable.
 
 Dès que `lock` est libéré tous les autres threads se jettent pour appeler `xchg`. Des essais infructueux ont de lourds impacts sur le système. Cela augmente la contention.
 

@@ -109,8 +109,8 @@ On a 8 registres génériques de **32 bits**:
 - `EDX`
 - `ESI`
 - `EDI`
-- `EBP`: gère la pile
-- `ESP`: gère la pile
+- `EBP`: gère le bas de la pile
+- `ESP`: gère le sommet de la pile
 
 On a 1 registres qui stocke le compteur de programme:
 
@@ -193,8 +193,8 @@ Pour récupérer la valeur des drapeaux on utilise `set`:
 
 - `sete`: **ZF**
 - `sets`: **SF**
-- `setg`: `~SF & ZF` en gérant dépassement test>
-- `setl`: **SF** et gérant le dépassement test<=
+- `setg`: `~SF & ZF` en gérant dépassement test $>$
+- `setl`: **SF** et gérant le dépassement test $\leqslant$
 
 
 #### Exemples
@@ -272,7 +272,7 @@ On place les arguments dans la pile. On passe donc les arguments par **valeur**.
 
 Pour modifier les registres `%eax`, `%ecx` et `%edx`, il faut faire une copie de sauvegarde.
 
-Pour modifier les registres `%ebx`, `%edi` et `%esi`, il faut copier puis restaurer. (qu'un convention)
+Pour modifier les registres `%ebx`, `%edi` et `%esi`, il faut copier puis restaurer. (qu'une convention)
 
 #### Valeur de Retour
 

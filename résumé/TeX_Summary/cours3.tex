@@ -69,8 +69,9 @@ On voit que \texttt{sbrk} réalise un élargissement de la zone de heap.
 \PreprocessorTok{\#include }\ImportTok{\textless{}unistd.h\textgreater{}}\PreprocessorTok{ }
 
 \DataTypeTok{int}\NormalTok{ brk}\OperatorTok{(}\DataTypeTok{void} \OperatorTok{*}\NormalTok{addr}\OperatorTok{);}            \CommentTok{// Positionne le programme break a une adresse}
-\DataTypeTok{void} \OperatorTok{*}\NormalTok{sbrk}\OperatorTok{(}\DataTypeTok{intptr\_t}\NormalTok{ increment}\OperatorTok{);} \CommentTok{// Décale le programme break et retourne le nouveau program break. }
-                                \CommentTok{//(sbrk(0) retourne la valeur actuelle donc)}
+\DataTypeTok{void} \OperatorTok{*}\NormalTok{sbrk}\OperatorTok{(}\DataTypeTok{intptr\_t}\NormalTok{ increment}\OperatorTok{);} \CommentTok{// Décale le programme break et retourne le nouveau }
+\CommentTok{// program break. }
+\CommentTok{// (sbrk(0) retourne la valeur actuelle donc)}
 \end{Highlighting}
 \end{Shaded}
 

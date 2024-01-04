@@ -13,8 +13,8 @@ Une sémaphore est donc une structure qui contient:
 
 ```c
 #include <semaphore.h> 
-int sem_init(sem_t *sem, int pshared, unsigned int value); // initialise avec value le nombre 
-//de place      pshared = 0
+int sem_init(sem_t *sem, int pshared, unsigned int value); // initialise avec value le 
+//nombre de place      pshared = 0
 int sem_destroy(sem_t *sem); // destruction du semaphore 
 int sem_wait(sem_t *sem); // Attente place
 int sem_post(sem_t *sem); // Liberation place
@@ -146,7 +146,7 @@ On assure bien que l'écrivain ne peut être en section critique en même temps 
 
 ### Variable `volatile`
 
-Quand on accède à une variable en C, C va mémoriser la valeur. On peut s'assurer qu'il relise la valeur à chaque fois en ajoutant le mot-clé `volatile`. **Ce n'est pas une solution pour se protéger des écritures et accès concurrent !**
+Quand on accède à une variable en C, C va mémoriser la valeur. On peut s'assurer qu'il relise la valeur à chaque fois en ajoutant le mot-clé `volatile`. Donc on empêche que le programme mette dans un registre la valeur d'une variable. **Ce n'est pas une solution pour se protéger des écritures et accès concurrent !**
 
 ### Threads-safe
 
@@ -167,7 +167,7 @@ Les étapes:
 1. Le shell doit localiser le fichier exécutable dans le `PATH`
 2. Demande au kernel de créer un nouveau processus
 3. Le processus demande au kernel le chargement et l'exécution du code du fichier programme
-4. On peut bloqué le shell et attendre de récupérer la valeur de retour
+4. On peut bloquer le shell et attendre de récupérer la valeur de retour
 
 On peut créer de nouveau processus via un `fork`. Cela fait des **copies** distinctes qui ne partagent rien entre elles. L'identifiant du processus va être différent. Le retour du père est 0 et des fils > 0.
 

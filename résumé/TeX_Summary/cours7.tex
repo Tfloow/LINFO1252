@@ -18,8 +18,8 @@ Une sémaphore est donc une structure qui contient:
 \begin{Shaded}
 \begin{Highlighting}[]
 \PreprocessorTok{\#include }\ImportTok{\textless{}semaphore.h\textgreater{}}\PreprocessorTok{ }
-\DataTypeTok{int}\NormalTok{ sem\_init}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ pshared}\OperatorTok{,} \DataTypeTok{unsigned} \DataTypeTok{int}\NormalTok{ value}\OperatorTok{);} \CommentTok{// initialise avec value le nombre }
-\CommentTok{//de place      pshared = 0}
+\DataTypeTok{int}\NormalTok{ sem\_init}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{,} \DataTypeTok{int}\NormalTok{ pshared}\OperatorTok{,} \DataTypeTok{unsigned} \DataTypeTok{int}\NormalTok{ value}\OperatorTok{);} \CommentTok{// initialise avec value le }
+\CommentTok{//nombre de place      pshared = 0}
 \DataTypeTok{int}\NormalTok{ sem\_destroy}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// destruction du semaphore }
 \DataTypeTok{int}\NormalTok{ sem\_wait}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Attente place}
 \DataTypeTok{int}\NormalTok{ sem\_post}\OperatorTok{(}\NormalTok{sem\_t }\OperatorTok{*}\NormalTok{sem}\OperatorTok{);} \CommentTok{// Liberation place}
@@ -177,8 +177,9 @@ risque juste d'avoir un writer qui attend indéfiniment que tous les
 
 Quand on accède à une variable en C, C va mémoriser la valeur. On peut
 s'assurer qu'il relise la valeur à chaque fois en ajoutant le mot-clé
-\texttt{volatile}. \textbf{Ce n'est pas une solution pour se protéger
-des écritures et accès concurrent !}
+\texttt{volatile}. Donc on empêche que le programme mette dans un
+registre la valeur d'une variable. \textbf{Ce n'est pas une solution
+pour se protéger des écritures et accès concurrent !}
 
 \subsubsection{Threads-safe}\label{threads-safe}
 
@@ -216,7 +217,7 @@ Les étapes:
   Le processus demande au kernel le chargement et l'exécution du code du
   fichier programme
 \item
-  On peut bloqué le shell et attendre de récupérer la valeur de retour
+  On peut bloquer le shell et attendre de récupérer la valeur de retour
 \end{enumerate}
 
 On peut créer de nouveau processus via un \texttt{fork}. Cela fait des
